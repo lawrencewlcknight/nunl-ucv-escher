@@ -8,6 +8,7 @@ import random
 import numpy as np
 import torch
 
+from hunl_escher.game import DEFAULT_ACTION_MENU, load_hunl_game
 from hunl_escher.features import (
     HUNLFeatureEncoder,
     ENCODER_ID,
@@ -238,9 +239,10 @@ class StructuredHUNLGroupedWideUCVEscher(GroupedWideUnbiasedControlVariateEscher
         *args,
         structured_branch_width: int = 64,
         feature_encoder_id: str = ENCODER_ID,
+        action_menu=DEFAULT_ACTION_MENU,
         **kwargs,
     ):
-        self.feature_encoder = make_feature_encoder(feature_encoder_id)
+        self.feature_encoder = make_feature_encoder(feature_encoder_id, action_menu)
         self.structured_branch_width = int(structured_branch_width)
         self.feature_replay_seed = int(kwargs.get("seed", 0))
         if self.structured_branch_width <= 0:
@@ -248,6 +250,9 @@ class StructuredHUNLGroupedWideUCVEscher(GroupedWideUnbiasedControlVariateEscher
         super().__init__(*args, **kwargs)
         if self.average_policy_loss != GROUPED_SOFT_TARGET_CROSS_ENTROPY:
             raise ValueError("The structured experiment requires grouped policy CE")
+
+    def load_game(self):
+        return load_hunl_game(self.feature_encoder.action_menu)
 
     def init_ave_policy_trainer(self):
         # DeepCumuAdv initially discovers OpenSpiel's raw size. From this hook

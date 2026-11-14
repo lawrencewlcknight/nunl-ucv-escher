@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "hunl-ucv-escher"
-version = "0.1.0"
+version = "0.4.0"
 description = "UCV-ESCHER research baseline for heads-up no-limit Hold'em"
 requires-python = ">=3.10,<3.13"
 dependencies = [
@@ -12,11 +12,13 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
+api = ["certifi>=2024.7.4"]
 parallel = ["ray==2.51.2", "psutil==7.2.1"]
 dev = ["pytest>=8,<9"]
 
 [project.scripts]
 hunl-train = "hunl_escher.train:main"
+hunl-play = "hunl_escher.play:main"
 
 [tool.setuptools.packages.find]
 where = ["."]

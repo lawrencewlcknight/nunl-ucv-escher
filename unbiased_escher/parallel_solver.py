@@ -21,7 +21,7 @@ from typing import Any, Iterable, Mapping
 import numpy as np
 import torch
 
-from hunl_escher.game import HUNL_GAME_NAME, load_hunl_game
+from hunl_escher.game import HUNL_GAME_NAME, DEFAULT_ACTION_MENU, load_hunl_game
 from vr_deep_cfr.logger import Logger
 
 from .parallel_utils import partition_total, worker_seed
@@ -160,7 +160,7 @@ class UCVEscherTraversalWorker:
 
         if str(game_name) != HUNL_GAME_NAME:
             raise ValueError(f"Parallel HUNL workers do not support {game_name!r}")
-        game = load_hunl_game()
+        game = load_hunl_game(solver_kwargs.get("action_menu", DEFAULT_ACTION_MENU))
         max_traversals = max(1, int(max_traversals_per_request))
         max_records = max_traversals * (int(game.max_game_length()) + 1)
         ensemble_size = int(solver_kwargs.get("q_ensemble_size", 3))

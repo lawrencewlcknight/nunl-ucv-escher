@@ -1,0 +1,132 @@
+{
+  "date": "2026-11-14",
+  "purpose": "Interface correctness only; not a playing-strength result",
+  "regression": {
+    "final_command": "python -m pytest -q",
+    "passed": 53,
+    "skipped": 2,
+    "seconds": 17.86,
+    "parallel_tests": {
+      "passed": 2,
+      "command": "RUN_RAY_TESTS=1 python -m pytest -q",
+      "note": "Passed in the preceding full 54-test run; the subsequent change only adds truncated HTTP response handling and its regression case."
+    },
+    "warnings": "Three upstream Ray/protobuf warnings in the parallel run"
+  },
+  "offline_suite": {
+    "synthetic_hands": 500,
+    "protocols": [
+      "slumbot",
+      "gtow"
+    ],
+    "real_http_requests": 0
+  },
+  "live_slumbot": {
+    "anonymous": true,
+    "completed_hands": 10,
+    "check_call_hands": 5,
+    "learned_checkpoint_hands": 5,
+    "named_leaderboard_run": false
+  },
+  "live_gtow": {
+    "performed": false,
+    "reason": "No approved researcher API key; user requested offline tests only"
+  },
+  "checkpoint": {
+    "path": "outputs/api-smoke-policy/policy_000001.pkl",
+    "sha256": "d618fda0842644b31944203ab8d0fb11e7d4dc32eee4b9acd2662f5078d7d343",
+    "training": "One smoke iteration, 32 trajectories, 2 critic updates per member; not competitive"
+  },
+  "tls_preflight": {
+    "initial_attempt": "Stopped before connection due to missing default Python CA file",
+    "resolution": "System trust augmented with verified Certifi CA bundle; TLS verification remains enabled"
+  },
+  "runs": {
+    "offline-checkpoint": {
+      "path": "outputs/api-smoke/offline-checkpoint.jsonl",
+      "sha256": "f5c45b42fab5ffc410c0884aace13b221d6b5a3160da56c5dcb9483f97ae8cd1",
+      "summary": {
+        "event": "summary",
+        "hands": 100,
+        "decisions": 581,
+        "adapter_observations": 1162,
+        "off_menu_raises": 60,
+        "policy_probability_checks": 1162,
+        "terminal_checks": 400,
+        "streets": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "seats": [
+          0,
+          1
+        ],
+        "kind": "synthetic_offline_equivalence",
+        "seed": 2026
+      },
+      "action_counts": {},
+      "seats": []
+    },
+    "slumbot-check-call-tls": {
+      "path": "outputs/api-smoke/slumbot-check-call-tls.jsonl",
+      "sha256": "8f5bedc547ba07cbf773a9ed3458d51ad91e889182f0cd6d77b1877b1e03006e",
+      "summary": {
+        "event": "summary",
+        "provider": "slumbot",
+        "completed_hands": 5,
+        "winnings_chips": 800.0,
+        "raw_bb_per_100": 160.0,
+        "recoveries": 0,
+        "purpose": "interface_smoke_not_strength_estimate"
+      },
+      "action_counts": {
+        "c": 17,
+        "k": 11
+      },
+      "seats": [
+        0,
+        1
+      ]
+    },
+    "slumbot-checkpoint": {
+      "path": "outputs/api-smoke/slumbot-checkpoint.jsonl",
+      "sha256": "221915b5c8100157ddb232ab6d25e989aa8f88223b01157502f57cffd3caa814",
+      "summary": {
+        "event": "summary",
+        "provider": "slumbot",
+        "completed_hands": 5,
+        "winnings_chips": -600.0,
+        "raw_bb_per_100": -120.0,
+        "recoveries": 0,
+        "purpose": "interface_smoke_not_strength_estimate"
+      },
+      "action_counts": {
+        "f": 1,
+        "b": 6,
+        "k": 1,
+        "c": 1
+      },
+      "seats": [
+        0,
+        1
+      ]
+    }
+  },
+  "source_sha256": {
+    "hunl_escher/api.py": "3da0e4de51abed785c070bd5f15fcce6bf5c4af5a3fee631fabd1403bc5be946",
+    "hunl_escher/remote.py": "bcd6e71b797fcb3da4d3c563d61bfb5a66a4c4439667033a07766ed146936646",
+    "hunl_escher/offline.py": "80d04de286caf5d99cfb6eb8da4c0c4556c5b2901853e1fbe9171afff983eb2e",
+    "hunl_escher/play.py": "bcdab5df5e6a4efd813d2d0f4098e8c2b1e07a6b3d7ac18135c5483be41b77a8",
+    "hunl_escher/features.py": "116cda36465b0c9b68686dea5834eebdc52122de9cf05bf82622ed884380be0e",
+    "hunl_escher/checkpointing.py": "b12ac03cf823c8dcd1e3b4afd41473927a5cc920ad7109ebc2f408ca3af26878",
+    "tests/test_remote.py": "0b8b15d9d032c20f64d9fe9db4b231a57c72a1358df8c27b8d6ba07b05c99edf"
+  },
+  "package": {
+    "wheel": "hunl_ucv_escher-0.3.0-py3-none-any.whl",
+    "wheel_sha256": "df4db0e78ceae8e7f4bd6802635c20f90bfc841dde8cecaf8f0600acb0f3fa42",
+    "installed_console_entry_point": "hunl-play",
+    "isolated_target_smoke": "10 offline hands using the saved checkpoint"
+  }
+}

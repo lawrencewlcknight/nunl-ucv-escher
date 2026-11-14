@@ -11,7 +11,7 @@ from typing import Mapping, Optional
 import numpy as np
 from open_spiel.python import policy
 
-from .game import HUNL_GAME_PARAMETERS, serialisable_game_definition
+from .game import HUNL_GAME_PARAMETERS
 
 
 CHECKPOINT_TYPE = "hunl_ucv_escher_policy_checkpoint"
@@ -52,7 +52,7 @@ def save_policy_checkpoint(
         ),
         "experiment_id": checkpoint_row.get("experiment_id"),
         "experiment_name": checkpoint_row.get("experiment_name"),
-        "game": serialisable_game_definition(),
+        "game": solver.game.definition(),
         "seed": int(seed),
         "outer_iteration": int(solver.num_iteration),
         "episode": int(solver.episode),
@@ -118,6 +118,8 @@ class LoadedHUNLPolicy(policy.Policy):
         self.game = game
         self.checkpoint_path = Path(checkpoint_path)
         self.checkpoint = load_checkpoint_payload(checkpoint_path)
+        if self.checkpoint["game"] != game.definition():
+            raise ValueError("Checkpoint game/action menu differs from the supplied game")
         self.feature_encoder = encoder_from_metadata(
             self.checkpoint.get("feature_encoder")
         )
@@ -156,15 +158,16 @@ class LoadedHUNLPolicy(policy.Policy):
         legal_actions = state.legal_actions(player)
         if not legal_actions:
             return {}
-        encoded = (
-            state.information_state_tensor(player)
-            if self.feature_encoder is None
-            else self.feature_encoder.information_state(state, player)
-        )
+        return self.action_probabilities_from_view(state.decision_view(player))
+
+    def action_probabilities_from_view(self, view):
+        """Inference only: no critic, hidden opponent cards, replay or optimisers."""
+        if view.actor != view.player:
+            raise ValueError("Cannot choose an action for a nonacting observer")
+        encoded = self.feature_encoder.encode_decision(view)
+        legal_actions = [a for a, legal in enumerate(view.legal_mask) if legal]
         info_state = self._torch.as_tensor(encoded, dtype=self._torch.float32)
-        legal_mask = self._torch.as_tensor(
-            state.legal_actions_mask(player), dtype=self._torch.bool
-        )
+        legal_mask = self._torch.as_tensor(view.legal_mask, dtype=self._torch.bool)
         with self._torch.no_grad():
             logits = self.model(info_state)
             masked_logits = self._torch.where(

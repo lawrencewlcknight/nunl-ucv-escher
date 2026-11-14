@@ -69,5 +69,14 @@
   "paired_legacy_train_steps": 5000,
   "structured_branch_width": 64,
   "cache_frozen_critic_targets": true,
-  "feature_encoder_id": "hunl_suit_canonical_fcpa_v1"
+  "feature_encoder_id": "hunl_strategic_public_state_v3",
+  "action_menu": [
+    "fold",
+    "check_call",
+    "min_raise",
+    "half_pot",
+    "pot",
+    "double_pot",
+    "all_in"
+  ]
 }

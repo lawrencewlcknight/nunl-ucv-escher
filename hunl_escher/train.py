@@ -58,7 +58,7 @@ def main(argv=None):
     contract = {"config": config, "seed": args.seed, "workers": args.workers,
                 "threads": args.threads, "checkpoint_every": checkpoint_every,
                 "source_fingerprint": source_fingerprint(),
-                "game": serialisable_game_definition(), "smoke": args.smoke,
+                "game": serialisable_game_definition(config["action_menu"]), "smoke": args.smoke,
                 "runtime": {"python": platform.python_version(), "torch": torch.__version__,
                             "numpy": np.__version__, "open_spiel": version("open_spiel"),
                             "ray": version("ray") if args.workers > 1 else None}}

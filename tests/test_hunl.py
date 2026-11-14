@@ -9,7 +9,7 @@ import torch
 
 from hunl_escher.config import baseline_config, smoke_config, make_solver
 from hunl_escher.features import HUNLFeatureEncoder
-from hunl_escher.game import HUNL_GAME_PARAMETERS, load_hunl_game
+from hunl_escher.game import DEFAULT_ACTION_MENU, HUNL_GAME_PARAMETERS, load_hunl_game
 from hunl_escher.checkpointing import save_policy_checkpoint, LoadedHUNLPolicy
 from hunl_escher.training_state import build_training_state, restore_training_state, save_training_state, read_training_state
 from unbiased_escher.estimator import control_variate_advantage, residual_adaptive_sampling_policy
@@ -53,7 +53,7 @@ def assert_models_equal(a, b, *, exact=True):
 def test_game_and_street_contract():
     assert HUNL_GAME_PARAMETERS["betting"] == "nolimit"
     assert HUNL_GAME_PARAMETERS["stack"] == "20000 20000"
-    assert load_hunl_game().num_distinct_actions() == 4
+    assert load_hunl_game().num_distinct_actions() == len(DEFAULT_ACTION_MENU)
     encoder = HUNLFeatureEncoder()
     for street, count in enumerate((0, 3, 4, 5)):
         state = state_at_street(street)
@@ -63,7 +63,7 @@ def test_game_and_street_contract():
                             (encoder.full_state(state), encoder.full_state_size)):
             assert value.shape == (size,)
             assert np.isfinite(value).all()
-            assert value.min() >= 0 and value.max() <= 1
+            assert value.min() >= -1 and value.max() <= 1
     state.apply_action(1)
     state.apply_action(1)
     assert state.is_terminal() and sum(state.returns()) == 0
@@ -72,14 +72,14 @@ def test_game_and_street_contract():
 
 def test_pot_raise_allin_and_terminal_payoffs():
     state = state_at_street()
-    state.apply_action(2)
+    state.apply_action(4)
     assert "r300" in state.information_state_string(1)
     assert HUNLFeatureEncoder().information_state(state).max() <= 1
     state.apply_action(0)
     assert state.is_terminal() and state.returns() == [100.0, -100.0]
     state = state_at_street()
-    state.apply_action(3)
-    assert 2 not in state.legal_actions()
+    state.apply_action(6)
+    assert set(state.legal_actions()) == {0, 1}
     state.apply_action(1)
     while state.is_chance_node():
         state.apply_action(state.chance_outcomes()[0][0])
@@ -96,9 +96,9 @@ def test_hidden_cards_do_not_leak_into_policy_and_suits_are_canonical():
     assert not np.array_equal(encoder.full_state(a), encoder.full_state(b))
     perm = (2, 0, 3, 1)
     mapped = load_hunl_game().new_initial_state()
-    for event in a.full_history():
+    for event in a.native_history():
         action = 4 * (event.action // 4) + perm[event.action % 4] if event.player == -1 else event.action
-        mapped.apply_action(action)
+        mapped.apply_native_action(action)
     np.testing.assert_array_equal(encoder.information_state(a), encoder.information_state(mapped))
     np.testing.assert_array_equal(encoder.full_state(a), encoder.full_state(mapped))
 
@@ -209,8 +209,10 @@ def test_cli_checkpoint_cadence_and_resume(tmp_path):
 
 @pytest.mark.ray
 @pytest.mark.skipif(os.getenv("RUN_RAY_TESTS") != "1", reason="Set RUN_RAY_TESTS=1 for real actor tests")
-def test_real_parallel_collection_and_resume(tmp_path):
+@pytest.mark.parametrize("menu", [list(DEFAULT_ACTION_MENU), ["fold", "check_call", "pot", "all_in"]])
+def test_real_parallel_collection_and_resume(tmp_path, menu):
     config = smoke_config()
+    config["action_menu"] = menu
     kwargs = dict(seed=53, repository_commit="test", config=config)
     solver = make_solver(config, seed=53, workers=2)
     try:

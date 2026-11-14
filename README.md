@@ -5,12 +5,25 @@ heads-up no-limit Texas Hold'em. The learner is extracted from the efficient
 FHP Experiment 36/38 implementation, with **2,500 updates per critic per fit**.
 See [the baseline specification](docs/BASELINE.md) for the choice and evidence.
 
-The initial game has two players, a full 52-card deck, preflop/flop/turn/river,
-50/100 blinds, and 20,000-chip stacks reset every hand. The initial **FCPA action
-abstraction** allows fold, check/call, pot-sized raise and all-in when legal.
-This is a runnable development baseline, not a trained competitive model.
-It does not yet support arbitrary opponent bet sizes or Slumbot/GTO Wizard API
-play. Those require the action/state adapter work in [the development plan](docs/HUNL_PLAN.md).
+The game uses OpenSpiel 1.6.3's full no-limit engine: two players, a full 52-card
+deck, preflop/flop/turn/river, 50/100 blinds, and 20,000-chip stacks reset every hand.
+A versioned Python adapter supplies exact chip amounts, public history and
+private-card-safe neural inputs. The default learner menu is fold, check/call,
+minimum raise, half-pot, pot, double-pot and all-in; illegal and duplicate sizes
+are masked. Exact off-menu opponent bets are accepted by the state interface.
+See [the game interface specification](docs/GAME_INTERFACE.md) for action IDs,
+chip conventions, features, engine limitations and an executable example.
+
+The [v3 strategic encoder](docs/STRATEGIC_FEATURES.md) adds current hand strength,
+draws, board texture, blockers and no-limit betting economics while retaining
+the exact original information. It uses bounded caches and requires fresh
+training from older v2 checkpoints.
+
+This is a runnable development learner, not a trained competitive model.
+Slumbot and GTO Wizard API adapters, inference-only play and offline equivalence
+tests are implemented in [the API interface](docs/API_INTERFACE.md). Slumbot has
+a small live smoke test; GTO Wizard remains verified offline pending an API key.
+Large-scale strength evaluation remains future work.
 
 ## Install
 
@@ -62,6 +75,19 @@ the source fingerprint, runtime, seed, configuration and worker arrangement;
 checkpoint files only; their PyTorch/pickle metadata is not an untrusted format.
 All checkpoint directories are retained; provision disk space for the chosen
 cadence. A retention policy and cloud runner remain future work.
+
+## Play and verify the API adapters
+
+```bash
+python -m hunl_escher.play --opponent offline --hands 100 --output outputs/offline.jsonl
+python -m hunl_escher.play --opponent slumbot --hands 10 --output outputs/slumbot.jsonl
+```
+
+The first command makes no network requests. The second plays anonymously with
+check/call. Add `--agent checkpoint --checkpoint PATH` to use a saved policy.
+For GTO Wizard, set `GTO_WIZARD_API_KEY` securely and use `--opponent gtow`.
+Install the `api` extra for the CA-bundle fallback. See the [API guide](docs/API_INTERFACE.md)
+for exact units, resumption limits, logs and credential handling.
 
 ## Layout
 

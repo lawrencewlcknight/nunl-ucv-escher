@@ -3,15 +3,18 @@
 The current repository deliberately establishes a runnable, testable starting
 point. It does not claim benchmark-ready play against Slumbot or GTO Wizard.
 
-1. **Choose the training bet menu and off-tree handling.** FCPA is a small initial
-   abstraction. Add useful fractions and raise sizes with a fixed, versioned
-   action-index contract, legal-size deduplication, min-raise/all-in handling and
-   full public-history encoding. Real opponent amounts must affect stacks, pots
-   and observations exactly. Silently snapping an opponent's bet to a training
-   size is not an adequate production adapter.
-2. **Port useful strategic descriptors.** Audit the selected FHP relative-strength
-   and betting-interaction inputs for all four streets. Compare feature cost and
-   quality; do not transplant flop-only formulas or tables as full-game equity.
+1. **Evaluate the training bet menu.** Interface v2 now uses exact OpenSpiel
+   `fullgame` states with seven default learner actions, explicit legal-size
+   deduplication and off-menu exact bet ingestion. See [GAME_INTERFACE.md](GAME_INTERFACE.md).
+   The menu remains a training abstraction: compare alternative menus for
+   quality per compute, and evaluate generalisation to off-menu histories.
+   External public-state reconstruction and protocol adapters are implemented
+   in [API_INTERFACE.md](API_INTERFACE.md). Verify the bundled engine's action-count
+   ceiling against the benchmark rules before claiming identical game trees.
+2. **Validate strategic feature quality.** The v3 four-street descriptors and
+   their lightweight cost audit are implemented; see [STRATEGIC_FEATURES.md](STRATEGIC_FEATURES.md).
+   A future matched-compute comparison should measure playing-strength gains.
+   No gain is inferred from correctness tests or the microbenchmark alone.
 3. **Profile on the intended training machine.** Establish memory, mature replay
    cost and iterations/nodes per wall-clock hour. Compare sequential and eight
    actor collection. Select checkpoint frequency and bounded retention. Verify
@@ -19,10 +22,12 @@ point. It does not claim benchmark-ready play against Slumbot or GTO Wizard.
 4. **Add evaluation.** Reusable local opponents, seat-balanced matches, independent
    evaluation RNG, per-hand payoff logs in bb, fixed evaluation sample budgets
    and confidence intervals. Random-opponent success is only an engineering check.
-5. **Add Slumbot and GTO Wizard adapters.** Match their 200bb format, betting
-   protocol, chip accounting and positional conventions. Separate anonymous
-   integration smoke from named leaderboard runs. Add retry/backoff and durable
-   hand logging. Obtain GTO Wizard API access before authenticated evaluation.
+5. **Expand external evaluation after API smoke tests.** Slumbot and GTO Wizard
+   adapters now share the exact policy input path, and include offline equivalence
+   tests, sequential clients, durable logs and conservative timeout handling.
+   Slumbot is smoke-tested live; GTO Wizard needs an approved key for its first
+   live verification. Add statistically planned, seat-balanced evaluation runs
+   and independent uncertainty estimates before comparing playing strength.
 6. **Run budget comparisons.** Start from 2,500 critic steps. Test 500 against
    2,500 with fresh seeds and both matched experience and matched total compute.
    Keep the action/feature representation fixed for this comparison.

@@ -80,30 +80,38 @@ restores training RNG state after each policy fit. Its iteration checkpoint
 interval replaces the old experiment's six-active-hour schedule; it is configurable,
 and should be selected using a measured HUNL iteration cost.
 
-## HUNL-specific changes in this initial repository
+## HUNL-specific changes
 
 The learning mechanism and budgets transfer; the FHP trained weights and its
 flop-only feature contract do not. New policies start from fresh initialisation.
 
 * Two players, 52 cards, two private cards each, board progression `0 3 1 1`,
   no-limit betting, 200bb stacks, 50/100 blinds, no rake.
-* OpenSpiel 1.6.3's FCPA abstraction: fold, check/call, pot-sized raise, all-in.
-  There is no fixed-limit raise cap. This is a restricted betting abstraction
-  of no-limit poker, not support for every legal chip-sized raise.
-* The new encoder has **287 policy features and 339 critic features**. Cards
-  occupy separate hole/flop/turn/river channels with global suit canonicalisation.
-  Betting history is retained from OpenSpiel, chip amounts are divided by 20,000,
-  and the context includes player identity, street and legal-action mask.
+* The initial FCPA interface has been replaced by OpenSpiel 1.6.3's `fullgame`
+  engine and a configurable compact learner action menu. The default seven
+  indices represent fold, check/call, min-raise, half-pot, pot, double-pot, all-in.
+  Exact off-menu chip amounts can enter the state without translation to a menu
+  size. OpenSpiel's bundled ACPC engine imposes a roughly 64-action-per-round
+  safety ceiling; see [the interface specification](GAME_INTERFACE.md).
+* Encoder v3 has **540 policy features and 641 critic features** with the
+  default seven-action menu. Cards occupy separate hole/flop/turn/river channels
+  with global suit canonicalisation. Compact public history preserves exact
+  bet amounts and street boundaries. Explicit context includes observer, actor,
+  street, stacks, total/street contributions, pot, call amount, raise bounds,
+  legal-action mask and the exact size represented by each action index.
+  The original 459/511-value prefixes remain intact; strategic features are appended.
 * Critics additionally receive both hole-card sets. Policy/calibration/regret
   inputs never contain the other player's cards. Public turn/river order is
   preserved even where OpenSpiel's native public-card mask loses it.
-* The source's additional relative-strength and betting-interaction descriptors
-  are **not blindly ported**: they assumed a flop-only fixed-limit game. The new
-  representation is a deliberate initial HUNL implementation, not the identical
-  231-dimensional FHP representation. Reintroducing useful four-street strength
-  features and testing their compute/quality tradeoff is planned.
-* Continuation and policy formats are renamed and reject old FHP checkpoints.
-  Full states are sharded with checksums and include actor/replay RNGs. Fits and
+* Four-street strategic descriptors now include exact current uniform-range
+  strength, best-five category/kickers, structural draws, board texture, blockers,
+  pot odds, effective stacks and action-specific costs. They are bounded,
+  deterministic and cached. Current strength before the river is explicitly
+  distinguished from showdown equity; no opponent range is inferred from it.
+  See [STRATEGIC_FEATURES.md](STRATEGIC_FEATURES.md) for the review and cost audit.
+* Continuation and policy contracts reject old FHP and initial FCPA checkpoints.
+  Encoder v3 also rejects v2 policies and continuation states; new training is
+  required. Full states are sharded with checksums and include actor/replay RNGs. Fits and
   checkpoints occur only at completed outer-iteration boundaries.
 
 ## Efficiency priorities

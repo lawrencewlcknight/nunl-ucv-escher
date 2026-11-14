@@ -4,6 +4,7 @@ import json
 from pathlib import Path
 
 from .features import ENCODER_ID
+from .game import validate_action_menu, load_hunl_game
 
 
 def baseline_config():
@@ -27,6 +28,7 @@ def smoke_config():
 
 
 def validate_config(config):
+    validate_action_menu(config["action_menu"])
     expected = baseline_config()
     if set(config) != set(expected):
         raise ValueError("Configuration keys differ from the versioned baseline")
@@ -65,7 +67,8 @@ def make_solver(config=None, *, seed=0, workers=1):
     else:
         solver = ParallelStructuredGroupedUCVEscher(
             **kwargs, parallel_num_workers=workers, parallel_run_seed=seed,
-            parallel_collection_chunk_size=min(1200, config["num_traversals"]),
+            parallel_collection_chunk_size=min(1200, config["num_traversals"],
+                max(1, 28800 // (load_hunl_game(config["action_menu"]).max_game_length() + 1))),
             parallel_ray_object_store_memory=128 * 1024**2,
             parallelize_independent_learners=False, parallel_cache_actor_snapshots=True)
     for key, value in runtime.items():

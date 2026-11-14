@@ -1,0 +1,236 @@
+{
+  "kind": "feature_engineering_microbenchmark_not_training_throughput",
+  "seed": 20261114,
+  "hands": 100,
+  "decisions": 800,
+  "machine": "arm64",
+  "python": "3.12.2",
+  "seconds": {
+    "v2_prefix_only": 0.06987583299633116,
+    "v3_cold_stream": 0.7528001660248265,
+    "v3_repeated_stream": 0.09872829203959554
+  },
+  "microseconds_per_policy_plus_critic": {
+    "v2_prefix_only": 87.34479124541394,
+    "v3_cold_stream": 941.0002075310331,
+    "v3_repeated_stream": 123.41036504949444
+  },
+  "encoder": {
+    "id": "hunl_strategic_public_state_v3",
+    "version": 3,
+    "raw_open_spiel_size": 760,
+    "policy_layout": {
+      "name": "player_information_state",
+      "total_size": 540,
+      "card_size": 208
+    },
+    "full_state_layout": {
+      "name": "critic_full_state",
+      "total_size": 641,
+      "card_size": 260
+    },
+    "board_channels": [
+      "flop",
+      "turn",
+      "river"
+    ],
+    "bet_amount_scale_chips": 20000,
+    "action_menu": [
+      "fold",
+      "check_call",
+      "min_raise",
+      "half_pot",
+      "pot",
+      "double_pot",
+      "all_in"
+    ],
+    "history_slots": 218,
+    "base_encoder_id": "hunl_exact_public_state_v2",
+    "base_policy_prefix_size": 459,
+    "base_full_state_prefix_size": 511,
+    "strategic_card_features": [
+      "hole_high_rank",
+      "hole_low_rank",
+      "pocket_pair",
+      "hole_suited",
+      "hole_rank_gap",
+      "hole_shared_straight_window",
+      "hole_broadway_fraction",
+      "made_high_card",
+      "made_pair",
+      "made_two_pair",
+      "made_trips",
+      "made_straight",
+      "made_flush",
+      "made_full_house",
+      "made_quads",
+      "made_straight_flush",
+      "made_tiebreak_0",
+      "made_tiebreak_1",
+      "made_tiebreak_2",
+      "made_tiebreak_3",
+      "made_tiebreak_4",
+      "strength_available",
+      "current_win_fraction",
+      "current_tie_fraction",
+      "current_loss_fraction",
+      "current_pot_share",
+      "currently_unbeatable",
+      "board_nuts_removed_fraction",
+      "board_nuts_legal_mass",
+      "board_paired_rank_fraction",
+      "board_max_multiplicity",
+      "board_max_suit_fraction",
+      "board_straight_window_fraction",
+      "board_high_rank",
+      "board_low_rank",
+      "river_board_category",
+      "river_plays_board",
+      "pocket_overpair",
+      "hole_matches_board_top",
+      "hole_overcard_fraction",
+      "hole_matches_board_fraction",
+      "board_flush_blocker_rank",
+      "nut_flush_blocker",
+      "next_straight_completion",
+      "next_flush_completion",
+      "next_either_completion",
+      "runner_runner_straight",
+      "runner_runner_flush",
+      "next_category_improvement"
+    ],
+    "strategic_economics_features": [
+      "observer_is_actor",
+      "observer_in_position",
+      "call_pot_odds",
+      "call_stack_fraction",
+      "effective_stack_pot_share",
+      "log_spr",
+      "facing_all_in",
+      "call_closes_street",
+      "strength_minus_pot_odds",
+      "strength_times_call_fraction",
+      "strength_times_stack_share",
+      "fold_incremental_risk_share",
+      "fold_opponent_call_pot_odds",
+      "fold_called_stack_pot_share",
+      "check_call_incremental_risk_share",
+      "check_call_opponent_call_pot_odds",
+      "check_call_called_stack_pot_share",
+      "min_raise_incremental_risk_share",
+      "min_raise_opponent_call_pot_odds",
+      "min_raise_called_stack_pot_share",
+      "half_pot_incremental_risk_share",
+      "half_pot_opponent_call_pot_odds",
+      "half_pot_called_stack_pot_share",
+      "pot_incremental_risk_share",
+      "pot_opponent_call_pot_odds",
+      "pot_called_stack_pot_share",
+      "double_pot_incremental_risk_share",
+      "double_pot_opponent_call_pot_odds",
+      "double_pot_called_stack_pot_share",
+      "all_in_incremental_risk_share",
+      "all_in_opponent_call_pot_odds",
+      "all_in_called_stack_pot_share"
+    ],
+    "policy_extra_order": "own card features; actor economics with off-turn strength interactions zero",
+    "critic_extra_order": "P0 card features; P1 card features; actor economics",
+    "strength_prior": "uniform legal opponent holdings; CURRENT best-five rank, not runout equity",
+    "draw_semantics": "visible-card pattern completion; not clean winning outs; zero on river",
+    "caches_per_process": {
+      "board_tables": 64,
+      "card_vectors": 8192
+    },
+    "grouping": "unchanged exact information states; additive descriptors, no lossy buckets",
+    "history_codes": {
+      "chance": 0,
+      "fold": -1,
+      "check_call": -0.5,
+      "raise": "hand_raise_to / stack"
+    }
+  },
+  "primary_replay_bytes_v2": 11627000000,
+  "primary_replay_bytes_v3": 13963000000,
+  "calibration_feature_growth_bytes": 324000000,
+  "memory_scope": "primary replay excludes calibration, model/fit tensors, actors, caches and checkpoint copies; not RSS",
+  "cache_info": {
+    "cards": {
+      "hits": 6485,
+      "misses": 715,
+      "maxsize": 8192,
+      "currsize": 715
+    },
+    "boards": {
+      "hits": 301,
+      "misses": 299,
+      "maxsize": 64,
+      "currsize": 64
+    }
+  },
+  "timing_scope": "paired policy+critic construction only; one check/call stream, no neural inference or learner fitting",
+  "validation_date": "2026-11-14",
+  "package_version": "0.4.0",
+  "tests": {
+    "offline": {
+      "passed": 68,
+      "skipped_opt_in_ray": 2,
+      "seconds": 23.59
+    },
+    "ray": {
+      "passed": 2,
+      "seconds": 29.78,
+      "scope": "two local actors, both default seven-action and custom four-action menus, exact resumed network equality",
+      "runtime_note": "Ray required unsandboxed macOS process inspection"
+    }
+  },
+  "commands": [
+    "python -m pytest -q",
+    "RUN_RAY_TESTS=1 python -m pytest -q -m ray",
+    "python -m hunl_escher.feature_audit --hands 100",
+    "python -m hunl_escher.train --smoke --iterations 2 --output outputs/strategic-v3-smoke",
+    "python -m hunl_escher.play --opponent offline --hands 100 --seed 20261114 --agent checkpoint --checkpoint outputs/strategic-v3-smoke/policy_000002.pkl --output outputs/strategic-v3-offline.jsonl"
+  ],
+  "offline_policy_equivalence": {
+    "event": "summary",
+    "time_unix": 1794673242.1170838,
+    "hands": 100,
+    "decisions": 571,
+    "adapter_observations": 1142,
+    "off_menu_raises": 64,
+    "policy_probability_checks": 1142,
+    "terminal_checks": 400,
+    "streets": [
+      0,
+      1,
+      2,
+      3
+    ],
+    "seats": [
+      0,
+      1
+    ],
+    "kind": "synthetic_offline_equivalence",
+    "seed": 20261114
+  },
+  "smoke_training": {
+    "iterations": 2,
+    "trajectories": 64,
+    "critic_updates_per_member_per_iteration": 2,
+    "note": "reduced engineering smoke, not production budgets or playing-strength evaluation"
+  },
+  "source_sha256": {
+    "hunl_escher/strategic_features.py": "ee4ad6d48ec6158c5d243856c366c35cea8709144b2bebb2c68db08b915284b1",
+    "hunl_escher/features.py": "288793e69ae0ad4e2c66b290e9a30875522e7a6fa8a557a2b67cd9f0a927a234",
+    "hunl_escher/feature_audit.py": "87530bb0f357dbe903336b05b463b60eef5d283964fc7da59f393cd78836ea0e",
+    "hunl_escher/play.py": "9245791e2d94abcb43111cf1ebd796d2bb41970de4662d4ebf0b9fa5080f70a9",
+    "hunl_escher/data/baseline.json": "795b402dacc5af9824bd05c2590fd7502edcfe9e9a1a64c056be1f3abbdfb119",
+    "tests/test_strategic_features.py": "70fd2ed5701cde86a7959ca71ac0232c19c3197dd5934f79eb8e66217fb13982"
+  },
+  "checkpoint_sha256": "33971a361b2476f2e75f0f53126228ccba26062994af825aebcac4c20dc38613",
+  "limits": [
+    "No new live API requests; GTO Wizard remains offline-only without a key.",
+    "No measured playing-strength improvement or proof of optimality.",
+    "Feature microbenchmark excludes neural fitting and is not production training throughput.",
+    "Previous live Slumbot evidence is the historical v2 snapshot in API_VALIDATION.json."
+  ]
+}

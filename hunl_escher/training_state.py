@@ -2,7 +2,6 @@
 from copy import deepcopy
 
 from . import state_storage
-from .game import serialisable_game_definition
 
 
 def _replay_buffers(solver):
@@ -13,7 +12,7 @@ def _replay_buffers(solver):
 
 def build_training_state(solver, **kwargs):
     result = state_storage.build_training_state(solver, **kwargs)
-    result["game"] = serialisable_game_definition()
+    result["game"] = solver.game.definition()
     result["encoder"] = solver.feature_encoder.metadata()
     result["replay_rng"] = [deepcopy(b.rng.bit_generator.state) for b in _replay_buffers(solver)]
     workers = getattr(solver, "_workers", [])
@@ -26,7 +25,7 @@ def build_training_state(solver, **kwargs):
 
 
 def restore_training_state(solver, payload, **kwargs):
-    if payload["game"] != serialisable_game_definition():
+    if payload["game"] != solver.game.definition():
         raise ValueError("Continuation game mismatch")
     if payload["encoder"] != solver.feature_encoder.metadata():
         raise ValueError("Continuation encoder mismatch")
