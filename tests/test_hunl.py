@@ -7,7 +7,7 @@ import numpy as np
 import pytest
 import torch
 
-from hunl_escher.config import baseline_config, smoke_config, make_solver
+from hunl_escher.config import baseline_config, smoke_config, make_solver, validate_config
 from hunl_escher.features import HUNLFeatureEncoder
 from hunl_escher.game import DEFAULT_ACTION_MENU, HUNL_GAME_PARAMETERS, load_hunl_game
 from hunl_escher.checkpointing import save_policy_checkpoint, LoadedHUNLPolicy
@@ -125,12 +125,81 @@ def test_control_variate_mean_and_sampler_support_for_four_actions():
     np.testing.assert_allclose(average, values - policy @ values, atol=1e-14)
 
 
-def test_checkpoint_reloads_legal_policy(tmp_path):
+def test_role_specific_network_sizes():
     solver = make_solver(smoke_config())
+    roles = [
+        (solver.regret_trainers[0].model, 128, [256, 256, 256], 305159),
+        (solver.regret_trainers[1].model, 128, [256, 256, 256], 305159),
+        (solver.ave_policy_trainer.model, 128, [256, 256, 256], 305159),
+        (solver.q_value_trainer.members[0].model, 96, [192, 192], 160231),
+        (solver.q_value_trainer.members[1].model, 96, [192, 192], 160231),
+        (solver.calibration_trainer.model, 64, [128, 128], 78722),
+    ]
+    for model, branch, layers, parameters in roles:
+        metadata = model.checkpoint_metadata()
+        assert metadata["branch_width"] == branch
+        assert metadata["hidden_layers"] == layers
+        assert sum(p.numel() for p in model.parameters()) == parameters
+    assert sum(sum(p.numel() for p in m.parameters()) for m, *_ in roles) == 1314661
+
+
+def custom_network_config():
+    config = smoke_config()
+    for role, branch, layers in (
+        ("regret", 48, [96, 64, 32]), ("critic", 40, [80, 48]),
+        ("calibration", 24, [48]), ("average_policy", 56, [112, 80]),
+    ):
+        config[f"{role}_branch_width"] = branch
+        config[f"{role}_network_layers"] = layers
+    return config
+
+
+def test_role_sizes_are_independently_configurable():
+    config = custom_network_config()
+    solver = make_solver(config)
+    roles = {
+        "regret": [t.model for t in solver.regret_trainers],
+        "critic": [model for m in solver.q_value_trainer.members
+                   for model in (m.model, m.target_model)],
+        "calibration": [solver.calibration_trainer.model, solver.calibration_trainer.target_model],
+        "average_policy": [solver.ave_policy_trainer.model],
+    }
+    for role, models in roles.items():
+        for model in models:
+            metadata = model.checkpoint_metadata()
+            assert metadata["branch_width"] == config[f"{role}_branch_width"]
+            assert metadata["hidden_layers"] == config[f"{role}_network_layers"]
+    solver.iteration()
+    solver.train_average_policy()
+    assert all(torch.isfinite(t).all() for state in model_states(solver) for t in state.values())
+
+
+@pytest.mark.parametrize("role", ["regret", "critic", "calibration", "average_policy"])
+@pytest.mark.parametrize("suffix,value", [
+    ("branch_width", 0), ("branch_width", True), ("branch_width", 1.5),
+    ("network_layers", []), ("network_layers", [64, -1]),
+    ("network_layers", [True]), ("network_layers", [64.5]), ("network_layers", 128),
+])
+def test_invalid_architecture_rejected(role, suffix, value):
+    config = smoke_config()
+    key = f"{role}_{suffix}"
+    config[key] = value
+    with pytest.raises(ValueError, match=key):
+        validate_config(config)
+
+
+@pytest.mark.parametrize("old_policy_shape", [False, True])
+def test_checkpoint_reloads_legal_policy(tmp_path, old_policy_shape):
+    config = smoke_config()
+    if old_policy_shape:
+        # Saved model metadata, not today's defaults, controls inference shape.
+        config["average_policy_branch_width"] = 64
+        config["average_policy_network_layers"] = [192, 192]
+    solver = make_solver(config)
     solver.iteration()
     solver.train_average_policy()
     path = save_policy_checkpoint(solver, tmp_path / "policy.pkl", seed=0,
-                                  config=smoke_config(), checkpoint_row={})
+                                  config=config, checkpoint_row={})
     loaded = LoadedHUNLPolicy(load_hunl_game(), path)
     for street in range(4):
         state = state_at_street(street)
@@ -170,6 +239,10 @@ def test_complete_state_resume_matches_uninterrupted(tmp_path):
     solver.iteration()
     expected = model_states(solver)
     expected_nodes = solver.nodes_touched
+    from hunl_escher.strategic_features import _card_features, _board_table, public_aggression
+    from hunl_escher.preflop_equity import _equity
+    for cache in (_card_features, _board_table, public_aggression, _equity):
+        cache.cache_clear()
     restored = make_solver(config, seed=43)
     restore_training_state(restored, read_training_state(tmp_path / "state"), **kwargs)
     restored.iteration()
@@ -178,6 +251,11 @@ def test_complete_state_resume_matches_uninterrupted(tmp_path):
     payload = read_training_state(tmp_path / "state")
     with pytest.raises(ValueError, match="seed"):
         restore_training_state(restored, payload, **dict(kwargs, seed=44))
+    changed = deepcopy(config)
+    changed["critic_branch_width"] += 1
+    with pytest.raises(ValueError, match="configuration"):
+        restore_training_state(make_solver(changed, seed=43), payload,
+                               **dict(kwargs, config=changed))
 
 
 def test_repo_has_no_historical_experiments_and_baseline_is_reduced():
@@ -211,7 +289,8 @@ def test_cli_checkpoint_cadence_and_resume(tmp_path):
 @pytest.mark.skipif(os.getenv("RUN_RAY_TESTS") != "1", reason="Set RUN_RAY_TESTS=1 for real actor tests")
 @pytest.mark.parametrize("menu", [list(DEFAULT_ACTION_MENU), ["fold", "check_call", "pot", "all_in"]])
 def test_real_parallel_collection_and_resume(tmp_path, menu):
-    config = smoke_config()
+    # Exercise both baseline sizes and independent, nonuniform role overrides.
+    config = smoke_config() if menu == list(DEFAULT_ACTION_MENU) else custom_network_config()
     config["action_menu"] = menu
     kwargs = dict(seed=53, repository_commit="test", config=config)
     solver = make_solver(config, seed=53, workers=2)

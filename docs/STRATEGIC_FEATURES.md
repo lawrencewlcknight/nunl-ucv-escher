@@ -1,6 +1,72 @@
-# Four-street strategic features, encoder v3
+# Four-street strategic features
 
-The default is `hunl_strategic_public_state_v3`. It adds poker structure to the
+## Current v5: strict nuts and preflop equity interactions
+
+The default `hunl_strategic_public_state_v5` has **569 policy / 688 critic inputs**
+with the seven-action menu. All 62 v4 card descriptors retain their values. One
+new card channel identifies strictly unbeatable current hands: every legal
+uniform opponent holding loses, with no ties. This differs from being merely
+unbeatable on a board everyone can play; it is unavailable/zero preflop.
+
+Three new public-context channels expose preflop equity minus actor call odds,
+equity times the fraction of the actor's stack needed to call, and equity times
+the effective-stack share. They reuse the bundled equity estimate, consume no
+new samples, and are zero postflop or when observer and actor differ. Separate
+names preserve the distinction from exact current-strength interactions, whose
+original values remain unchanged. These inputs are not betting thresholds or an
+opponent-range model.
+
+Network widths, depth, optimisation and sampling budgets remain unchanged.
+Default dense replay grows by **120 MB** including calibration; online model
+parameters increase by 2,752 to **1,314,661**. No playing-strength gain is claimed.
+V5 requires fresh training. Saved v3/v4 policies retain their original layouts
+and semantics; `v4_strategic_features.py` freezes v4 behavior. The shared v2 card
+fixture verifies alignment with limit Hold'em's blockers, draws and strict nuts.
+
+
+## Historical v4: transfers from the limit Hold'em encoder
+
+The default is `hunl_strategic_public_state_v4`: **565 policy inputs and 683
+critic inputs** with the seven-action menu. All exact v3 information and its 49
+card descriptors remain represented, with a new order for three network branches:
+exact cards, strategic cards, and betting context. Trunk sizes and fit budgets
+remain as specified in [NETWORK_CONFIGURATION.md](NETWORK_CONFIGURATION.md).
+
+* Ten additional card channels expose availability and the exact nine-category
+  distribution after the next card on flop/turn. These reuse the existing
+  next-card rankings. They describe the resulting best hand, whereas the retained
+  straight/flush completion channels describe newly completed card patterns.
+* Three preflop channels expose availability, uniform-opponent showdown equity
+  and its estimated standard error. The 4,096-sample PCG64/hash rule and canonical
+  key match the limit encoder. A separate 169-entry cache retains every starting
+  hand class even when the general hand cache evicts entries. The estimates are
+  precomputed in a bundled, checksum-validated table: training and API inference
+  perform no preflop Monte Carlo work. The offline reference sampler remains
+  available for regeneration tests; no training RNG is consumed.
+  These are estimates, not exact equity or an inferred betting-conditioned range.
+  They are zero after the flop; no postflop equity sampler was added.
+* Twelve public aggression channels encode four street raise counts as n/(n+1)
+  and the last aggressor on each street relative to the observer. They include
+  arbitrary legal off-menu raises, exclude blinds, and retain street boundaries.
+* Four critic-only channels encode comparison availability and player-0
+  win/tie/loss on the current board. They reuse the two players' already computed
+  category/kickers; policy, regret and calibration never receive this comparison.
+
+V3 policy checkpoints remain playable through the frozen v3 encoder and two-branch
+model. V4 continuation requires a new training run; v3 replay and optimiser states
+cannot be resumed into the changed input layout. V2 remains unsupported.
+
+At million-entry replay capacities, the feature changes add **836,000,000 bytes**
+of dense storage including calibration, before batches, actors and checkpoints.
+Online models total **1,311,909 parameters**. The shared fixture
+`tests/fixtures/holdem_card_contract_v1.json` is identical in both Hold'em repositories
+and checks common card semantics plus all 169 preflop classes independently of
+the other repository's availability. V3 semantics are frozen in
+`legacy_strategic_features.py` for saved-policy inference.
+
+## Historical v3 feature review and measurements
+
+V3 introduced `hunl_strategic_public_state_v3`. It adds poker structure to the
 exact input rather than merging hands into strength buckets. Policy inputs grow
 from **459 to 540** values; critics grow from **511 to 641**. The original prefixes,
 suit symmetry, ordered board streets and complete public betting history remain
@@ -27,8 +93,10 @@ The Leduc 51 evidence supports the retained critic budget, as documented in
 [BASELINE.md](BASELINE.md); it does not establish the best Hold'em representation.
 
 The implementation therefore retains a compact set with direct poker meaning.
-It keeps the existing cross-fit UCV estimator, residual sampling, target caching,
-network widths, 2,500 updates per critic and checkpoint-only average-policy fits.
+The feature change kept the existing cross-fit UCV estimator, residual sampling,
+target caching, network widths, 2,500 updates per critic and checkpoint-only
+average-policy fits. A subsequent [network configuration change](NETWORK_CONFIGURATION.md)
+increased capacity separately by role.
 No new learned auxiliary model, Monte Carlo feature estimator, range model or
 expensive future-board equity search is introduced.
 
@@ -102,8 +170,9 @@ player's own/public information, followed by the actor's betting features. The
 actual opponent cards never narrow the uniform prior in either card block.
 Terminal critic rows retain their zero placeholder and done mask.
 
-Raw cards retain their existing 64-wide branch. The derived descriptors join
-the public context branch, also 64-wide, before the existing trunk. Training,
+Raw cards have a separate branch. The derived descriptors join the public
+context branch before the joint trunk. Both branches were 64-wide during this
+feature audit; current widths are specified in [NETWORK_CONFIGURATION.md](NETWORK_CONFIGURATION.md). Training,
 Slumbot and GTO Wizard all invoke the same encoder. Dummy opponent cards used
 for remote replay cannot enter the policy's card statistics.
 

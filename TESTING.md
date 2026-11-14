@@ -1,5 +1,44 @@
 # Verification
 
+## Encoder v5 validation — 2026-11-15
+
+* Offline suite: **115 passed, 2 skipped**; skips are opt-in Ray tests.
+* Real two-worker collection and exact continuation: **2 passed** separately,
+  covering both the default and custom action menus.
+* Tests distinguish strict current nuts from board ties and check the three new
+  preflop equity interactions, exact call prices, and off-turn/postflop masking.
+  Original named card and betting values remain unchanged.
+* Frozen v4 metadata and nonzero saved-policy predictions are preserved. Current
+  continuation passes; continuation from older layouts is rejected.
+* Cross-repository audit: 30,000 ranked hands, 800 random card cases with 51 shared
+  channels, all 169 preflop equity classes, and 612 decisions across 60 matched
+  full hands agree. Shared fixtures pass independently in each repository.
+* Single matched 100-hand/800-decision timing: v4/v5 policy-plus-critic encoding
+  took 0.946/0.907 ms per decision on the first pass and 0.130/0.149 ms on the
+  repeated pass. These local measurements include within-hand reuse and are
+  not training-throughput or playing-strength evidence.
+* Widths and fitting budgets are unchanged. Default online parameters total
+  1,314,661; dense replay growth is 120 MB including calibration. Details and raw
+  measurements: [ENCODER_V5_VALIDATION.json](docs/ENCODER_V5_VALIDATION.json).
+
+## Encoder v4 validation — 2026-11-15
+
+* Offline suite: **110 passed**, with two opt-in Ray tests skipped.
+* Real Ray default/custom-menu collection and exact continuation: **2 passed**.
+* Shared card fixture: 193 cases including every preflop suit class, identical
+  to the fixture tested independently by the limit repository.
+* Checks cover full next-card categories, off-menu aggression histories,
+  hidden-card isolation, critic comparison, preflop table regeneration, global
+  RNG isolation, v3 predictions and exact continuation after clearing caches.
+* Version 0.5.0 wheel built without downloads, installed into a separate target,
+  and completed a smoke iteration, policy fit and checkpoint reload from outside
+  the checkout. The bundled preflop table and frozen v3 modules are included.
+* Matched 100-hand/800-decision audit: policy-plus-critic encoding changed from
+  0.913 to 1.000 ms on the first pass and 0.121 to 0.128 ms on the repeated pass.
+  This measures feature construction only, with within-hand cache reuse; it is
+  not a full training throughput or playing-strength result. Raw measurements,
+  source fingerprints and replay costs: [ENCODER_V4_VALIDATION.json](docs/ENCODER_V4_VALIDATION.json).
+
 Use the pinned dependencies and Python 3.10–3.12.
 
 ```bash
@@ -47,7 +86,13 @@ Slumbot smoke and the GTO Wizard key requirement.
 an independent best-five oracle, 300 OpenSpiel showdowns, rare hand categories,
 full opponent enumeration, blockers, wheel/open-ended/backdoor draws, suit
 permutations, exact no-limit action prices, off-turn observations and v2 rejection.
-Existing API equivalence and exact continuation tests use the v3 encoder.
+Existing API equivalence and exact continuation tests use the v5 encoder.
+
+Network tests check the default per-role shapes and parameter counts, independent
+width/depth overrides, invalid configuration rejection, and policy reload with
+both previous and current sizes. Continuation rejects changed architecture
+settings. The Ray tests cover default sizes and nonuniform per-role overrides,
+including bit-exact continuation. Smoke retains the full default network sizes.
 
 For a small cost audit without training or network access:
 
@@ -55,6 +100,6 @@ For a small cost audit without training or network access:
 python -m hunl_escher.feature_audit --hands 100
 ```
 
-This compares the retained v2 prefix with v3 features on the same 800 check/call
+This compares the retained v2 exact channels, v3 and v5 encoders on the same 800 check/call
 decisions, reports cold/repeated timings and replay allocation estimates, and
 checks exact prefix retention. It is not a training-throughput benchmark.

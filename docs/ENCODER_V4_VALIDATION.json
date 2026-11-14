@@ -1,0 +1,67 @@
+{
+  "date": "2026-11-15",
+  "seed": 20261115,
+  "hands": 100,
+  "decisions": 800,
+  "python": "3.12.2",
+  "machine": "arm64",
+  "scope": "Local matched check/call encoder benchmark, both seats, four streets. First pass has within-hand cache reuse. No neural inference/fitting; not training throughput or playing strength.",
+  "results": {
+    "no_limit_v3": {
+      "policy_size": 540,
+      "critic_size": 641,
+      "ms_per_policy_plus_critic": {
+        "first_pass": 0.9132848962326534,
+        "repeated_pass": 0.12083651119610295
+      }
+    },
+    "no_limit_v4": {
+      "policy_size": 565,
+      "critic_size": 683,
+      "ms_per_policy_plus_critic": {
+        "first_pass": 0.9998764062765986,
+        "repeated_pass": 0.12781968747731298
+      }
+    },
+    "limit_v3": {
+      "policy_size": 412,
+      "critic_size": 595,
+      "ms_per_policy_plus_critic": {
+        "first_pass": 5.168663072545314,
+        "repeated_pass": 0.21072088507935405
+      }
+    },
+    "limit_v4": {
+      "policy_size": 413,
+      "critic_size": 597,
+      "ms_per_policy_plus_critic": {
+        "first_pass": 4.320553228753852,
+        "repeated_pass": 0.20977161490009166
+      }
+    }
+  },
+  "source_fingerprints": {
+    "no_limit": "ec44a1ce43195654ad9e25fd4cddb2c452dfef7afcf9f812441e72f3d829715c",
+    "limit": "97d716b9475f32a366ca74e92b21de83dffedd6330afdee34f94fcda4787a58b"
+  },
+  "validation": {
+    "no_limit_offline_tests": 110,
+    "limit_offline_tests": 44,
+    "no_limit_ray_tests": 2,
+    "limit_ray_tests": 1,
+    "shared_fixture_cases": 193,
+    "preflop_classes": 169,
+    "old_v3_policy_files_loaded": true,
+    "cold_cache_exact_continuation": true,
+    "installed_v050_smoke_and_policy_roundtrip_both_repositories": true
+  },
+  "default_replay_growth_bytes": {
+    "no_limit": 836000000,
+    "limit": 36000000
+  },
+  "online_parameters": {
+    "no_limit": 1311909,
+    "limit": 911377
+  },
+  "shared_fixture_sha256": "79dbf230cdd6cc22a3e81f4f9864721a9967520f67790d78ac425b2482b7d126"
+}

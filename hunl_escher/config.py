@@ -32,6 +32,15 @@ def validate_config(config):
     expected = baseline_config()
     if set(config) != set(expected):
         raise ValueError("Configuration keys differ from the versioned baseline")
+    for role in ("regret", "critic", "calibration", "average_policy"):
+        width_key = f"{role}_branch_width"
+        if type(config[width_key]) is not int or config[width_key] <= 0:
+            raise ValueError(f"{width_key} must be a positive integer")
+        layers_key = f"{role}_network_layers"
+        layers = config[layers_key]
+        if (not isinstance(layers, list) or not layers
+                or any(type(width) is not int or width <= 0 for width in layers)):
+            raise ValueError(f"{layers_key} must be a nonempty list of positive integers")
     for key in ("advantage_buffer_size", "ave_policy_buffer_size", "baseline_buffer_size",
                 "calibration_buffer_size", "num_traversals", "advantage_batch_size",
                 "ave_policy_batch_size", "baseline_batch_size", "calibration_batch_size",

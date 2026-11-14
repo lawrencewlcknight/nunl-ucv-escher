@@ -64,7 +64,7 @@ it beneficial.
 | Average policy | Grouped soft-target cross entropy; iteration weighting gamma 2; reset each fit; 20,000 updates; batch 2,048; LR 0.003 |
 | Policy fit cadence | Checkpoints only, preserving the FHP approach; the initial runner uses completed-iteration checkpoints (50 by default), plus the final endpoint |
 | Collection | 10,000 trajectories per player per iteration, 20,000 total; alternating player updates |
-| Networks | Separate 64-wide card/context branches; 2×128 trunk for regret, critics and calibration; 2×192 trunk for average policy |
+| Networks | Regret and policy: 128-wide exact-card/strategic-card/context branches, 3×256 trunk; critics: 96-wide branches, 2×192 trunk; calibration: 64-wide branches, 2×128 trunk. See [network configuration](NETWORK_CONFIGURATION.md). |
 | Regret replay | Capacity 1,000,000 per player, reset for each player collection batch |
 | Policy replay | 1,000,000-row reservoir |
 | Critic replay | 1,000,000 transitions total, divided into two 500,000-row circular buffers |
@@ -93,13 +93,13 @@ flop-only feature contract do not. New policies start from fresh initialisation.
   Exact off-menu chip amounts can enter the state without translation to a menu
   size. OpenSpiel's bundled ACPC engine imposes a roughly 64-action-per-round
   safety ceiling; see [the interface specification](GAME_INTERFACE.md).
-* Encoder v3 has **540 policy features and 641 critic features** with the
+* Encoder v5 has **569 policy features and 688 critic features** with the
   default seven-action menu. Cards occupy separate hole/flop/turn/river channels
   with global suit canonicalisation. Compact public history preserves exact
   bet amounts and street boundaries. Explicit context includes observer, actor,
   street, stacks, total/street contributions, pot, call amount, raise bounds,
   legal-action mask and the exact size represented by each action index.
-  The original 459/511-value prefixes remain intact; strategic features are appended.
+  All original 459/511 exact channels remain; strategic features occupy a separate branch.
 * Critics additionally receive both hole-card sets. Policy/calibration/regret
   inputs never contain the other player's cards. Public turn/river order is
   preserved even where OpenSpiel's native public-card mask loses it.
@@ -110,8 +110,8 @@ flop-only feature contract do not. New policies start from fresh initialisation.
   distinguished from showdown equity; no opponent range is inferred from it.
   See [STRATEGIC_FEATURES.md](STRATEGIC_FEATURES.md) for the review and cost audit.
 * Continuation and policy contracts reject old FHP and initial FCPA checkpoints.
-  Encoder v3 also rejects v2 policies and continuation states; new training is
-  required. Full states are sharded with checksums and include actor/replay RNGs. Fits and
+  V3/v4 policies retain their original encoders for inference; v5 requires fresh
+  training and rejects older continuation states. V2 policies remain unsupported. Full states are sharded with checksums and include actor/replay RNGs. Fits and
   checkpoints occur only at completed outer-iteration boundaries.
 
 ## Efficiency priorities

@@ -132,7 +132,7 @@ def test_draws_wheel_open_ended_backdoor_and_river():
     assert f["next_flush_completion"] == pytest.approx(9 / 46)
     assert f["runner_runner_flush"] == f["runner_runner_straight"] == 0
     f = features("As Ks", "Qs Js 2c 3d 4h")
-    assert all(f[name] == 0 for name in CARD_NAMES[-6:])
+    assert all(f[name] == 0 for name in CARD_NAMES[43:49])
     f = features("As Kd", "Qs Js 2s")
     assert f["nut_flush_blocker"] == f["board_flush_blocker_rank"] == 1
 
@@ -180,13 +180,13 @@ def test_critic_perspectives_and_contract_reject_old_features():
     encoder = HUNLFeatureEncoder()
     state = state_at_street(2)
     x, y = encoder.information_state(state), encoder.full_state(state)
-    assert encoder.policy_size == 540 and encoder.full_state_size == 641
-    start, width = encoder.critic_prefix_size, len(CARD_NAMES)
+    assert encoder.policy_size == 569 and encoder.full_state_size == 688
+    start, width = encoder.full_state_layout.card_size, len(CARD_NAMES)
     for player in (0, 1):
         v = state.decision_view(player)
         np.testing.assert_array_equal(y[start + player * width:start + (player + 1) * width],
                                       card_features(v.hole_cards, v.board_cards))
-    np.testing.assert_array_equal(x[encoder.policy_prefix_size:encoder.policy_prefix_size + width],
+    np.testing.assert_array_equal(x[encoder.policy_layout.card_size:encoder.policy_layout.card_size + width],
                                   y[start + state.current_player() * width:start + (state.current_player() + 1) * width])
     old = dict(encoder.metadata(), id="hunl_exact_public_state_v2", version=2)
     with pytest.raises(ValueError, match="Unsupported"):

@@ -11,11 +11,13 @@ import torch
 from torch import nn
 
 from .game import DEFAULT_ACTION_MENU, STACK_CHIPS, load_hunl_game
-from .strategic_features import (CARD_NAMES, BOARD_CACHE_SIZE, HAND_CACHE_SIZE,
+from .legacy_strategic_features import (CARD_NAMES, BOARD_CACHE_SIZE, HAND_CACHE_SIZE,
                                  card_features, betting_features, economics_names)
 from vr_deep_cfr.solver import SonnetLinear, ZeroInitLinear
 
-ENCODER_ID = "hunl_strategic_public_state_v3"
+LEGACY_ENCODER_ID = "hunl_strategic_public_state_v3"
+STRATEGIC_V4_ENCODER_ID = "hunl_strategic_public_state_v4"
+ENCODER_ID = "hunl_strategic_public_state_v5"
 
 
 @dataclass(frozen=True)
@@ -23,13 +25,17 @@ class FeatureLayout:
     name: str
     total_size: int
     card_size: int
+    strategic_size: int = 0
 
     @property
     def context_size(self):
-        return self.total_size - self.card_size
+        return self.total_size - self.card_size - self.strategic_size
 
     def to_dict(self):
-        return dict(name=self.name, total_size=self.total_size, card_size=self.card_size)
+        result = dict(name=self.name, total_size=self.total_size, card_size=self.card_size)
+        if self.strategic_size:
+            result["strategic_size"] = self.strategic_size
+        return result
 
 
 def _canonicalise_suits(*channels):
@@ -39,8 +45,8 @@ def _canonicalise_suits(*channels):
     return tuple(channel[order].reshape(-1) for channel in channels)
 
 
-class HUNLFeatureEncoder:
-    encoder_id = ENCODER_ID
+class LegacyHUNLFeatureEncoder:
+    encoder_id = LEGACY_ENCODER_ID
 
     def __init__(self, action_menu=DEFAULT_ACTION_MENU):
         game = load_hunl_game(action_menu)
@@ -124,8 +130,7 @@ class HUNLFeatureEncoder:
     def information_state(self, state, player=None):
         return self.encode_decision(self._view(state, player))
 
-    def encode_decision(self, view):
-        """Identical input path for OpenSpiel training and remote public observations."""
+    def _validate_decision(self, view):
         if view.action_menu != self.action_menu:
             raise ValueError("Observation action menu differs from the encoder contract")
         if view.player not in (0, 1) or view.actor not in (0, 1):
@@ -137,6 +142,10 @@ class HUNLFeatureEncoder:
             raise ValueError("Invalid or duplicate visible cards")
         if len(view.legal_mask) != self.action_size or not any(view.legal_mask):
             raise ValueError("Invalid decision mask")
+
+    def encode_decision(self, view):
+        """Identical input path for OpenSpiel training and remote public observations."""
+        self._validate_decision(view)
         own = card_features(view.hole_cards, view.board_cards)
         return np.concatenate((*_canonicalise_suits(self._cards(view.hole_cards),
                                                     *self._board(view)),
@@ -154,7 +163,75 @@ class HUNLFeatureEncoder:
                                betting_features(view, extras[view.actor]))).astype(np.float32)
 
 
+class StrategicV4HUNLFeatureEncoder(LegacyHUNLFeatureEncoder):
+    encoder_id = STRATEGIC_V4_ENCODER_ID
+    version = 4
+    from . import v4_strategic_features as card_module
+
+    def __init__(self, action_menu=DEFAULT_ACTION_MENU):
+        super().__init__(action_menu)
+        strategic = self.card_module
+        size = len(strategic.CARD_NAMES)
+        extra = len(strategic.economics_names(self.action_menu))
+        self.policy_layout = FeatureLayout(f"strategic_player_v{self.version}",
+            self.policy_prefix_size + size + extra, 208, size)
+        self.full_state_layout = FeatureLayout(f"strategic_critic_v{self.version}",
+            self.critic_prefix_size + 2 * size + 4 + extra, 260, 2 * size + 4)
+
+    def metadata(self):
+        strategic = self.card_module
+        from .preflop_equity import SAMPLES, SAMPLING_ID, TABLE_ID, TABLE_SHA256
+        return {**super().metadata(), "version": self.version,
+                "strategic_card_features": list(strategic.CARD_NAMES),
+                "strategic_economics_features": list(strategic.economics_names(self.action_menu)),
+                "feature_order": "exact cards; strategic cards; exact public context; economics",
+                "policy_extra_order": "own strategic cards before context; actor economics with off-turn strength interactions zero",
+                "critic_extra_order": "P0 strategic cards; P1 strategic cards; current comparison; context; actor economics",
+                "critic_comparison": ["available", "player0_current_win", "current_tie", "player1_current_win"],
+                "next_card_categories": "exact marginal best-hand category; flop/turn only; separate from pattern completion",
+                "preflop_equity": {"prior": "uniform compatible opponent holdings", "samples": SAMPLES,
+                    "sampling_id": SAMPLING_ID, "cache_entries": 169,
+                    "table_id": TABLE_ID, "table_sha256": TABLE_SHA256,
+                    "semantics": "sampled showdown equity and standard error; preflop only; never exact nuts"},
+                "aggression": "per-street raise count n/(n+1); last aggressor relative to observer; blinds excluded",
+                "public_aggression_cache_entries": 4096}
+
+    def encode_decision(self, view):
+        strategic = self.card_module
+        self._validate_decision(view)
+        own = strategic.card_features(view.hole_cards, view.board_cards)
+        return np.concatenate((*_canonicalise_suits(self._cards(view.hole_cards), *self._board(view)),
+                               own, self._context(view), strategic.betting_features(view, own))).astype(np.float32)
+
+    def full_state(self, state):
+        strategic = self.card_module
+        if state.is_terminal():
+            return np.zeros(self.full_state_size, dtype=np.float32)
+        view = self._view(state)
+        private = state.critic_hole_cards()
+        extras = [strategic.card_features(cards, view.board_cards) for cards in private]
+        return np.concatenate((*_canonicalise_suits(*[self._cards(cards) for cards in private], *self._board(view)),
+                               *extras, strategic.critic_comparison(*extras), self._context(view),
+                               strategic.betting_features(view, extras[view.actor]))).astype(np.float32)
+
+
+
+class HUNLFeatureEncoder(StrategicV4HUNLFeatureEncoder):
+    encoder_id = ENCODER_ID
+    version = 5
+    from . import strategic_features as card_module
+
+    def metadata(self):
+        return {**super().metadata(),
+                "strict_nuts": "exact current win fraction equals one; excludes ties and preflop",
+                "preflop_interactions": "sampled preflop equity versus actor call odds, call stack fraction and effective stack share; zero postflop or off-turn"}
+
+
 def make_feature_encoder(encoder_id=ENCODER_ID, action_menu=DEFAULT_ACTION_MENU):
+    if encoder_id == STRATEGIC_V4_ENCODER_ID:
+        return StrategicV4HUNLFeatureEncoder(action_menu)
+    if encoder_id == LEGACY_ENCODER_ID:
+        return LegacyHUNLFeatureEncoder(action_menu)
     if encoder_id != ENCODER_ID:
         raise ValueError(f"Unsupported HUNL encoder: {encoder_id}")
     return HUNLFeatureEncoder(action_menu)
@@ -170,7 +247,7 @@ def encoder_from_metadata(metadata):
 
 
 class StructuredHUNLMLP(nn.Module):
-    """Small CPU-friendly two-branch MLP for cards and betting context."""
+    """Separate exact-card, strategic-card and context branches; v3 stays loadable."""
 
     checkpoint_model_type = "structured_hunl_mlp_v1"
 
@@ -191,13 +268,17 @@ class StructuredHUNLMLP(nn.Module):
         self.output_size = int(output_size)
         self.hidden_layers = hidden_layers
         self.branch_width = int(branch_width)
+        self.checkpoint_model_type = ("structured_hunl_mlp_v2" if layout.strategic_size
+                                      else "structured_hunl_mlp_v1")
         self.card_encoder = SonnetLinear(
             layout.card_size, self.branch_width, activation=True
         )
         self.context_encoder = SonnetLinear(
             layout.context_size, self.branch_width, activation=True
         )
-        widths = [2 * self.branch_width, *hidden_layers]
+        if layout.strategic_size:
+            self.strategic_encoder = SonnetLinear(layout.strategic_size, self.branch_width, activation=True)
+        widths = [(3 if layout.strategic_size else 2) * self.branch_width, *hidden_layers]
         self.trunk = nn.Sequential(
             *[
                 SonnetLinear(input_width, output_width, activation=True)
@@ -209,6 +290,8 @@ class StructuredHUNLMLP(nn.Module):
     def reset_parameters(self) -> None:
         self.card_encoder.reset_parameters()
         self.context_encoder.reset_parameters()
+        if self.layout.strategic_size:
+            self.strategic_encoder.reset_parameters()
         for layer in self.trunk:
             layer.reset_parameters()
         self.output.reset_parameters()
@@ -224,8 +307,10 @@ class StructuredHUNLMLP(nn.Module):
 
     def forward(self, inputs: torch.Tensor) -> torch.Tensor:
         cards = inputs[..., : self.layout.card_size]
-        context = inputs[..., self.layout.card_size :]
-        joined = torch.cat(
-            [self.card_encoder(cards), self.context_encoder(context)], dim=-1
-        )
+        split = self.layout.card_size + self.layout.strategic_size
+        context = inputs[..., split:]
+        branches = [self.card_encoder(cards), self.context_encoder(context)]
+        if self.layout.strategic_size:
+            branches.append(self.strategic_encoder(inputs[..., self.layout.card_size:split]))
+        joined = torch.cat(branches, dim=-1)
         return self.output(self.trunk(joined))

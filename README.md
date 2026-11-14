@@ -14,10 +14,18 @@ are masked. Exact off-menu opponent bets are accepted by the state interface.
 See [the game interface specification](docs/GAME_INTERFACE.md) for action IDs,
 chip conventions, features, engine limitations and an executable example.
 
-The [v3 strategic encoder](docs/STRATEGIC_FEATURES.md) adds current hand strength,
+The [v5 strategic encoder](docs/STRATEGIC_FEATURES.md) adds current hand strength,
 draws, board texture, blockers and no-limit betting economics while retaining
-the exact original information. It uses bounded caches and requires fresh
-training from older v2 checkpoints.
+the exact original information. V4 adds next-card categories, public aggression,
+cached preflop equity and critic-only hand comparisons. V5 adds strict current nuts
+and explicit preflop equity/call-cost interactions. It uses bounded caches;
+training starts fresh, while saved v3/v4 policies remain loadable for inference.
+
+The [network configuration](docs/NETWORK_CONFIGURATION.md) uses 3×256 trunks for
+regret and average policy, 2×192 for critics and 2×128 for residual calibration,
+with separately sized exact-card, strategic-card and context branches. The six online models total
+1.31 million parameters. These defaults require a fresh training run; saved v3/v4
+policies with the previous widths remain usable for inference.
 
 This is a runnable development learner, not a trained competitive model.
 Slumbot and GTO Wizard API adapters, inference-only play and offline equivalence

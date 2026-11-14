@@ -6,7 +6,7 @@ from time import perf_counter
 
 import numpy as np
 
-from .features import HUNLFeatureEncoder, _canonicalise_suits
+from .features import HUNLFeatureEncoder, LegacyHUNLFeatureEncoder, _canonicalise_suits
 from .game import load_hunl_game
 from .strategic_features import _card_features, _board_table
 
@@ -15,6 +15,7 @@ def audit(hands=100, seed=20261114):
     if hands < 1:
         raise ValueError("hands must be positive")
     game, encoder = load_hunl_game(), HUNLFeatureEncoder()
+    legacy = LegacyHUNLFeatureEncoder()
     rng = np.random.default_rng(seed)
     states = []
     for _ in range(hands):
@@ -44,8 +45,9 @@ def audit(hands=100, seed=20261114):
     elapsed = {}
     _card_features.cache_clear()
     _board_table.cache_clear()
-    for name, fn in (("v2_prefix_only", prefix_only), ("v3_cold_stream", enhanced),
-                     ("v3_repeated_stream", enhanced)):
+    for name, fn in (("v2_prefix_only", prefix_only),
+                     ("v3_first_stream", lambda s: (legacy.information_state(s), legacy.full_state(s))),
+                     ("v5_first_stream", enhanced), ("v5_repeated_stream", enhanced)):
         start = perf_counter()
         for state in states:
             fn(state)
@@ -54,8 +56,12 @@ def audit(hands=100, seed=20261114):
     # This checks that the old exact information is retained, outside timing.
     for state in states:
         old, new = prefix_only(state), enhanced(state)
-        np.testing.assert_array_equal(old[0], new[0][:encoder.policy_prefix_size])
-        np.testing.assert_array_equal(old[1], new[1][:encoder.critic_prefix_size])
+        for before, after, layout, size in zip(old, new,
+                (encoder.policy_layout, encoder.full_state_layout),
+                (encoder.policy_prefix_size, encoder.critic_prefix_size)):
+            split = layout.card_size + layout.strategic_size
+            np.testing.assert_array_equal(before, np.concatenate((after[:layout.card_size],
+                after[split:split + size - layout.card_size])))
     a, p, c = encoder.action_size, encoder.policy_size, encoder.full_state_size
 
     def replay_bytes(policy, critic):
@@ -69,7 +75,8 @@ def audit(hands=100, seed=20261114):
         microseconds_per_policy_plus_critic={name: value / len(states) * 1e6 for name, value in elapsed.items()},
         encoder=encoder.metadata(),
         primary_replay_bytes_v2=replay_bytes(encoder.policy_prefix_size, encoder.critic_prefix_size),
-        primary_replay_bytes_v3=replay_bytes(p, c),
+        primary_replay_bytes_v3=replay_bytes(legacy.policy_size, legacy.full_state_size),
+        primary_replay_bytes_v5=replay_bytes(p, c),
         calibration_feature_growth_bytes=1_000_000 * 4 * (p - encoder.policy_prefix_size),
         memory_scope="primary replay excludes calibration, model/fit tensors, actors, caches and checkpoint copies; not RSS",
         cache_info={"cards": _card_features.cache_info()._asdict(), "boards": _board_table.cache_info()._asdict()},

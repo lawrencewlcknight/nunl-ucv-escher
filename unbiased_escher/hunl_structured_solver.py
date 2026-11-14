@@ -216,6 +216,7 @@ class StructuredHUNLResidualCalibrationTrainer(ResidualCalibrationTrainer):
             "residual_calibration",
             self.feature_size,
             feature_encoder.policy_layout.card_size,
+            feature_encoder.policy_layout.strategic_size,
         )
         hidden_layers = list(hidden_layers)
         self.model = StructuredHUNLMLP(
@@ -237,17 +238,29 @@ class StructuredHUNLGroupedWideUCVEscher(GroupedWideUnbiasedControlVariateEscher
     def __init__(
         self,
         *args,
-        structured_branch_width: int = 64,
+        regret_network_layers=(256, 256, 256),
+        critic_network_layers=(192, 192),
+        calibration_network_layers=(128, 128),
+        average_policy_network_layers=(256, 256, 256),
+        regret_branch_width: int = 128,
+        critic_branch_width: int = 96,
+        calibration_branch_width: int = 64,
+        average_policy_branch_width: int = 128,
         feature_encoder_id: str = ENCODER_ID,
         action_menu=DEFAULT_ACTION_MENU,
         **kwargs,
     ):
         self.feature_encoder = make_feature_encoder(feature_encoder_id, action_menu)
-        self.structured_branch_width = int(structured_branch_width)
+        self.regret_network_layers = list(regret_network_layers)
+        self.critic_network_layers = list(critic_network_layers)
+        self.calibration_network_layers = list(calibration_network_layers)
+        self.regret_branch_width = regret_branch_width
+        self.critic_branch_width = critic_branch_width
+        self.calibration_branch_width = calibration_branch_width
+        self.average_policy_branch_width = average_policy_branch_width
         self.feature_replay_seed = int(kwargs.get("seed", 0))
-        if self.structured_branch_width <= 0:
-            raise ValueError("structured_branch_width must be positive")
-        super().__init__(*args, **kwargs)
+        super().__init__(*args, average_policy_network_layers=average_policy_network_layers,
+                         **kwargs)
         if self.average_policy_loss != GROUPED_SOFT_TARGET_CROSS_ENTROPY:
             raise ValueError("The structured experiment requires grouped policy CE")
 
@@ -259,6 +272,9 @@ class StructuredHUNLGroupedWideUCVEscher(GroupedWideUnbiasedControlVariateEscher
         # onwards every learner consistently uses the versioned HUNL encoder.
         self.raw_open_spiel_infostate_size = int(self.infostate_size)
         self.infostate_size = self.feature_encoder.policy_size
+        # Keep the inherited generic architecture attribute aligned with regret.
+        # Every HUNL trainer below uses its own explicit role configuration.
+        self.network_layers = list(self.regret_network_layers)
 
         # Preserve Experiment 35's legacy RNG anchor so the algorithmic change
         # is limited to representation and structured model capacity.
@@ -293,7 +309,7 @@ class StructuredHUNLGroupedWideUCVEscher(GroupedWideUnbiasedControlVariateEscher
             self.device,
             self.gamma,
             feature_encoder=self.feature_encoder,
-            branch_width=self.structured_branch_width,
+            branch_width=self.average_policy_branch_width,
             replay_seed=self.feature_replay_seed + 100,
         )
         random.setstate(rng_after_legacy["python"])
@@ -310,7 +326,7 @@ class StructuredHUNLGroupedWideUCVEscher(GroupedWideUnbiasedControlVariateEscher
             StructuredHUNLRegretTrainer(
                 self.infostate_size,
                 self.action_size,
-                self.network_layers,
+                self.regret_network_layers,
                 self.learning_rate,
                 self.advantage_buffer_size,
                 self.advantage_batch_size,
@@ -320,7 +336,7 @@ class StructuredHUNLGroupedWideUCVEscher(GroupedWideUnbiasedControlVariateEscher
                 self.device,
                 self.alpha,
                 feature_encoder=self.feature_encoder,
-                branch_width=self.structured_branch_width,
+                branch_width=self.regret_branch_width,
                 replay_seed=self.feature_replay_seed + 200 + player,
             )
             for player in range(self.num_players)
@@ -329,14 +345,14 @@ class StructuredHUNLGroupedWideUCVEscher(GroupedWideUnbiasedControlVariateEscher
     def init_q_value_trainer(self):
         self.q_value_trainer = StructuredHUNLQEnsemble(
             feature_encoder=self.feature_encoder,
-            branch_width=self.structured_branch_width,
+            branch_width=self.critic_branch_width,
             replay_seed=self.feature_replay_seed + 300,
             target_average_window=self.critic_target_average_window,
             ensemble_size=self.q_ensemble_size,
             history_size=self.feature_encoder.full_state_size,
             state_size=self.feature_encoder.policy_size,
             action_size=self.action_size,
-            network_layers=self.network_layers,
+            network_layers=self.critic_network_layers,
             learning_rate=self.learning_rate,
             total_buffer_size=self.baseline_buffer_size,
             batch_size=self.baseline_batch_size,
@@ -351,7 +367,7 @@ class StructuredHUNLGroupedWideUCVEscher(GroupedWideUnbiasedControlVariateEscher
         self.calibration_trainer = StructuredHUNLResidualCalibrationTrainer(
             infostate_size=self.infostate_size,
             action_size=self.action_size,
-            hidden_layers=self.network_layers,
+            hidden_layers=self.calibration_network_layers,
             learning_rate=self.calibration_learning_rate,
             buffer_size=self.calibration_buffer_size,
             batch_size=self.calibration_batch_size,
@@ -359,7 +375,7 @@ class StructuredHUNLGroupedWideUCVEscher(GroupedWideUnbiasedControlVariateEscher
             device=self.device,
             minimum_variance=self.calibration_minimum_variance,
             feature_encoder=self.feature_encoder,
-            branch_width=self.structured_branch_width,
+            branch_width=self.calibration_branch_width,
         )
 
     def get_infostate_tensor(self, state, player=None):

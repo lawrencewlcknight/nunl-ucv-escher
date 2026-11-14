@@ -1,0 +1,75 @@
+{
+  "date": "2026-11-15",
+  "encoder_version": 5,
+  "tests": {
+    "offline_passed": 115,
+    "offline_skipped": 2,
+    "separate_ray_passed": 2
+  },
+  "alignment": {
+    "date": "2026-11-15",
+    "random_rank_hands": 30000,
+    "random_card_cases": 800,
+    "shared_card_channels": 51,
+    "legacy_prefixes_identical": true,
+    "preflop_holdings": 1326,
+    "preflop_classes": 169,
+    "equity_and_se_identical": true,
+    "matched_full_game_hands": 60,
+    "matched_decision_states": 612,
+    "matched_checks": [
+      "exact policy and critic cards",
+      "critic comparison",
+      "street raise counts and aggressors",
+      "actor check/call street closure"
+    ],
+    "shared_fixture_sha256": "52918b705d4ac6e8c9fcb826bfff0c598a41fca47e67dd999f0e5eb32e3ce2f7",
+    "input_sizes": {
+      "limit": [
+        417,
+        605
+      ],
+      "no_limit": [
+        569,
+        688
+      ]
+    }
+  },
+  "feature_cost": {
+    "kind": "feature_microbenchmark_not_training_throughput",
+    "machine": "arm64",
+    "python": "3.12.2",
+    "seed": 20261115,
+    "hands": 100,
+    "results": {
+      "limit": {
+        "decisions": 800,
+        "seconds": {
+          "v4_first": 3.30752274999395,
+          "v4_repeated": 0.1660180001053959,
+          "v5_first": 3.4927740830462426,
+          "v5_repeated": 0.19335120893083513
+        }
+      },
+      "no_limit": {
+        "decisions": 800,
+        "seconds": {
+          "v4_first": 0.7569649170618504,
+          "v4_repeated": 0.10432808299083263,
+          "v5_first": 0.7252524169161916,
+          "v5_repeated": 0.11892929102759808
+        }
+      }
+    }
+  },
+  "online_parameters": 1314661,
+  "additional_dense_replay_bytes_including_calibration": 120000000,
+  "scope": "Local correctness, compatibility and feature-cost checks; no long training, playing-strength claim, or full-training throughput measurement. Single timing stream per version; ordering and noise can affect timing.",
+  "source_sha256": {
+    "hunl_escher/strategic_features.py": "6df845ca0153b084b018e6bba97389a0816933f350154ce685ada1da3e9e044b",
+    "hunl_escher/features.py": "4c50b3ecedfddce4237d831509f40080aa9c8e62f247c0e3aa312adc09ea7dfc",
+    "hunl_escher/data/baseline.json": "63d527c0e65f3edad9231a9e7877325b58f8e9d366d98cf8e91e1da0717a617a",
+    "tests/test_encoder_v5.py": "322cd783b8b2a81590c44648f6ffe5114f017e42e0bcf8bbb4b444c47813cc30",
+    "tests/fixtures/encoder_v4_metadata.json": "6152136f3b9c3969d6e844b4d145fefc47afd553af1e785c5f6864056f4780c7"
+  }
+}

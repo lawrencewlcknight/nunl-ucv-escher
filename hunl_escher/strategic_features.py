@@ -1,4 +1,4 @@
-"""Bounded, deterministic Hold'em descriptors; no bucketing or sampled equity.
+"""Bounded Hold'em descriptors with cached, deterministic preflop equity.
 
 Strength compares the best CURRENT five cards with every legal uniform opponent
 holding. Before the river this is not showdown equity. Draw probabilities describe
@@ -26,13 +26,21 @@ CARD_NAMES = (
     "hole_matches_board_fraction", "board_flush_blocker_rank", "nut_flush_blocker",
     "next_straight_completion", "next_flush_completion", "next_either_completion",
     "runner_runner_straight", "runner_runner_flush", "next_category_improvement",
+    "next_card_available", *(f"next_card_{name}" for name in CATEGORIES),
+    "preflop_equity_available", "preflop_equity", "preflop_equity_sampling_se",
+    "currently_strict_nuts",
 )
 ECONOMICS_NAMES = (
     "observer_is_actor", "observer_in_position", "call_pot_odds", "call_stack_fraction",
     "effective_stack_pot_share", "log_spr", "facing_all_in", "call_closes_street",
     "strength_minus_pot_odds", "strength_times_call_fraction", "strength_times_stack_share",
+    "preflop_equity_minus_pot_odds", "preflop_equity_times_call_fraction",
+    "preflop_equity_times_stack_share",
 )
 ACTION_NAMES = ("incremental_risk_share", "opponent_call_pot_odds", "called_stack_pot_share")
+AGGRESSION_NAMES = (*(f"street_{s}_raise_count_share" for s in range(4)),
+                    *(f"street_{s}_aggressor_{who}" for s in range(4)
+                      for who in ("self", "opponent")))
 BOARD_CACHE_SIZE = 64
 HAND_CACHE_SIZE = 8192
 _PAIRS = np.asarray(list(combinations(range(52), 2)), dtype=np.int16)
@@ -167,6 +175,7 @@ def _card_features(hole, board):
         values.update(strength_available=1, current_win_fraction=win, current_tie_fraction=equal,
             current_loss_fraction=loss, current_pot_share=win + equal / 2,
             currently_unbeatable=loss == 0,
+            currently_strict_nuts=win == 1,
             board_nuts_removed_fraction=1 - np.count_nonzero(nuts & legal) / nuts.sum(),
             board_nuts_legal_mass=np.count_nonzero(nuts & legal) / legal.sum())
         values[f"made_{CATEGORIES[category]}"] = 1
@@ -205,6 +214,9 @@ def _card_features(hole, board):
                           next_either_completion=(straight | flush).mean())
             _, next_cat, _ = rank_cards(np.column_stack((np.tile(visible, (len(remaining), 1)), remaining)))
             values["next_category_improvement"] = (next_cat > category).mean()
+            values["next_card_available"] = 1
+            values.update({f"next_card_{name}": mass for name, mass in
+                           zip(CATEGORIES, np.bincount(next_cat, minlength=9) / len(next_cat))})
             if len(board) == 3:
                 runouts = _PAIRS[~np.isin(_PAIRS, visible).any(axis=1)]
                 r0, r1 = runouts[:, 0] // 4, runouts[:, 1] // 4
@@ -213,13 +225,48 @@ def _card_features(hole, board):
                 values["runner_runner_straight"] = (both & neither).mean()
                 s0, s1 = runouts[:, 0] % 4, runouts[:, 1] % 4
                 values["runner_runner_flush"] = ((s0 == s1) & (suits[s0] == 3)).mean()
+    else:
+        from .preflop_equity import preflop_equity
+        equity, se = preflop_equity(hole)
+        values.update(preflop_equity_available=1, preflop_equity=equity,
+                      preflop_equity_sampling_se=se)
     result = np.asarray([values[name] for name in CARD_NAMES], dtype=np.float32)
     result.flags.writeable = False
     return result
 
 
 def economics_names(action_menu):
-    return (*ECONOMICS_NAMES, *(f"{action}_{name}" for action in action_menu for name in ACTION_NAMES))
+    return (*ECONOMICS_NAMES, *(f"{action}_{name}" for action in action_menu for name in ACTION_NAMES),
+            *AGGRESSION_NAMES)
+
+
+@lru_cache(maxsize=4096)
+def public_aggression(history):
+    """Counts and absolute-seat last aggressors from redacted public events."""
+    counts, aggressors = [0] * 4, [-1] * 4
+    dealt = street = actor = 0
+    for event in history:
+        if event == 0:
+            dealt += 1
+            street = 0 if dealt <= 4 else min(3, max(1, dealt - 6))
+            actor = 0 if street == 0 else 1
+        else:
+            if event > 0:
+                counts[street] += 1
+                aggressors[street] = actor
+            actor = 1 - actor
+    return tuple(counts), tuple(aggressors)
+
+
+def critic_comparison(features0, features1):
+    """Compare already-computed exact ranks; privileged critic channels only."""
+    if not features0[CARD_NAMES.index("strength_available")]:
+        return np.zeros(4, dtype=np.float32)
+    def rank(features):
+        category = int(np.argmax(features[7:16]))
+        return (category, *features[16:21])
+    left, right = rank(features0), rank(features1)
+    return np.asarray((1, left > right, left == right, left < right), dtype=np.float32)
 
 
 def betting_features(view, own_features):
@@ -246,6 +293,12 @@ def betting_features(view, own_features):
               view.stacks[opponent] == 0 and cost > 0, closes,
               strength - odds if available else 0,
               strength * risk if available else 0, strength * share if available else 0]
+    preflop = acting and bool(own_features[CARD_NAMES.index("preflop_equity_available")])
+    equity = float(own_features[CARD_NAMES.index("preflop_equity")])
+    # Separate channels retain the distinction between current strength and
+    # sampled preflop showdown equity. Off-turn observers must not mix perspectives.
+    result.extend((equity - odds if preflop else 0,
+                   equity * risk if preflop else 0, equity * share if preflop else 0))
     for action in view.native_actions:
         if action is None or action == 0:
             result.extend((0, 0, 0))
@@ -256,4 +309,7 @@ def betting_features(view, own_features):
         left = min(view.stacks[actor] - delta, view.stacks[opponent] - response)
         result.extend((delta / (view.pot + delta), response / pot_after_response,
                        left / (pot_after_response + left)))
+    counts, aggressors = public_aggression(tuple(view.public_history))
+    result.extend(n / (n + 1) for n in counts)
+    result.extend(a == p for a in aggressors for p in (view.player, 1 - view.player))
     return np.asarray(result, dtype=np.float32)

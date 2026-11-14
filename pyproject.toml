@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "hunl-ucv-escher"
-version = "0.4.0"
+version = "0.6.0"
 description = "UCV-ESCHER research baseline for heads-up no-limit Hold'em"
 requires-python = ">=3.10,<3.13"
 dependencies = [

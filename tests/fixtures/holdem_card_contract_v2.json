@@ -1,0 +1,4466 @@
+{
+  "contract": "holdem_card_contract_v2",
+  "provenance": "Extends v1 with exact blockers, two-card-required draws and strict current nuts; values checked across both implementations, with independent enumeration tests.",
+  "mapping": {
+    "hole_high_rank": {
+      "no_limit": "hole_high_rank",
+      "limit": "hole_high_rank"
+    },
+    "hole_low_rank": {
+      "no_limit": "hole_low_rank",
+      "limit": "hole_low_rank"
+    },
+    "pocket_pair": {
+      "no_limit": "pocket_pair",
+      "limit": "pocket_pair"
+    },
+    "hole_suited": {
+      "no_limit": "hole_suited",
+      "limit": "suited"
+    },
+    "hole_rank_gap": {
+      "no_limit": "hole_rank_gap",
+      "limit": "hole_gap"
+    },
+    "hole_broadway_fraction": {
+      "no_limit": "hole_broadway_fraction",
+      "limit": "hole_broadway_fraction"
+    },
+    "strength_available": {
+      "no_limit": "strength_available",
+      "limit": "made_hand_available"
+    },
+    "current_win_fraction": {
+      "no_limit": "current_win_fraction",
+      "limit": "current_win"
+    },
+    "current_tie_fraction": {
+      "no_limit": "current_tie_fraction",
+      "limit": "current_tie"
+    },
+    "current_loss_fraction": {
+      "no_limit": "current_loss_fraction",
+      "limit": "current_loss"
+    },
+    "current_pot_share": {
+      "no_limit": "current_pot_share",
+      "limit": "current_strength"
+    },
+    "currently_unbeatable": {
+      "no_limit": "currently_unbeatable",
+      "limit": "currently_unbeatable"
+    },
+    "board_paired_rank_fraction": {
+      "no_limit": "board_paired_rank_fraction",
+      "limit": "board_pair_count"
+    },
+    "board_max_suit_fraction": {
+      "no_limit": "board_max_suit_fraction",
+      "limit": "board_suit_count_0"
+    },
+    "board_straight_window_fraction": {
+      "no_limit": "board_straight_window_fraction",
+      "limit": "board_straight_window"
+    },
+    "river_plays_board": {
+      "no_limit": "river_plays_board",
+      "limit": "plays_board"
+    },
+    "pocket_overpair": {
+      "no_limit": "pocket_overpair",
+      "limit": "overpair"
+    },
+    "hole_matches_board_top": {
+      "no_limit": "hole_matches_board_top",
+      "limit": "top_rank_match"
+    },
+    "hole_overcard_fraction": {
+      "no_limit": "hole_overcard_fraction",
+      "limit": "overcard_fraction"
+    },
+    "hole_matches_board_fraction": {
+      "no_limit": "hole_matches_board_fraction",
+      "limit": "board_matching_fraction"
+    },
+    "board_flush_blocker_rank": {
+      "no_limit": "board_flush_blocker_rank",
+      "limit": "board_flush_suit_hole_high"
+    },
+    "made_high_card": {
+      "no_limit": "made_high_card",
+      "limit": "made_high_card"
+    },
+    "made_pair": {
+      "no_limit": "made_pair",
+      "limit": "made_pair"
+    },
+    "made_two_pair": {
+      "no_limit": "made_two_pair",
+      "limit": "made_two_pair"
+    },
+    "made_trips": {
+      "no_limit": "made_trips",
+      "limit": "made_trips"
+    },
+    "made_straight": {
+      "no_limit": "made_straight",
+      "limit": "made_straight"
+    },
+    "made_flush": {
+      "no_limit": "made_flush",
+      "limit": "made_flush"
+    },
+    "made_full_house": {
+      "no_limit": "made_full_house",
+      "limit": "made_full_house"
+    },
+    "made_quads": {
+      "no_limit": "made_quads",
+      "limit": "made_quads"
+    },
+    "made_straight_flush": {
+      "no_limit": "made_straight_flush",
+      "limit": "made_straight_flush"
+    },
+    "made_tiebreak_0": {
+      "no_limit": "made_tiebreak_0",
+      "limit": "tiebreak_0"
+    },
+    "made_tiebreak_1": {
+      "no_limit": "made_tiebreak_1",
+      "limit": "tiebreak_1"
+    },
+    "made_tiebreak_2": {
+      "no_limit": "made_tiebreak_2",
+      "limit": "tiebreak_2"
+    },
+    "made_tiebreak_3": {
+      "no_limit": "made_tiebreak_3",
+      "limit": "tiebreak_3"
+    },
+    "made_tiebreak_4": {
+      "no_limit": "made_tiebreak_4",
+      "limit": "tiebreak_4"
+    },
+    "next_card_available": {
+      "no_limit": "next_card_available",
+      "limit": "next_card_available"
+    },
+    "next_card_high_card": {
+      "no_limit": "next_card_high_card",
+      "limit": "next_card_high_card"
+    },
+    "next_card_pair": {
+      "no_limit": "next_card_pair",
+      "limit": "next_card_pair"
+    },
+    "next_card_two_pair": {
+      "no_limit": "next_card_two_pair",
+      "limit": "next_card_two_pair"
+    },
+    "next_card_trips": {
+      "no_limit": "next_card_trips",
+      "limit": "next_card_trips"
+    },
+    "next_card_straight": {
+      "no_limit": "next_card_straight",
+      "limit": "next_card_straight"
+    },
+    "next_card_flush": {
+      "no_limit": "next_card_flush",
+      "limit": "next_card_flush"
+    },
+    "next_card_full_house": {
+      "no_limit": "next_card_full_house",
+      "limit": "next_card_full_house"
+    },
+    "next_card_quads": {
+      "no_limit": "next_card_quads",
+      "limit": "next_card_quads"
+    },
+    "next_card_straight_flush": {
+      "no_limit": "next_card_straight_flush",
+      "limit": "next_card_straight_flush"
+    },
+    "nut_flush_blocker": {
+      "no_limit": "nut_flush_blocker",
+      "limit": "nut_flush_blocker"
+    },
+    "preflop_equity": {
+      "no_limit": "preflop_equity",
+      "limit": "showdown_equity"
+    },
+    "preflop_equity_sampling_se": {
+      "no_limit": "preflop_equity_sampling_se",
+      "limit": "equity_sampling_se"
+    },
+    "board_nuts_removed_fraction": {
+      "limit": "board_nuts_removed_fraction",
+      "no_limit": "board_nuts_removed_fraction"
+    },
+    "board_nuts_legal_mass": {
+      "limit": "board_nuts_legal_mass",
+      "no_limit": "board_nuts_legal_mass"
+    },
+    "runner_runner_straight": {
+      "limit": "runner_runner_straight",
+      "no_limit": "runner_runner_straight"
+    },
+    "runner_runner_flush": {
+      "limit": "runner_runner_flush",
+      "no_limit": "runner_runner_flush"
+    },
+    "currently_strict_nuts": {
+      "limit": "currently_strict_nuts",
+      "no_limit": "currently_strict_nuts"
+    }
+  },
+  "cases": [
+    {
+      "hole": [
+        26,
+        23
+      ],
+      "board": [],
+      "values": {
+        "hole_high_rank": 0.5714285969734192,
+        "hole_low_rank": 0.5,
+        "pocket_pair": 0.0,
+        "hole_suited": 0.0,
+        "hole_rank_gap": 0.0833333358168602,
+        "hole_broadway_fraction": 0.0,
+        "strength_available": 0.0,
+        "current_win_fraction": 0.0,
+        "current_tie_fraction": 0.0,
+        "current_loss_fraction": 0.0,
+        "current_pot_share": 0.0,
+        "currently_unbeatable": 0.0,
+        "board_paired_rank_fraction": 0.0,
+        "board_max_suit_fraction": 0.0,
+        "board_straight_window_fraction": 0.0,
+        "river_plays_board": 0.0,
+        "pocket_overpair": 0.0,
+        "hole_matches_board_top": 0.0,
+        "hole_overcard_fraction": 0.0,
+        "hole_matches_board_fraction": 0.0,
+        "board_flush_blocker_rank": 0.0,
+        "made_high_card": 0.0,
+        "made_pair": 0.0,
+        "made_two_pair": 0.0,
+        "made_trips": 0.0,
+        "made_straight": 0.0,
+        "made_flush": 0.0,
+        "made_full_house": 0.0,
+        "made_quads": 0.0,
+        "made_straight_flush": 0.0,
+        "made_tiebreak_0": 0.0,
+        "made_tiebreak_1": 0.0,
+        "made_tiebreak_2": 0.0,
+        "made_tiebreak_3": 0.0,
+        "made_tiebreak_4": 0.0,
+        "next_card_available": 0.0,
+        "next_card_high_card": 0.0,
+        "next_card_pair": 0.0,
+        "next_card_two_pair": 0.0,
+        "next_card_trips": 0.0,
+        "next_card_straight": 0.0,
+        "next_card_flush": 0.0,
+        "next_card_full_house": 0.0,
+        "next_card_quads": 0.0,
+        "next_card_straight_flush": 0.0,
+        "preflop_equity": 0.441162109375,
+        "preflop_equity_sampling_se": 0.0075960950925946236,
+        "nut_flush_blocker": 0.0,
+        "board_nuts_removed_fraction": 0.0,
+        "board_nuts_legal_mass": 0.0,
+        "runner_runner_straight": 0.0,
+        "runner_runner_flush": 0.0,
+        "currently_strict_nuts": 0.0
+      }
+    },
+    {
+      "hole": [
+        16,
+        43
+      ],
+      "board": [],
+      "values": {
+        "hole_high_rank": 0.8571428656578064,
+        "hole_low_rank": 0.4285714328289032,
+        "pocket_pair": 0.0,
+        "hole_suited": 0.0,
+        "hole_rank_gap": 0.5,
+        "hole_broadway_fraction": 0.5,
+        "strength_available": 0.0,
+        "current_win_fraction": 0.0,
+        "current_tie_fraction": 0.0,
+        "current_loss_fraction": 0.0,
+        "current_pot_share": 0.0,
+        "currently_unbeatable": 0.0,
+        "board_paired_rank_fraction": 0.0,
+        "board_max_suit_fraction": 0.0,
+        "board_straight_window_fraction": 0.0,
+        "river_plays_board": 0.0,
+        "pocket_overpair": 0.0,
+        "hole_matches_board_top": 0.0,
+        "hole_overcard_fraction": 0.0,
+        "hole_matches_board_fraction": 0.0,
+        "board_flush_blocker_rank": 0.0,
+        "made_high_card": 0.0,
+        "made_pair": 0.0,
+        "made_two_pair": 0.0,
+        "made_trips": 0.0,
+        "made_straight": 0.0,
+        "made_flush": 0.0,
+        "made_full_house": 0.0,
+        "made_quads": 0.0,
+        "made_straight_flush": 0.0,
+        "made_tiebreak_0": 0.0,
+        "made_tiebreak_1": 0.0,
+        "made_tiebreak_2": 0.0,
+        "made_tiebreak_3": 0.0,
+        "made_tiebreak_4": 0.0,
+        "next_card_available": 0.0,
+        "next_card_high_card": 0.0,
+        "next_card_pair": 0.0,
+        "next_card_two_pair": 0.0,
+        "next_card_trips": 0.0,
+        "next_card_straight": 0.0,
+        "next_card_flush": 0.0,
+        "next_card_full_house": 0.0,
+        "next_card_quads": 0.0,
+        "next_card_straight_flush": 0.0,
+        "preflop_equity": 0.5074462890625,
+        "preflop_equity_sampling_se": 0.007649680133908987,
+        "nut_flush_blocker": 0.0,
+        "board_nuts_removed_fraction": 0.0,
+        "board_nuts_legal_mass": 0.0,
+        "runner_runner_straight": 0.0,
+        "runner_runner_flush": 0.0,
+        "currently_strict_nuts": 0.0
+      }
+    },
+    {
+      "hole": [
+        15,
+        41
+      ],
+      "board": [],
+      "values": {
+        "hole_high_rank": 0.8571428656578064,
+        "hole_low_rank": 0.3571428656578064,
+        "pocket_pair": 0.0,
+        "hole_suited": 0.0,
+        "hole_rank_gap": 0.5833333134651184,
+        "hole_broadway_fraction": 0.5,
+        "strength_available": 0.0,
+        "current_win_fraction": 0.0,
+        "current_tie_fraction": 0.0,
+        "current_loss_fraction": 0.0,
+        "current_pot_share": 0.0,
+        "currently_unbeatable": 0.0,
+        "board_paired_rank_fraction": 0.0,
+        "board_max_suit_fraction": 0.0,
+        "board_straight_window_fraction": 0.0,
+        "river_plays_board": 0.0,
+        "pocket_overpair": 0.0,
+        "hole_matches_board_top": 0.0,
+        "hole_overcard_fraction": 0.0,
+        "hole_matches_board_fraction": 0.0,
+        "board_flush_blocker_rank": 0.0,
+        "made_high_card": 0.0,
+        "made_pair": 0.0,
+        "made_two_pair": 0.0,
+        "made_trips": 0.0,
+        "made_straight": 0.0,
+        "made_flush": 0.0,
+        "made_full_house": 0.0,
+        "made_quads": 0.0,
+        "made_straight_flush": 0.0,
+        "made_tiebreak_0": 0.0,
+        "made_tiebreak_1": 0.0,
+        "made_tiebreak_2": 0.0,
+        "made_tiebreak_3": 0.0,
+        "made_tiebreak_4": 0.0,
+        "next_card_available": 0.0,
+        "next_card_high_card": 0.0,
+        "next_card_pair": 0.0,
+        "next_card_two_pair": 0.0,
+        "next_card_trips": 0.0,
+        "next_card_straight": 0.0,
+        "next_card_flush": 0.0,
+        "next_card_full_house": 0.0,
+        "next_card_quads": 0.0,
+        "next_card_straight_flush": 0.0,
+        "preflop_equity": 0.4991455078125,
+        "preflop_equity_sampling_se": 0.007650553714483976,
+        "nut_flush_blocker": 0.0,
+        "board_nuts_removed_fraction": 0.0,
+        "board_nuts_legal_mass": 0.0,
+        "runner_runner_straight": 0.0,
+        "runner_runner_flush": 0.0,
+        "currently_strict_nuts": 0.0
+      }
+    },
+    {
+      "hole": [
+        6,
+        35
+      ],
+      "board": [],
+      "values": {
+        "hole_high_rank": 0.7142857313156128,
+        "hole_low_rank": 0.2142857164144516,
+        "pocket_pair": 0.0,
+        "hole_suited": 0.0,
+        "hole_rank_gap": 0.5833333134651184,
+        "hole_broadway_fraction": 0.5,
+        "strength_available": 0.0,
+        "current_win_fraction": 0.0,
+        "current_tie_fraction": 0.0,
+        "current_loss_fraction": 0.0,
+        "current_pot_share": 0.0,
+        "currently_unbeatable": 0.0,
+        "board_paired_rank_fraction": 0.0,
+        "board_max_suit_fraction": 0.0,
+        "board_straight_window_fraction": 0.0,
+        "river_plays_board": 0.0,
+        "pocket_overpair": 0.0,
+        "hole_matches_board_top": 0.0,
+        "hole_overcard_fraction": 0.0,
+        "hole_matches_board_fraction": 0.0,
+        "board_flush_blocker_rank": 0.0,
+        "made_high_card": 0.0,
+        "made_pair": 0.0,
+        "made_two_pair": 0.0,
+        "made_trips": 0.0,
+        "made_straight": 0.0,
+        "made_flush": 0.0,
+        "made_full_house": 0.0,
+        "made_quads": 0.0,
+        "made_straight_flush": 0.0,
+        "made_tiebreak_0": 0.0,
+        "made_tiebreak_1": 0.0,
+        "made_tiebreak_2": 0.0,
+        "made_tiebreak_3": 0.0,
+        "made_tiebreak_4": 0.0,
+        "next_card_available": 0.0,
+        "next_card_high_card": 0.0,
+        "next_card_pair": 0.0,
+        "next_card_two_pair": 0.0,
+        "next_card_trips": 0.0,
+        "next_card_straight": 0.0,
+        "next_card_flush": 0.0,
+        "next_card_full_house": 0.0,
+        "next_card_quads": 0.0,
+        "next_card_straight_flush": 0.0,
+        "preflop_equity": 0.422119140625,
+        "preflop_equity_sampling_se": 0.007524475455284119,
+        "nut_flush_blocker": 0.0,
+        "board_nuts_removed_fraction": 0.0,
+        "board_nuts_legal_mass": 0.0,
+        "runner_runner_straight": 0.0,
+        "runner_runner_flush": 0.0,
+        "currently_strict_nuts": 0.0
+      }
+    },
+    {
+      "hole": [
+        18,
+        21
+      ],
+      "board": [],
+      "values": {
+        "hole_high_rank": 0.5,
+        "hole_low_rank": 0.4285714328289032,
+        "pocket_pair": 0.0,
+        "hole_suited": 0.0,
+        "hole_rank_gap": 0.0833333358168602,
+        "hole_broadway_fraction": 0.0,
+        "strength_available": 0.0,
+        "current_win_fraction": 0.0,
+        "current_tie_fraction": 0.0,
+        "current_loss_fraction": 0.0,
+        "current_pot_share": 0.0,
+        "currently_unbeatable": 0.0,
+        "board_paired_rank_fraction": 0.0,
+        "board_max_suit_fraction": 0.0,
+        "board_straight_window_fraction": 0.0,
+        "river_plays_board": 0.0,
+        "pocket_overpair": 0.0,
+        "hole_matches_board_top": 0.0,
+        "hole_overcard_fraction": 0.0,
+        "hole_matches_board_fraction": 0.0,
+        "board_flush_blocker_rank": 0.0,
+        "made_high_card": 0.0,
+        "made_pair": 0.0,
+        "made_two_pair": 0.0,
+        "made_trips": 0.0,
+        "made_straight": 0.0,
+        "made_flush": 0.0,
+        "made_full_house": 0.0,
+        "made_quads": 0.0,
+        "made_straight_flush": 0.0,
+        "made_tiebreak_0": 0.0,
+        "made_tiebreak_1": 0.0,
+        "made_tiebreak_2": 0.0,
+        "made_tiebreak_3": 0.0,
+        "made_tiebreak_4": 0.0,
+        "next_card_available": 0.0,
+        "next_card_high_card": 0.0,
+        "next_card_pair": 0.0,
+        "next_card_two_pair": 0.0,
+        "next_card_trips": 0.0,
+        "next_card_straight": 0.0,
+        "next_card_flush": 0.0,
+        "next_card_full_house": 0.0,
+        "next_card_quads": 0.0,
+        "next_card_straight_flush": 0.0,
+        "preflop_equity": 0.4249267578125,
+        "preflop_equity_sampling_se": 0.007490761112421751,
+        "nut_flush_blocker": 0.0,
+        "board_nuts_removed_fraction": 0.0,
+        "board_nuts_legal_mass": 0.0,
+        "runner_runner_straight": 0.0,
+        "runner_runner_flush": 0.0,
+        "currently_strict_nuts": 0.0
+      }
+    },
+    {
+      "hole": [
+        28,
+        0
+      ],
+      "board": [],
+      "values": {
+        "hole_high_rank": 0.6428571343421936,
+        "hole_low_rank": 0.1428571492433548,
+        "pocket_pair": 0.0,
+        "hole_suited": 1.0,
+        "hole_rank_gap": 0.5833333134651184,
+        "hole_broadway_fraction": 0.0,
+        "strength_available": 0.0,
+        "current_win_fraction": 0.0,
+        "current_tie_fraction": 0.0,
+        "current_loss_fraction": 0.0,
+        "current_pot_share": 0.0,
+        "currently_unbeatable": 0.0,
+        "board_paired_rank_fraction": 0.0,
+        "board_max_suit_fraction": 0.0,
+        "board_straight_window_fraction": 0.0,
+        "river_plays_board": 0.0,
+        "pocket_overpair": 0.0,
+        "hole_matches_board_top": 0.0,
+        "hole_overcard_fraction": 0.0,
+        "hole_matches_board_fraction": 0.0,
+        "board_flush_blocker_rank": 0.0,
+        "made_high_card": 0.0,
+        "made_pair": 0.0,
+        "made_two_pair": 0.0,
+        "made_trips": 0.0,
+        "made_straight": 0.0,
+        "made_flush": 0.0,
+        "made_full_house": 0.0,
+        "made_quads": 0.0,
+        "made_straight_flush": 0.0,
+        "made_tiebreak_0": 0.0,
+        "made_tiebreak_1": 0.0,
+        "made_tiebreak_2": 0.0,
+        "made_tiebreak_3": 0.0,
+        "made_tiebreak_4": 0.0,
+        "next_card_available": 0.0,
+        "next_card_high_card": 0.0,
+        "next_card_pair": 0.0,
+        "next_card_two_pair": 0.0,
+        "next_card_trips": 0.0,
+        "next_card_straight": 0.0,
+        "next_card_flush": 0.0,
+        "next_card_full_house": 0.0,
+        "next_card_quads": 0.0,
+        "next_card_straight_flush": 0.0,
+        "preflop_equity": 0.4432373046875,
+        "preflop_equity_sampling_se": 0.007567521650344133,
+        "nut_flush_blocker": 0.0,
+        "board_nuts_removed_fraction": 0.0,
+        "board_nuts_legal_mass": 0.0,
+        "runner_runner_straight": 0.0,
+        "runner_runner_flush": 0.0,
+        "currently_strict_nuts": 0.0
+      }
+    },
+    {
+      "hole": [
+        15,
+        23
+      ],
+      "board": [
+        48,
+        31,
+        30
+      ],
+      "values": {
+        "hole_high_rank": 0.5,
+        "hole_low_rank": 0.3571428656578064,
+        "pocket_pair": 0.0,
+        "hole_suited": 1.0,
+        "hole_rank_gap": 0.1666666716337204,
+        "hole_broadway_fraction": 0.0,
+        "strength_available": 1.0,
+        "current_win_fraction": 0.16651248931884766,
+        "current_tie_fraction": 0.008325624279677868,
+        "current_loss_fraction": 0.825161874294281,
+        "current_pot_share": 0.17067530751228333,
+        "currently_unbeatable": 0.0,
+        "board_paired_rank_fraction": 0.5,
+        "board_max_suit_fraction": 0.20000000298023224,
+        "board_straight_window_fraction": 0.20000000298023224,
+        "river_plays_board": 0.0,
+        "pocket_overpair": 0.0,
+        "hole_matches_board_top": 0.0,
+        "hole_overcard_fraction": 0.0,
+        "hole_matches_board_fraction": 0.0,
+        "board_flush_blocker_rank": 0.0,
+        "made_high_card": 0.0,
+        "made_pair": 1.0,
+        "made_two_pair": 0.0,
+        "made_trips": 0.0,
+        "made_straight": 0.0,
+        "made_flush": 0.0,
+        "made_full_house": 0.0,
+        "made_quads": 0.0,
+        "made_straight_flush": 0.0,
+        "made_tiebreak_0": 0.6428571343421936,
+        "made_tiebreak_1": 1.0,
+        "made_tiebreak_2": 0.5,
+        "made_tiebreak_3": 0.3571428656578064,
+        "made_tiebreak_4": 0.0,
+        "next_card_available": 1.0,
+        "next_card_high_card": 0.0,
+        "next_card_pair": 0.7659574747085571,
+        "next_card_two_pair": 0.19148936867713928,
+        "next_card_trips": 0.042553190141916275,
+        "next_card_straight": 0.0,
+        "next_card_flush": 0.0,
+        "next_card_full_house": 0.0,
+        "next_card_quads": 0.0,
+        "next_card_straight_flush": 0.0,
+        "nut_flush_blocker": 0.0,
+        "board_nuts_removed_fraction": 0.0,
+        "board_nuts_legal_mass": 0.0009250693838112056,
+        "runner_runner_straight": 0.01480111014097929,
+        "runner_runner_flush": 0.041628122329711914,
+        "currently_strict_nuts": 0.0
+      }
+    },
+    {
+      "hole": [
+        29,
+        26
+      ],
+      "board": [
+        28,
+        12,
+        47
+      ],
+      "values": {
+        "hole_high_rank": 0.6428571343421936,
+        "hole_low_rank": 0.5714285969734192,
+        "pocket_pair": 0.0,
+        "hole_suited": 0.0,
+        "hole_rank_gap": 0.0833333358168602,
+        "hole_broadway_fraction": 0.0,
+        "strength_available": 1.0,
+        "current_win_fraction": 0.8085106611251831,
+        "current_tie_fraction": 0.005550416186451912,
+        "current_loss_fraction": 0.18593893945217133,
+        "current_pot_share": 0.8112858533859253,
+        "currently_unbeatable": 0.0,
+        "board_paired_rank_fraction": 0.0,
+        "board_max_suit_fraction": 0.4000000059604645,
+        "board_straight_window_fraction": 0.4000000059604645,
+        "river_plays_board": 0.0,
+        "pocket_overpair": 0.0,
+        "hole_matches_board_top": 0.0,
+        "hole_overcard_fraction": 0.0,
+        "hole_matches_board_fraction": 0.5,
+        "board_flush_blocker_rank": 0.0,
+        "made_high_card": 0.0,
+        "made_pair": 1.0,
+        "made_two_pair": 0.0,
+        "made_trips": 0.0,
+        "made_straight": 0.0,
+        "made_flush": 0.0,
+        "made_full_house": 0.0,
+        "made_quads": 0.0,
+        "made_straight_flush": 0.0,
+        "made_tiebreak_0": 0.6428571343421936,
+        "made_tiebreak_1": 0.9285714030265808,
+        "made_tiebreak_2": 0.5714285969734192,
+        "made_tiebreak_3": 0.3571428656578064,
+        "made_tiebreak_4": 0.0,
+        "next_card_available": 1.0,
+        "next_card_high_card": 0.0,
+        "next_card_pair": 0.7659574747085571,
+        "next_card_two_pair": 0.19148936867713928,
+        "next_card_trips": 0.042553190141916275,
+        "next_card_straight": 0.0,
+        "next_card_flush": 0.0,
+        "next_card_full_house": 0.0,
+        "next_card_quads": 0.0,
+        "next_card_straight_flush": 0.0,
+        "nut_flush_blocker": 0.0,
+        "board_nuts_removed_fraction": 0.0,
+        "board_nuts_legal_mass": 0.002775208093225956,
+        "runner_runner_straight": 0.01480111014097929,
+        "runner_runner_flush": 0.0,
+        "currently_strict_nuts": 0.0
+      }
+    },
+    {
+      "hole": [
+        17,
+        50
+      ],
+      "board": [
+        38,
+        44,
+        15
+      ],
+      "values": {
+        "hole_high_rank": 1.0,
+        "hole_low_rank": 0.4285714328289032,
+        "pocket_pair": 0.0,
+        "hole_suited": 0.0,
+        "hole_rank_gap": 0.6666666865348816,
+        "hole_broadway_fraction": 0.5,
+        "strength_available": 1.0,
+        "current_win_fraction": 0.5365402698516846,
+        "current_tie_fraction": 0.008325624279677868,
+        "current_loss_fraction": 0.4551341235637665,
+        "current_pot_share": 0.5407030582427979,
+        "currently_unbeatable": 0.0,
+        "board_paired_rank_fraction": 0.0,
+        "board_max_suit_fraction": 0.20000000298023224,
+        "board_straight_window_fraction": 0.4000000059604645,
+        "river_plays_board": 0.0,
+        "pocket_overpair": 0.0,
+        "hole_matches_board_top": 0.0,
+        "hole_overcard_fraction": 0.5,
+        "hole_matches_board_fraction": 0.0,
+        "board_flush_blocker_rank": 0.0,
+        "made_high_card": 1.0,
+        "made_pair": 0.0,
+        "made_two_pair": 0.0,
+        "made_trips": 0.0,
+        "made_straight": 0.0,
+        "made_flush": 0.0,
+        "made_full_house": 0.0,
+        "made_quads": 0.0,
+        "made_straight_flush": 0.0,
+        "made_tiebreak_0": 1.0,
+        "made_tiebreak_1": 0.9285714030265808,
+        "made_tiebreak_2": 0.7857142686843872,
+        "made_tiebreak_3": 0.4285714328289032,
+        "made_tiebreak_4": 0.3571428656578064,
+        "next_card_available": 1.0,
+        "next_card_high_card": 0.6808510422706604,
+        "next_card_pair": 0.3191489279270172,
+        "next_card_two_pair": 0.0,
+        "next_card_trips": 0.0,
+        "next_card_straight": 0.0,
+        "next_card_flush": 0.0,
+        "next_card_full_house": 0.0,
+        "next_card_quads": 0.0,
+        "next_card_straight_flush": 0.0,
+        "nut_flush_blocker": 0.0,
+        "board_nuts_removed_fraction": 0.0,
+        "board_nuts_legal_mass": 0.002775208093225956,
+        "runner_runner_straight": 0.01480111014097929,
+        "runner_runner_flush": 0.0,
+        "currently_strict_nuts": 0.0
+      }
+    },
+    {
+      "hole": [
+        29,
+        10
+      ],
+      "board": [
+        20,
+        3,
+        45
+      ],
+      "values": {
+        "hole_high_rank": 0.6428571343421936,
+        "hole_low_rank": 0.2857142984867096,
+        "pocket_pair": 0.0,
+        "hole_suited": 0.0,
+        "hole_rank_gap": 0.4166666567325592,
+        "hole_broadway_fraction": 0.0,
+        "strength_available": 1.0,
+        "current_win_fraction": 0.1443108171224594,
+        "current_tie_fraction": 0.008325624279677868,
+        "current_loss_fraction": 0.8473635315895081,
+        "current_pot_share": 0.14847363531589508,
+        "currently_unbeatable": 0.0,
+        "board_paired_rank_fraction": 0.0,
+        "board_max_suit_fraction": 0.20000000298023224,
+        "board_straight_window_fraction": 0.20000000298023224,
+        "river_plays_board": 0.0,
+        "pocket_overpair": 0.0,
+        "hole_matches_board_top": 0.0,
+        "hole_overcard_fraction": 0.0,
+        "hole_matches_board_fraction": 0.0,
+        "board_flush_blocker_rank": 0.0,
+        "made_high_card": 1.0,
+        "made_pair": 0.0,
+        "made_two_pair": 0.0,
+        "made_trips": 0.0,
+        "made_straight": 0.0,
+        "made_flush": 0.0,
+        "made_full_house": 0.0,
+        "made_quads": 0.0,
+        "made_straight_flush": 0.0,
+        "made_tiebreak_0": 0.9285714030265808,
+        "made_tiebreak_1": 0.6428571343421936,
+        "made_tiebreak_2": 0.5,
+        "made_tiebreak_3": 0.2857142984867096,
+        "made_tiebreak_4": 0.1428571492433548,
+        "next_card_available": 1.0,
+        "next_card_high_card": 0.6808510422706604,
+        "next_card_pair": 0.3191489279270172,
+        "next_card_two_pair": 0.0,
+        "next_card_trips": 0.0,
+        "next_card_straight": 0.0,
+        "next_card_flush": 0.0,
+        "next_card_full_house": 0.0,
+        "next_card_quads": 0.0,
+        "next_card_straight_flush": 0.0,
+        "nut_flush_blocker": 0.0,
+        "board_nuts_removed_fraction": 0.0,
+        "board_nuts_legal_mass": 0.002775208093225956,
+        "runner_runner_straight": 0.0,
+        "runner_runner_flush": 0.0,
+        "currently_strict_nuts": 0.0
+      }
+    },
+    {
+      "hole": [
+        37,
+        49
+      ],
+      "board": [
+        4,
+        18,
+        0
+      ],
+      "values": {
+        "hole_high_rank": 1.0,
+        "hole_low_rank": 0.7857142686843872,
+        "pocket_pair": 0.0,
+        "hole_suited": 1.0,
+        "hole_rank_gap": 0.25,
+        "hole_broadway_fraction": 1.0,
+        "strength_available": 1.0,
+        "current_win_fraction": 0.5550416111946106,
+        "current_tie_fraction": 0.008325624279677868,
+        "current_loss_fraction": 0.43663275241851807,
+        "current_pot_share": 0.5592044591903687,
+        "currently_unbeatable": 0.0,
+        "board_paired_rank_fraction": 0.0,
+        "board_max_suit_fraction": 0.4000000059604645,
+        "board_straight_window_fraction": 0.6000000238418579,
+        "river_plays_board": 0.0,
+        "pocket_overpair": 0.0,
+        "hole_matches_board_top": 0.0,
+        "hole_overcard_fraction": 1.0,
+        "hole_matches_board_fraction": 0.0,
+        "board_flush_blocker_rank": 0.0,
+        "made_high_card": 1.0,
+        "made_pair": 0.0,
+        "made_two_pair": 0.0,
+        "made_trips": 0.0,
+        "made_straight": 0.0,
+        "made_flush": 0.0,
+        "made_full_house": 0.0,
+        "made_quads": 0.0,
+        "made_straight_flush": 0.0,
+        "made_tiebreak_0": 1.0,
+        "made_tiebreak_1": 0.7857142686843872,
+        "made_tiebreak_2": 0.4285714328289032,
+        "made_tiebreak_3": 0.2142857164144516,
+        "made_tiebreak_4": 0.1428571492433548,
+        "next_card_available": 1.0,
+        "next_card_high_card": 0.6808510422706604,
+        "next_card_pair": 0.3191489279270172,
+        "next_card_two_pair": 0.0,
+        "next_card_trips": 0.0,
+        "next_card_straight": 0.0,
+        "next_card_flush": 0.0,
+        "next_card_full_house": 0.0,
+        "next_card_quads": 0.0,
+        "next_card_straight_flush": 0.0,
+        "nut_flush_blocker": 0.0,
+        "board_nuts_removed_fraction": 0.0,
+        "board_nuts_legal_mass": 0.01480111014097929,
+        "runner_runner_straight": 0.01480111014097929,
+        "runner_runner_flush": 0.0,
+        "currently_strict_nuts": 0.0
+      }
+    },
+    {
+      "hole": [
+        17,
+        50
+      ],
+      "board": [
+        6,
+        40,
+        45
+      ],
+      "values": {
+        "hole_high_rank": 1.0,
+        "hole_low_rank": 0.4285714328289032,
+        "pocket_pair": 0.0,
+        "hole_suited": 0.0,
+        "hole_rank_gap": 0.6666666865348816,
+        "hole_broadway_fraction": 0.5,
+        "strength_available": 1.0,
+        "current_win_fraction": 0.5365402698516846,
+        "current_tie_fraction": 0.008325624279677868,
+        "current_loss_fraction": 0.4551341235637665,
+        "current_pot_share": 0.5407030582427979,
+        "currently_unbeatable": 0.0,
+        "board_paired_rank_fraction": 0.0,
+        "board_max_suit_fraction": 0.20000000298023224,
+        "board_straight_window_fraction": 0.4000000059604645,
+        "river_plays_board": 0.0,
+        "pocket_overpair": 0.0,
+        "hole_matches_board_top": 0.0,
+        "hole_overcard_fraction": 0.5,
+        "hole_matches_board_fraction": 0.0,
+        "board_flush_blocker_rank": 0.0,
+        "made_high_card": 1.0,
+        "made_pair": 0.0,
+        "made_two_pair": 0.0,
+        "made_trips": 0.0,
+        "made_straight": 0.0,
+        "made_flush": 0.0,
+        "made_full_house": 0.0,
+        "made_quads": 0.0,
+        "made_straight_flush": 0.0,
+        "made_tiebreak_0": 1.0,
+        "made_tiebreak_1": 0.9285714030265808,
+        "made_tiebreak_2": 0.8571428656578064,
+        "made_tiebreak_3": 0.4285714328289032,
+        "made_tiebreak_4": 0.2142857164144516,
+        "next_card_available": 1.0,
+        "next_card_high_card": 0.6808510422706604,
+        "next_card_pair": 0.3191489279270172,
+        "next_card_two_pair": 0.0,
+        "next_card_trips": 0.0,
+        "next_card_straight": 0.0,
+        "next_card_flush": 0.0,
+        "next_card_full_house": 0.0,
+        "next_card_quads": 0.0,
+        "next_card_straight_flush": 0.0,
+        "nut_flush_blocker": 0.0,
+        "board_nuts_removed_fraction": 0.0,
+        "board_nuts_legal_mass": 0.002775208093225956,
+        "runner_runner_straight": 0.01480111014097929,
+        "runner_runner_flush": 0.0,
+        "currently_strict_nuts": 0.0
+      }
+    },
+    {
+      "hole": [
+        26,
+        23
+      ],
+      "board": [
+        19,
+        15,
+        51,
+        29
+      ],
+      "values": {
+        "hole_high_rank": 0.5714285969734192,
+        "hole_low_rank": 0.5,
+        "pocket_pair": 0.0,
+        "hole_suited": 0.0,
+        "hole_rank_gap": 0.0833333358168602,
+        "hole_broadway_fraction": 0.0,
+        "strength_available": 1.0,
+        "current_win_fraction": 0.95652174949646,
+        "current_tie_fraction": 0.008695651777088642,
+        "current_loss_fraction": 0.03478260710835457,
+        "current_pot_share": 0.960869550704956,
+        "currently_unbeatable": 0.0,
+        "board_paired_rank_fraction": 0.0,
+        "board_max_suit_fraction": 0.6000000238418579,
+        "board_straight_window_fraction": 0.6000000238418579,
+        "river_plays_board": 0.0,
+        "pocket_overpair": 0.0,
+        "hole_matches_board_top": 0.0,
+        "hole_overcard_fraction": 0.0,
+        "hole_matches_board_fraction": 0.0,
+        "board_flush_blocker_rank": 0.5,
+        "made_high_card": 0.0,
+        "made_pair": 0.0,
+        "made_two_pair": 0.0,
+        "made_trips": 0.0,
+        "made_straight": 1.0,
+        "made_flush": 0.0,
+        "made_full_house": 0.0,
+        "made_quads": 0.0,
+        "made_straight_flush": 0.0,
+        "made_tiebreak_0": 0.6428571343421936,
+        "made_tiebreak_1": 0.0,
+        "made_tiebreak_2": 0.0,
+        "made_tiebreak_3": 0.0,
+        "made_tiebreak_4": 0.0,
+        "next_card_available": 1.0,
+        "next_card_high_card": 0.0,
+        "next_card_pair": 0.0,
+        "next_card_two_pair": 0.0,
+        "next_card_trips": 0.0,
+        "next_card_straight": 0.804347813129425,
+        "next_card_flush": 0.19565217196941376,
+        "next_card_full_house": 0.0,
+        "next_card_quads": 0.0,
+        "next_card_straight_flush": 0.0,
+        "nut_flush_blocker": 0.0,
+        "board_nuts_removed_fraction": 0.0,
+        "board_nuts_legal_mass": 0.0009661835501901805,
+        "runner_runner_straight": 0.0,
+        "runner_runner_flush": 0.0,
+        "currently_strict_nuts": 0.0
+      }
+    },
+    {
+      "hole": [
+        1,
+        9
+      ],
+      "board": [
+        43,
+        14,
+        39,
+        29
+      ],
+      "values": {
+        "hole_high_rank": 0.2857142984867096,
+        "hole_low_rank": 0.1428571492433548,
+        "pocket_pair": 0.0,
+        "hole_suited": 1.0,
+        "hole_rank_gap": 0.1666666716337204,
+        "hole_broadway_fraction": 0.0,
+        "strength_available": 1.0,
+        "current_win_fraction": 0.011594203300774097,
+        "current_tie_fraction": 0.02028985507786274,
+        "current_loss_fraction": 0.9681159257888794,
+        "current_pot_share": 0.021739130839705467,
+        "currently_unbeatable": 0.0,
+        "board_paired_rank_fraction": 0.0,
+        "board_max_suit_fraction": 0.4000000059604645,
+        "board_straight_window_fraction": 0.6000000238418579,
+        "river_plays_board": 0.0,
+        "pocket_overpair": 0.0,
+        "hole_matches_board_top": 0.0,
+        "hole_overcard_fraction": 0.0,
+        "hole_matches_board_fraction": 0.0,
+        "board_flush_blocker_rank": 0.0,
+        "made_high_card": 1.0,
+        "made_pair": 0.0,
+        "made_two_pair": 0.0,
+        "made_trips": 0.0,
+        "made_straight": 0.0,
+        "made_flush": 0.0,
+        "made_full_house": 0.0,
+        "made_quads": 0.0,
+        "made_straight_flush": 0.0,
+        "made_tiebreak_0": 0.8571428656578064,
+        "made_tiebreak_1": 0.7857142686843872,
+        "made_tiebreak_2": 0.6428571343421936,
+        "made_tiebreak_3": 0.3571428656578064,
+        "made_tiebreak_4": 0.2857142984867096,
+        "next_card_available": 1.0,
+        "next_card_high_card": 0.6086956262588501,
+        "next_card_pair": 0.3913043439388275,
+        "next_card_two_pair": 0.0,
+        "next_card_trips": 0.0,
+        "next_card_straight": 0.0,
+        "next_card_flush": 0.0,
+        "next_card_full_house": 0.0,
+        "next_card_quads": 0.0,
+        "next_card_straight_flush": 0.0,
+        "nut_flush_blocker": 0.0,
+        "board_nuts_removed_fraction": 0.0,
+        "board_nuts_legal_mass": 0.015458936803042889,
+        "runner_runner_straight": 0.0,
+        "runner_runner_flush": 0.0,
+        "currently_strict_nuts": 0.0
+      }
+    },
+    {
+      "hole": [
+        49,
+        15
+      ],
+      "board": [
+        9,
+        47,
+        16,
+        48
+      ],
+      "values": {
+        "hole_high_rank": 1.0,
+        "hole_low_rank": 0.3571428656578064,
+        "pocket_pair": 0.0,
+        "hole_suited": 0.0,
+        "hole_rank_gap": 0.75,
+        "hole_broadway_fraction": 0.5,
+        "strength_available": 1.0,
+        "current_win_fraction": 0.8946859836578369,
+        "current_tie_fraction": 0.005797101650387049,
+        "current_loss_fraction": 0.09951690584421158,
+        "current_pot_share": 0.8975845575332642,
+        "currently_unbeatable": 0.0,
+        "board_paired_rank_fraction": 0.0,
+        "board_max_suit_fraction": 0.4000000059604645,
+        "board_straight_window_fraction": 0.4000000059604645,
+        "river_plays_board": 0.0,
+        "pocket_overpair": 0.0,
+        "hole_matches_board_top": 1.0,
+        "hole_overcard_fraction": 0.0,
+        "hole_matches_board_fraction": 0.5,
+        "board_flush_blocker_rank": 0.0,
+        "made_high_card": 0.0,
+        "made_pair": 1.0,
+        "made_two_pair": 0.0,
+        "made_trips": 0.0,
+        "made_straight": 0.0,
+        "made_flush": 0.0,
+        "made_full_house": 0.0,
+        "made_quads": 0.0,
+        "made_straight_flush": 0.0,
+        "made_tiebreak_0": 1.0,
+        "made_tiebreak_1": 0.9285714030265808,
+        "made_tiebreak_2": 0.4285714328289032,
+        "made_tiebreak_3": 0.3571428656578064,
+        "made_tiebreak_4": 0.0,
+        "next_card_available": 1.0,
+        "next_card_high_card": 0.0,
+        "next_card_pair": 0.695652186870575,
+        "next_card_two_pair": 0.260869562625885,
+        "next_card_trips": 0.043478261679410934,
+        "next_card_straight": 0.0,
+        "next_card_flush": 0.0,
+        "next_card_full_house": 0.0,
+        "next_card_quads": 0.0,
+        "next_card_straight_flush": 0.0,
+        "nut_flush_blocker": 0.0,
+        "board_nuts_removed_fraction": 0.6666666865348816,
+        "board_nuts_legal_mass": 0.0009661835501901805,
+        "runner_runner_straight": 0.0,
+        "runner_runner_flush": 0.0,
+        "currently_strict_nuts": 0.0
+      }
+    },
+    {
+      "hole": [
+        17,
+        38
+      ],
+      "board": [
+        3,
+        24,
+        35,
+        43
+      ],
+      "values": {
+        "hole_high_rank": 0.7857142686843872,
+        "hole_low_rank": 0.4285714328289032,
+        "pocket_pair": 0.0,
+        "hole_suited": 0.0,
+        "hole_rank_gap": 0.4166666567325592,
+        "hole_broadway_fraction": 0.5,
+        "strength_available": 1.0,
+        "current_win_fraction": 0.22995169460773468,
+        "current_tie_fraction": 0.007729468401521444,
+        "current_loss_fraction": 0.7623188495635986,
+        "current_pot_share": 0.23381642997264862,
+        "currently_unbeatable": 0.0,
+        "board_paired_rank_fraction": 0.0,
+        "board_max_suit_fraction": 0.6000000238418579,
+        "board_straight_window_fraction": 0.6000000238418579,
+        "river_plays_board": 0.0,
+        "pocket_overpair": 0.0,
+        "hole_matches_board_top": 0.0,
+        "hole_overcard_fraction": 0.0,
+        "hole_matches_board_fraction": 0.0,
+        "board_flush_blocker_rank": 0.0,
+        "made_high_card": 1.0,
+        "made_pair": 0.0,
+        "made_two_pair": 0.0,
+        "made_trips": 0.0,
+        "made_straight": 0.0,
+        "made_flush": 0.0,
+        "made_full_house": 0.0,
+        "made_quads": 0.0,
+        "made_straight_flush": 0.0,
+        "made_tiebreak_0": 0.8571428656578064,
+        "made_tiebreak_1": 0.7857142686843872,
+        "made_tiebreak_2": 0.7142857313156128,
+        "made_tiebreak_3": 0.5714285969734192,
+        "made_tiebreak_4": 0.4285714328289032,
+        "next_card_available": 1.0,
+        "next_card_high_card": 0.52173912525177,
+        "next_card_pair": 0.3913043439388275,
+        "next_card_two_pair": 0.0,
+        "next_card_trips": 0.0,
+        "next_card_straight": 0.08695652335882187,
+        "next_card_flush": 0.0,
+        "next_card_full_house": 0.0,
+        "next_card_quads": 0.0,
+        "next_card_straight_flush": 0.0,
+        "nut_flush_blocker": 0.0,
+        "board_nuts_removed_fraction": 0.0,
+        "board_nuts_legal_mass": 0.0009661835501901805,
+        "runner_runner_straight": 0.0,
+        "runner_runner_flush": 0.0,
+        "currently_strict_nuts": 0.0
+      }
+    },
+    {
+      "hole": [
+        37,
+        22
+      ],
+      "board": [
+        31,
+        34,
+        29,
+        12
+      ],
+      "values": {
+        "hole_high_rank": 0.7857142686843872,
+        "hole_low_rank": 0.5,
+        "pocket_pair": 0.0,
+        "hole_suited": 0.0,
+        "hole_rank_gap": 0.3333333432674408,
+        "hole_broadway_fraction": 0.5,
+        "strength_available": 1.0,
+        "current_win_fraction": 0.25893720984458923,
+        "current_tie_fraction": 0.008695651777088642,
+        "current_loss_fraction": 0.7323671579360962,
+        "current_pot_share": 0.2632850110530853,
+        "currently_unbeatable": 0.0,
+        "board_paired_rank_fraction": 0.5,
+        "board_max_suit_fraction": 0.20000000298023224,
+        "board_straight_window_fraction": 0.4000000059604645,
+        "river_plays_board": 0.0,
+        "pocket_overpair": 0.0,
+        "hole_matches_board_top": 0.0,
+        "hole_overcard_fraction": 0.5,
+        "hole_matches_board_fraction": 0.0,
+        "board_flush_blocker_rank": 0.0,
+        "made_high_card": 0.0,
+        "made_pair": 1.0,
+        "made_two_pair": 0.0,
+        "made_trips": 0.0,
+        "made_straight": 0.0,
+        "made_flush": 0.0,
+        "made_full_house": 0.0,
+        "made_quads": 0.0,
+        "made_straight_flush": 0.0,
+        "made_tiebreak_0": 0.6428571343421936,
+        "made_tiebreak_1": 0.7857142686843872,
+        "made_tiebreak_2": 0.7142857313156128,
+        "made_tiebreak_3": 0.5,
+        "made_tiebreak_4": 0.0,
+        "next_card_available": 1.0,
+        "next_card_high_card": 0.0,
+        "next_card_pair": 0.6086956262588501,
+        "next_card_two_pair": 0.260869562625885,
+        "next_card_trips": 0.043478261679410934,
+        "next_card_straight": 0.08695652335882187,
+        "next_card_flush": 0.0,
+        "next_card_full_house": 0.0,
+        "next_card_quads": 0.0,
+        "next_card_straight_flush": 0.0,
+        "nut_flush_blocker": 0.0,
+        "board_nuts_removed_fraction": 0.0,
+        "board_nuts_legal_mass": 0.0009661835501901805,
+        "runner_runner_straight": 0.0,
+        "runner_runner_flush": 0.0,
+        "currently_strict_nuts": 0.0
+      }
+    },
+    {
+      "hole": [
+        8,
+        1
+      ],
+      "board": [
+        0,
+        42,
+        11,
+        40
+      ],
+      "values": {
+        "hole_high_rank": 0.2857142984867096,
+        "hole_low_rank": 0.1428571492433548,
+        "pocket_pair": 0.0,
+        "hole_suited": 0.0,
+        "hole_rank_gap": 0.1666666716337204,
+        "hole_broadway_fraction": 0.0,
+        "strength_available": 1.0,
+        "current_win_fraction": 0.7787439823150635,
+        "current_tie_fraction": 0.003864734200760722,
+        "current_loss_fraction": 0.21739129722118378,
+        "current_pot_share": 0.7806763052940369,
+        "currently_unbeatable": 0.0,
+        "board_paired_rank_fraction": 0.5,
+        "board_max_suit_fraction": 0.4000000059604645,
+        "board_straight_window_fraction": 0.4000000059604645,
+        "river_plays_board": 0.0,
+        "pocket_overpair": 0.0,
+        "hole_matches_board_top": 0.0,
+        "hole_overcard_fraction": 0.0,
+        "hole_matches_board_fraction": 1.0,
+        "board_flush_blocker_rank": 0.0,
+        "made_high_card": 0.0,
+        "made_pair": 0.0,
+        "made_two_pair": 1.0,
+        "made_trips": 0.0,
+        "made_straight": 0.0,
+        "made_flush": 0.0,
+        "made_full_house": 0.0,
+        "made_quads": 0.0,
+        "made_straight_flush": 0.0,
+        "made_tiebreak_0": 0.8571428656578064,
+        "made_tiebreak_1": 0.2857142984867096,
+        "made_tiebreak_2": 0.1428571492433548,
+        "made_tiebreak_3": 0.0,
+        "made_tiebreak_4": 0.0,
+        "next_card_available": 1.0,
+        "next_card_high_card": 0.0,
+        "next_card_pair": 0.0,
+        "next_card_two_pair": 0.8695651888847351,
+        "next_card_trips": 0.0,
+        "next_card_straight": 0.0,
+        "next_card_flush": 0.0,
+        "next_card_full_house": 0.1304347813129425,
+        "next_card_quads": 0.0,
+        "next_card_straight_flush": 0.0,
+        "nut_flush_blocker": 0.0,
+        "board_nuts_removed_fraction": 0.0,
+        "board_nuts_legal_mass": 0.0009661835501901805,
+        "runner_runner_straight": 0.0,
+        "runner_runner_flush": 0.0,
+        "currently_strict_nuts": 0.0
+      }
+    },
+    {
+      "hole": [
+        33,
+        48
+      ],
+      "board": [
+        18,
+        47,
+        51,
+        21,
+        37
+      ],
+      "values": {
+        "hole_high_rank": 1.0,
+        "hole_low_rank": 0.7142857313156128,
+        "pocket_pair": 0.0,
+        "hole_suited": 0.0,
+        "hole_rank_gap": 0.3333333432674408,
+        "hole_broadway_fraction": 1.0,
+        "strength_available": 1.0,
+        "current_win_fraction": 0.8818181753158569,
+        "current_tie_fraction": 0.0060606058686971664,
+        "current_loss_fraction": 0.11212120950222015,
+        "current_pot_share": 0.8848484754562378,
+        "currently_unbeatable": 0.0,
+        "board_paired_rank_fraction": 0.0,
+        "board_max_suit_fraction": 0.4000000059604645,
+        "board_straight_window_fraction": 0.6000000238418579,
+        "river_plays_board": 0.0,
+        "pocket_overpair": 0.0,
+        "hole_matches_board_top": 1.0,
+        "hole_overcard_fraction": 0.0,
+        "hole_matches_board_fraction": 0.5,
+        "board_flush_blocker_rank": 0.0,
+        "made_high_card": 0.0,
+        "made_pair": 1.0,
+        "made_two_pair": 0.0,
+        "made_trips": 0.0,
+        "made_straight": 0.0,
+        "made_flush": 0.0,
+        "made_full_house": 0.0,
+        "made_quads": 0.0,
+        "made_straight_flush": 0.0,
+        "made_tiebreak_0": 1.0,
+        "made_tiebreak_1": 0.9285714030265808,
+        "made_tiebreak_2": 0.7857142686843872,
+        "made_tiebreak_3": 0.7142857313156128,
+        "made_tiebreak_4": 0.0,
+        "next_card_available": 0.0,
+        "next_card_high_card": 0.0,
+        "next_card_pair": 0.0,
+        "next_card_two_pair": 0.0,
+        "next_card_trips": 0.0,
+        "next_card_straight": 0.0,
+        "next_card_flush": 0.0,
+        "next_card_full_house": 0.0,
+        "next_card_quads": 0.0,
+        "next_card_straight_flush": 0.0,
+        "nut_flush_blocker": 0.0,
+        "board_nuts_removed_fraction": 0.25,
+        "board_nuts_legal_mass": 0.012121211737394333,
+        "runner_runner_straight": 0.0,
+        "runner_runner_flush": 0.0,
+        "currently_strict_nuts": 0.0
+      }
+    },
+    {
+      "hole": [
+        4,
+        28
+      ],
+      "board": [
+        40,
+        33,
+        1,
+        7,
+        11
+      ],
+      "values": {
+        "hole_high_rank": 0.6428571343421936,
+        "hole_low_rank": 0.2142857164144516,
+        "pocket_pair": 0.0,
+        "hole_suited": 1.0,
+        "hole_rank_gap": 0.5,
+        "hole_broadway_fraction": 0.0,
+        "strength_available": 1.0,
+        "current_win_fraction": 0.5181818008422852,
+        "current_tie_fraction": 0.0060606058686971664,
+        "current_loss_fraction": 0.47575756907463074,
+        "current_pot_share": 0.521212100982666,
+        "currently_unbeatable": 0.0,
+        "board_paired_rank_fraction": 0.0,
+        "board_max_suit_fraction": 0.4000000059604645,
+        "board_straight_window_fraction": 0.6000000238418579,
+        "river_plays_board": 0.0,
+        "pocket_overpair": 0.0,
+        "hole_matches_board_top": 0.0,
+        "hole_overcard_fraction": 0.0,
+        "hole_matches_board_fraction": 0.5,
+        "board_flush_blocker_rank": 0.0,
+        "made_high_card": 0.0,
+        "made_pair": 1.0,
+        "made_two_pair": 0.0,
+        "made_trips": 0.0,
+        "made_straight": 0.0,
+        "made_flush": 0.0,
+        "made_full_house": 0.0,
+        "made_quads": 0.0,
+        "made_straight_flush": 0.0,
+        "made_tiebreak_0": 0.2142857164144516,
+        "made_tiebreak_1": 0.8571428656578064,
+        "made_tiebreak_2": 0.7142857313156128,
+        "made_tiebreak_3": 0.6428571343421936,
+        "made_tiebreak_4": 0.0,
+        "next_card_available": 0.0,
+        "next_card_high_card": 0.0,
+        "next_card_pair": 0.0,
+        "next_card_two_pair": 0.0,
+        "next_card_trips": 0.0,
+        "next_card_straight": 0.0,
+        "next_card_flush": 0.0,
+        "next_card_full_house": 0.0,
+        "next_card_quads": 0.0,
+        "next_card_straight_flush": 0.0,
+        "nut_flush_blocker": 0.0,
+        "board_nuts_removed_fraction": 0.0,
+        "board_nuts_legal_mass": 0.016161616891622543,
+        "runner_runner_straight": 0.0,
+        "runner_runner_flush": 0.0,
+        "currently_strict_nuts": 0.0
+      }
+    },
+    {
+      "hole": [
+        28,
+        39
+      ],
+      "board": [
+        42,
+        50,
+        31,
+        36,
+        45
+      ],
+      "values": {
+        "hole_high_rank": 0.7857142686843872,
+        "hole_low_rank": 0.6428571343421936,
+        "pocket_pair": 0.0,
+        "hole_suited": 0.0,
+        "hole_rank_gap": 0.1666666716337204,
+        "hole_broadway_fraction": 0.5,
+        "strength_available": 1.0,
+        "current_win_fraction": 0.7494949698448181,
+        "current_tie_fraction": 0.004040404222905636,
+        "current_loss_fraction": 0.24646463990211487,
+        "current_pot_share": 0.7515151500701904,
+        "currently_unbeatable": 0.0,
+        "board_paired_rank_fraction": 0.0,
+        "board_max_suit_fraction": 0.4000000059604645,
+        "board_straight_window_fraction": 0.800000011920929,
+        "river_plays_board": 0.0,
+        "pocket_overpair": 0.0,
+        "hole_matches_board_top": 0.0,
+        "hole_overcard_fraction": 0.0,
+        "hole_matches_board_fraction": 1.0,
+        "board_flush_blocker_rank": 0.0,
+        "made_high_card": 0.0,
+        "made_pair": 0.0,
+        "made_two_pair": 1.0,
+        "made_trips": 0.0,
+        "made_straight": 0.0,
+        "made_flush": 0.0,
+        "made_full_house": 0.0,
+        "made_quads": 0.0,
+        "made_straight_flush": 0.0,
+        "made_tiebreak_0": 0.7857142686843872,
+        "made_tiebreak_1": 0.6428571343421936,
+        "made_tiebreak_2": 1.0,
+        "made_tiebreak_3": 0.0,
+        "made_tiebreak_4": 0.0,
+        "next_card_available": 0.0,
+        "next_card_high_card": 0.0,
+        "next_card_pair": 0.0,
+        "next_card_two_pair": 0.0,
+        "next_card_trips": 0.0,
+        "next_card_straight": 0.0,
+        "next_card_flush": 0.0,
+        "next_card_full_house": 0.0,
+        "next_card_quads": 0.0,
+        "next_card_straight_flush": 0.0,
+        "nut_flush_blocker": 0.0,
+        "board_nuts_removed_fraction": 0.04494382068514824,
+        "board_nuts_legal_mass": 0.17171716690063477,
+        "runner_runner_straight": 0.0,
+        "runner_runner_flush": 0.0,
+        "currently_strict_nuts": 0.0
+      }
+    },
+    {
+      "hole": [
+        13,
+        34
+      ],
+      "board": [
+        17,
+        40,
+        46,
+        3,
+        7
+      ],
+      "values": {
+        "hole_high_rank": 0.7142857313156128,
+        "hole_low_rank": 0.3571428656578064,
+        "pocket_pair": 0.0,
+        "hole_suited": 0.0,
+        "hole_rank_gap": 0.4166666567325592,
+        "hole_broadway_fraction": 0.5,
+        "strength_available": 1.0,
+        "current_win_fraction": 0.145454540848732,
+        "current_tie_fraction": 0.00909090880304575,
+        "current_loss_fraction": 0.8454545736312866,
+        "current_pot_share": 0.15000000596046448,
+        "currently_unbeatable": 0.0,
+        "board_paired_rank_fraction": 0.0,
+        "board_max_suit_fraction": 0.4000000059604645,
+        "board_straight_window_fraction": 0.6000000238418579,
+        "river_plays_board": 0.0,
+        "pocket_overpair": 0.0,
+        "hole_matches_board_top": 0.0,
+        "hole_overcard_fraction": 0.0,
+        "hole_matches_board_fraction": 0.0,
+        "board_flush_blocker_rank": 0.0,
+        "made_high_card": 1.0,
+        "made_pair": 0.0,
+        "made_two_pair": 0.0,
+        "made_trips": 0.0,
+        "made_straight": 0.0,
+        "made_flush": 0.0,
+        "made_full_house": 0.0,
+        "made_quads": 0.0,
+        "made_straight_flush": 0.0,
+        "made_tiebreak_0": 0.9285714030265808,
+        "made_tiebreak_1": 0.8571428656578064,
+        "made_tiebreak_2": 0.7142857313156128,
+        "made_tiebreak_3": 0.4285714328289032,
+        "made_tiebreak_4": 0.3571428656578064,
+        "next_card_available": 0.0,
+        "next_card_high_card": 0.0,
+        "next_card_pair": 0.0,
+        "next_card_two_pair": 0.0,
+        "next_card_trips": 0.0,
+        "next_card_straight": 0.0,
+        "next_card_flush": 0.0,
+        "next_card_full_house": 0.0,
+        "next_card_quads": 0.0,
+        "next_card_straight_flush": 0.0,
+        "nut_flush_blocker": 0.0,
+        "board_nuts_removed_fraction": 0.25,
+        "board_nuts_legal_mass": 0.012121211737394333,
+        "runner_runner_straight": 0.0,
+        "runner_runner_flush": 0.0,
+        "currently_strict_nuts": 0.0
+      }
+    },
+    {
+      "hole": [
+        24,
+        20
+      ],
+      "board": [
+        37,
+        8,
+        40,
+        5,
+        46
+      ],
+      "values": {
+        "hole_high_rank": 0.5714285969734192,
+        "hole_low_rank": 0.5,
+        "pocket_pair": 0.0,
+        "hole_suited": 1.0,
+        "hole_rank_gap": 0.0833333358168602,
+        "hole_broadway_fraction": 0.0,
+        "strength_available": 1.0,
+        "current_win_fraction": 0.12121212482452393,
+        "current_tie_fraction": 0.00909090880304575,
+        "current_loss_fraction": 0.8696969747543335,
+        "current_pot_share": 0.12575757503509521,
+        "currently_unbeatable": 0.0,
+        "board_paired_rank_fraction": 0.0,
+        "board_max_suit_fraction": 0.4000000059604645,
+        "board_straight_window_fraction": 0.6000000238418579,
+        "river_plays_board": 0.0,
+        "pocket_overpair": 0.0,
+        "hole_matches_board_top": 0.0,
+        "hole_overcard_fraction": 0.0,
+        "hole_matches_board_fraction": 0.0,
+        "board_flush_blocker_rank": 0.0,
+        "made_high_card": 1.0,
+        "made_pair": 0.0,
+        "made_two_pair": 0.0,
+        "made_trips": 0.0,
+        "made_straight": 0.0,
+        "made_flush": 0.0,
+        "made_full_house": 0.0,
+        "made_quads": 0.0,
+        "made_straight_flush": 0.0,
+        "made_tiebreak_0": 0.9285714030265808,
+        "made_tiebreak_1": 0.8571428656578064,
+        "made_tiebreak_2": 0.7857142686843872,
+        "made_tiebreak_3": 0.5714285969734192,
+        "made_tiebreak_4": 0.5,
+        "next_card_available": 0.0,
+        "next_card_high_card": 0.0,
+        "next_card_pair": 0.0,
+        "next_card_two_pair": 0.0,
+        "next_card_trips": 0.0,
+        "next_card_straight": 0.0,
+        "next_card_flush": 0.0,
+        "next_card_full_house": 0.0,
+        "next_card_quads": 0.0,
+        "next_card_straight_flush": 0.0,
+        "nut_flush_blocker": 0.0,
+        "board_nuts_removed_fraction": 0.0,
+        "board_nuts_legal_mass": 0.016161616891622543,
+        "runner_runner_straight": 0.0,
+        "runner_runner_flush": 0.0,
+        "currently_strict_nuts": 0.0
+      }
+    },
+    {
+      "hole": [
+        26,
+        47
+      ],
+      "board": [
+        16,
+        21,
+        32,
+        42,
+        4
+      ],
+      "values": {
+        "hole_high_rank": 0.9285714030265808,
+        "hole_low_rank": 0.5714285969734192,
+        "pocket_pair": 0.0,
+        "hole_suited": 0.0,
+        "hole_rank_gap": 0.4166666567325592,
+        "hole_broadway_fraction": 0.5,
+        "strength_available": 1.0,
+        "current_win_fraction": 0.21414141356945038,
+        "current_tie_fraction": 0.008080808445811272,
+        "current_loss_fraction": 0.7777777910232544,
+        "current_pot_share": 0.2181818187236786,
+        "currently_unbeatable": 0.0,
+        "board_paired_rank_fraction": 0.0,
+        "board_max_suit_fraction": 0.6000000238418579,
+        "board_straight_window_fraction": 0.6000000238418579,
+        "river_plays_board": 0.0,
+        "pocket_overpair": 0.0,
+        "hole_matches_board_top": 0.0,
+        "hole_overcard_fraction": 0.5,
+        "hole_matches_board_fraction": 0.0,
+        "board_flush_blocker_rank": 0.0,
+        "made_high_card": 1.0,
+        "made_pair": 0.0,
+        "made_two_pair": 0.0,
+        "made_trips": 0.0,
+        "made_straight": 0.0,
+        "made_flush": 0.0,
+        "made_full_house": 0.0,
+        "made_quads": 0.0,
+        "made_straight_flush": 0.0,
+        "made_tiebreak_0": 0.9285714030265808,
+        "made_tiebreak_1": 0.8571428656578064,
+        "made_tiebreak_2": 0.7142857313156128,
+        "made_tiebreak_3": 0.5714285969734192,
+        "made_tiebreak_4": 0.5,
+        "next_card_available": 0.0,
+        "next_card_high_card": 0.0,
+        "next_card_pair": 0.0,
+        "next_card_two_pair": 0.0,
+        "next_card_trips": 0.0,
+        "next_card_straight": 0.0,
+        "next_card_flush": 0.0,
+        "next_card_full_house": 0.0,
+        "next_card_quads": 0.0,
+        "next_card_straight_flush": 0.0,
+        "nut_flush_blocker": 0.0,
+        "board_nuts_removed_fraction": 0.0,
+        "board_nuts_legal_mass": 0.001010101055726409,
+        "runner_runner_straight": 0.0,
+        "runner_runner_flush": 0.0,
+        "currently_strict_nuts": 0.0
+      }
+    },
+    {
+      "hole": [
+        0,
+        1
+      ],
+      "board": [],
+      "values": {
+        "preflop_equity": 0.5067138671875,
+        "preflop_equity_sampling_se": 0.007723529357463121,
+        "board_nuts_removed_fraction": 0.0,
+        "board_nuts_legal_mass": 0.0,
+        "runner_runner_straight": 0.0,
+        "runner_runner_flush": 0.0,
+        "currently_strict_nuts": 0.0
+      }
+    },
+    {
+      "hole": [
+        0,
+        4
+      ],
+      "board": [],
+      "values": {
+        "preflop_equity": 0.3492431640625,
+        "preflop_equity_sampling_se": 0.007212984841316938,
+        "board_nuts_removed_fraction": 0.0,
+        "board_nuts_legal_mass": 0.0,
+        "runner_runner_straight": 0.0,
+        "runner_runner_flush": 0.0,
+        "currently_strict_nuts": 0.0
+      }
+    },
+    {
+      "hole": [
+        0,
+        5
+      ],
+      "board": [],
+      "values": {
+        "preflop_equity": 0.3099365234375,
+        "preflop_equity_sampling_se": 0.006965432316064835,
+        "board_nuts_removed_fraction": 0.0,
+        "board_nuts_legal_mass": 0.0,
+        "runner_runner_straight": 0.0,
+        "runner_runner_flush": 0.0,
+        "currently_strict_nuts": 0.0
+      }
+    },
+    {
+      "hole": [
+        0,
+        8
+      ],
+      "board": [],
+      "values": {
+        "preflop_equity": 0.3643798828125,
+        "preflop_equity_sampling_se": 0.007277806755155325,
+        "board_nuts_removed_fraction": 0.0,
+        "board_nuts_legal_mass": 0.0,
+        "runner_runner_straight": 0.0,
+        "runner_runner_flush": 0.0,
+        "currently_strict_nuts": 0.0
+      }
+    },
+    {
+      "hole": [
+        0,
+        9
+      ],
+      "board": [],
+      "values": {
+        "preflop_equity": 0.3385009765625,
+        "preflop_equity_sampling_se": 0.007128850091248751,
+        "board_nuts_removed_fraction": 0.0,
+        "board_nuts_legal_mass": 0.0,
+        "runner_runner_straight": 0.0,
+        "runner_runner_flush": 0.0,
+        "currently_strict_nuts": 0.0
+      }
+    },
+    {
+      "hole": [
+        0,
+        12
+      ],
+      "board": [],
+      "values": {
+        "preflop_equity": 0.3699951171875,
+        "preflop_equity_sampling_se": 0.007315023336559534,
+        "board_nuts_removed_fraction": 0.0,
+        "board_nuts_legal_mass": 0.0,
+        "runner_runner_straight": 0.0,
+        "runner_runner_flush": 0.0,
+        "currently_strict_nuts": 0.0
+      }
+    },
+    {
+      "hole": [
+        0,
+        13
+      ],
+      "board": [],
+      "values": {
+        "preflop_equity": 0.34326171875,
+        "preflop_equity_sampling_se": 0.0071703591383993626,
+        "board_nuts_removed_fraction": 0.0,
+        "board_nuts_legal_mass": 0.0,
+        "runner_runner_straight": 0.0,
+        "runner_runner_flush": 0.0,
+        "currently_strict_nuts": 0.0
+      }
+    },
+    {
+      "hole": [
+        0,
+        16
+      ],
+      "board": [],
+      "values": {
+        "preflop_equity": 0.38427734375,
+        "preflop_equity_sampling_se": 0.007366292178630829,
+        "board_nuts_removed_fraction": 0.0,
+        "board_nuts_legal_mass": 0.0,
+        "runner_runner_straight": 0.0,
+        "runner_runner_flush": 0.0,
+        "currently_strict_nuts": 0.0
+      }
+    },
+    {
+      "hole": [
+        0,
+        17
+      ],
+      "board": [],
+      "values": {
+        "preflop_equity": 0.3428955078125,
+        "preflop_equity_sampling_se": 0.0071798283606767654,
+        "board_nuts_removed_fraction": 0.0,
+        "board_nuts_legal_mass": 0.0,
+        "runner_runner_straight": 0.0,
+        "runner_runner_flush": 0.0,
+        "currently_strict_nuts": 0.0
+      }
+    },
+    {
+      "hole": [
+        0,
+        20
+      ],
+      "board": [],
+      "values": {
+        "preflop_equity": 0.3853759765625,
+        "preflop_equity_sampling_se": 0.007395720575004816,
+        "board_nuts_removed_fraction": 0.0,
+        "board_nuts_legal_mass": 0.0,
+        "runner_runner_straight": 0.0,
+        "runner_runner_flush": 0.0,
+        "currently_strict_nuts": 0.0
+      }
+    },
+    {
+      "hole": [
+        0,
+        21
+      ],
+      "board": [],
+      "values": {
+        "preflop_equity": 0.339111328125,
+        "preflop_equity_sampling_se": 0.00717077637091279,
+        "board_nuts_removed_fraction": 0.0,
+        "board_nuts_legal_mass": 0.0,
+        "runner_runner_straight": 0.0,
+        "runner_runner_flush": 0.0,
+        "currently_strict_nuts": 0.0
+      }
+    },
+    {
+      "hole": [
+        0,
+        24
+      ],
+      "board": [],
+      "values": {
+        "preflop_equity": 0.3997802734375,
+        "preflop_equity_sampling_se": 0.007440629880875349,
+        "board_nuts_removed_fraction": 0.0,
+        "board_nuts_legal_mass": 0.0,
+        "runner_runner_straight": 0.0,
+        "runner_runner_flush": 0.0,
+        "currently_strict_nuts": 0.0
+      }
+    },
+    {
+      "hole": [
+        0,
+        25
+      ],
+      "board": [],
+      "values": {
+        "preflop_equity": 0.37060546875,
+        "preflop_equity_sampling_se": 0.007322756107896566,
+        "board_nuts_removed_fraction": 0.0,
+        "board_nuts_legal_mass": 0.0,
+        "runner_runner_straight": 0.0,
+        "runner_runner_flush": 0.0,
+        "currently_strict_nuts": 0.0
+      }
+    },
+    {
+      "hole": [
+        0,
+        28
+      ],
+      "board": [],
+      "values": {
+        "preflop_equity": 0.4432373046875,
+        "preflop_equity_sampling_se": 0.007567521650344133,
+        "board_nuts_removed_fraction": 0.0,
+        "board_nuts_legal_mass": 0.0,
+        "runner_runner_straight": 0.0,
+        "runner_runner_flush": 0.0,
+        "currently_strict_nuts": 0.0
+      }
+    },
+    {
+      "hole": [
+        0,
+        29
+      ],
+      "board": [],
+      "values": {
+        "preflop_equity": 0.384521484375,
+        "preflop_equity_sampling_se": 0.0073854136280715466,
+        "board_nuts_removed_fraction": 0.0,
+        "board_nuts_legal_mass": 0.0,
+        "runner_runner_straight": 0.0,
+        "runner_runner_flush": 0.0,
+        "currently_strict_nuts": 0.0
+      }
+    },
+    {
+      "hole": [
+        0,
+        32
+      ],
+      "board": [],
+      "values": {
+        "preflop_equity": 0.4512939453125,
+        "preflop_equity_sampling_se": 0.007593006361275911,
+        "board_nuts_removed_fraction": 0.0,
+        "board_nuts_legal_mass": 0.0,
+        "runner_runner_straight": 0.0,
+        "runner_runner_flush": 0.0,
+        "currently_strict_nuts": 0.0
+      }
+    },
+    {
+      "hole": [
+        0,
+        33
+      ],
+      "board": [],
+      "values": {
+        "preflop_equity": 0.4134521484375,
+        "preflop_equity_sampling_se": 0.007504294626414776,
+        "board_nuts_removed_fraction": 0.0,
+        "board_nuts_legal_mass": 0.0,
+        "runner_runner_straight": 0.0,
+        "runner_runner_flush": 0.0,
+        "currently_strict_nuts": 0.0
+      }
+    },
+    {
+      "hole": [
+        0,
+        36
+      ],
+      "board": [],
+      "values": {
+        "preflop_equity": 0.4705810546875,
+        "preflop_equity_sampling_se": 0.0076093669049441814,
+        "board_nuts_removed_fraction": 0.0,
+        "board_nuts_legal_mass": 0.0,
+        "runner_runner_straight": 0.0,
+        "runner_runner_flush": 0.0,
+        "currently_strict_nuts": 0.0
+      }
+    },
+    {
+      "hole": [
+        0,
+        37
+      ],
+      "board": [],
+      "values": {
+        "preflop_equity": 0.4404296875,
+        "preflop_equity_sampling_se": 0.0075868465937674046,
+        "board_nuts_removed_fraction": 0.0,
+        "board_nuts_legal_mass": 0.0,
+        "runner_runner_straight": 0.0,
+        "runner_runner_flush": 0.0,
+        "currently_strict_nuts": 0.0
+      }
+    },
+    {
+      "hole": [
+        0,
+        40
+      ],
+      "board": [],
+      "values": {
+        "preflop_equity": 0.5006103515625,
+        "preflop_equity_sampling_se": 0.0076641845516860485,
+        "board_nuts_removed_fraction": 0.0,
+        "board_nuts_legal_mass": 0.0,
+        "runner_runner_straight": 0.0,
+        "runner_runner_flush": 0.0,
+        "currently_strict_nuts": 0.0
+      }
+    },
+    {
+      "hole": [
+        0,
+        41
+      ],
+      "board": [],
+      "values": {
+        "preflop_equity": 0.475830078125,
+        "preflop_equity_sampling_se": 0.007650008890777826,
+        "board_nuts_removed_fraction": 0.0,
+        "board_nuts_legal_mass": 0.0,
+        "runner_runner_straight": 0.0,
+        "runner_runner_flush": 0.0,
+        "currently_strict_nuts": 0.0
+      }
+    },
+    {
+      "hole": [
+        0,
+        44
+      ],
+      "board": [],
+      "values": {
+        "preflop_equity": 0.542724609375,
+        "preflop_equity_sampling_se": 0.007628218736499548,
+        "board_nuts_removed_fraction": 0.0,
+        "board_nuts_legal_mass": 0.0,
+        "runner_runner_straight": 0.0,
+        "runner_runner_flush": 0.0,
+        "currently_strict_nuts": 0.0
+      }
+    },
+    {
+      "hole": [
+        0,
+        45
+      ],
+      "board": [],
+      "values": {
+        "preflop_equity": 0.5059814453125,
+        "preflop_equity_sampling_se": 0.007673338986933231,
+        "board_nuts_removed_fraction": 0.0,
+        "board_nuts_legal_mass": 0.0,
+        "runner_runner_straight": 0.0,
+        "runner_runner_flush": 0.0,
+        "currently_strict_nuts": 0.0
+      }
+    },
+    {
+      "hole": [
+        0,
+        48
+      ],
+      "board": [],
+      "values": {
+        "preflop_equity": 0.5758056640625,
+        "preflop_equity_sampling_se": 0.007568150293081999,
+        "board_nuts_removed_fraction": 0.0,
+        "board_nuts_legal_mass": 0.0,
+        "runner_runner_straight": 0.0,
+        "runner_runner_flush": 0.0,
+        "currently_strict_nuts": 0.0
+      }
+    },
+    {
+      "hole": [
+        0,
+        49
+      ],
+      "board": [],
+      "values": {
+        "preflop_equity": 0.5489501953125,
+        "preflop_equity_sampling_se": 0.007645441684871912,
+        "board_nuts_removed_fraction": 0.0,
+        "board_nuts_legal_mass": 0.0,
+        "runner_runner_straight": 0.0,
+        "runner_runner_flush": 0.0,
+        "currently_strict_nuts": 0.0
+      }
+    },
+    {
+      "hole": [
+        4,
+        5
+      ],
+      "board": [],
+      "values": {
+        "preflop_equity": 0.5399169921875,
+        "preflop_equity_sampling_se": 0.007714485749602318,
+        "board_nuts_removed_fraction": 0.0,
+        "board_nuts_legal_mass": 0.0,
+        "runner_runner_straight": 0.0,
+        "runner_runner_flush": 0.0,
+        "currently_strict_nuts": 0.0
+      }
+    },
+    {
+      "hole": [
+        4,
+        8
+      ],
+      "board": [],
+      "values": {
+        "preflop_equity": 0.3865966796875,
+        "preflop_equity_sampling_se": 0.007378126494586468,
+        "board_nuts_removed_fraction": 0.0,
+        "board_nuts_legal_mass": 0.0,
+        "runner_runner_straight": 0.0,
+        "runner_runner_flush": 0.0,
+        "currently_strict_nuts": 0.0
+      }
+    },
+    {
+      "hole": [
+        4,
+        9
+      ],
+      "board": [],
+      "values": {
+        "preflop_equity": 0.3392333984375,
+        "preflop_equity_sampling_se": 0.007126620039343834,
+        "board_nuts_removed_fraction": 0.0,
+        "board_nuts_legal_mass": 0.0,
+        "runner_runner_straight": 0.0,
+        "runner_runner_flush": 0.0,
+        "currently_strict_nuts": 0.0
+      }
+    },
+    {
+      "hole": [
+        4,
+        12
+      ],
+      "board": [],
+      "values": {
+        "preflop_equity": 0.390869140625,
+        "preflop_equity_sampling_se": 0.007376689463853836,
+        "board_nuts_removed_fraction": 0.0,
+        "board_nuts_legal_mass": 0.0,
+        "runner_runner_straight": 0.0,
+        "runner_runner_flush": 0.0,
+        "currently_strict_nuts": 0.0
+      }
+    },
+    {
+      "hole": [
+        4,
+        13
+      ],
+      "board": [],
+      "values": {
+        "preflop_equity": 0.367431640625,
+        "preflop_equity_sampling_se": 0.007282320875674486,
+        "board_nuts_removed_fraction": 0.0,
+        "board_nuts_legal_mass": 0.0,
+        "runner_runner_straight": 0.0,
+        "runner_runner_flush": 0.0,
+        "currently_strict_nuts": 0.0
+      }
+    },
+    {
+      "hole": [
+        4,
+        16
+      ],
+      "board": [],
+      "values": {
+        "preflop_equity": 0.3951416015625,
+        "preflop_equity_sampling_se": 0.007404902018606663,
+        "board_nuts_removed_fraction": 0.0,
+        "board_nuts_legal_mass": 0.0,
+        "runner_runner_straight": 0.0,
+        "runner_runner_flush": 0.0,
+        "currently_strict_nuts": 0.0
+      }
+    },
+    {
+      "hole": [
+        4,
+        17
+      ],
+      "board": [],
+      "values": {
+        "preflop_equity": 0.3721923828125,
+        "preflop_equity_sampling_se": 0.007291841320693493,
+        "board_nuts_removed_fraction": 0.0,
+        "board_nuts_legal_mass": 0.0,
+        "runner_runner_straight": 0.0,
+        "runner_runner_flush": 0.0,
+        "currently_strict_nuts": 0.0
+      }
+    },
+    {
+      "hole": [
+        4,
+        20
+      ],
+      "board": [],
+      "values": {
+        "preflop_equity": 0.4041748046875,
+        "preflop_equity_sampling_se": 0.007446752395480871,
+        "board_nuts_removed_fraction": 0.0,
+        "board_nuts_legal_mass": 0.0,
+        "runner_runner_straight": 0.0,
+        "runner_runner_flush": 0.0,
+        "currently_strict_nuts": 0.0
+      }
+    },
+    {
+      "hole": [
+        4,
+        21
+      ],
+      "board": [],
+      "values": {
+        "preflop_equity": 0.348876953125,
+        "preflop_equity_sampling_se": 0.007218343671411276,
+        "board_nuts_removed_fraction": 0.0,
+        "board_nuts_legal_mass": 0.0,
+        "runner_runner_straight": 0.0,
+        "runner_runner_flush": 0.0,
+        "currently_strict_nuts": 0.0
+      }
+    },
+    {
+      "hole": [
+        4,
+        24
+      ],
+      "board": [],
+      "values": {
+        "preflop_equity": 0.4122314453125,
+        "preflop_equity_sampling_se": 0.007488899398595095,
+        "board_nuts_removed_fraction": 0.0,
+        "board_nuts_legal_mass": 0.0,
+        "runner_runner_straight": 0.0,
+        "runner_runner_flush": 0.0,
+        "currently_strict_nuts": 0.0
+      }
+    },
+    {
+      "hole": [
+        4,
+        25
+      ],
+      "board": [],
+      "values": {
+        "preflop_equity": 0.3812255859375,
+        "preflop_equity_sampling_se": 0.007367582526057959,
+        "board_nuts_removed_fraction": 0.0,
+        "board_nuts_legal_mass": 0.0,
+        "runner_runner_straight": 0.0,
+        "runner_runner_flush": 0.0,
+        "currently_strict_nuts": 0.0
+      }
+    },
+    {
+      "hole": [
+        4,
+        28
+      ],
+      "board": [],
+      "values": {
+        "preflop_equity": 0.4337158203125,
+        "preflop_equity_sampling_se": 0.007526843808591366,
+        "board_nuts_removed_fraction": 0.0,
+        "board_nuts_legal_mass": 0.0,
+        "runner_runner_straight": 0.0,
+        "runner_runner_flush": 0.0,
+        "currently_strict_nuts": 0.0
+      }
+    },
+    {
+      "hole": [
+        4,
+        29
+      ],
+      "board": [],
+      "values": {
+        "preflop_equity": 0.4122314453125,
+        "preflop_equity_sampling_se": 0.007492878939956427,
+        "board_nuts_removed_fraction": 0.0,
+        "board_nuts_legal_mass": 0.0,
+        "runner_runner_straight": 0.0,
+        "runner_runner_flush": 0.0,
+        "currently_strict_nuts": 0.0
+      }
+    },
+    {
+      "hole": [
+        4,
+        32
+      ],
+      "board": [],
+      "values": {
+        "preflop_equity": 0.4647216796875,
+        "preflop_equity_sampling_se": 0.0076072015799582005,
+        "board_nuts_removed_fraction": 0.0,
+        "board_nuts_legal_mass": 0.0,
+        "runner_runner_straight": 0.0,
+        "runner_runner_flush": 0.0,
+        "currently_strict_nuts": 0.0
+      }
+    },
+    {
+      "hole": [
+        4,
+        33
+      ],
+      "board": [],
+      "values": {
+        "preflop_equity": 0.422119140625,
+        "preflop_equity_sampling_se": 0.007524475455284119,
+        "board_nuts_removed_fraction": 0.0,
+        "board_nuts_legal_mass": 0.0,
+        "runner_runner_straight": 0.0,
+        "runner_runner_flush": 0.0,
+        "currently_strict_nuts": 0.0
+      }
+    },
+    {
+      "hole": [
+        4,
+        36
+      ],
+      "board": [],
+      "values": {
+        "preflop_equity": 0.476318359375,
+        "preflop_equity_sampling_se": 0.0076445345766842365,
+        "board_nuts_removed_fraction": 0.0,
+        "board_nuts_legal_mass": 0.0,
+        "runner_runner_straight": 0.0,
+        "runner_runner_flush": 0.0,
+        "currently_strict_nuts": 0.0
+      }
+    },
+    {
+      "hole": [
+        4,
+        37
+      ],
+      "board": [],
+      "values": {
+        "preflop_equity": 0.46630859375,
+        "preflop_equity_sampling_se": 0.007606019265949726,
+        "board_nuts_removed_fraction": 0.0,
+        "board_nuts_legal_mass": 0.0,
+        "runner_runner_straight": 0.0,
+        "runner_runner_flush": 0.0,
+        "currently_strict_nuts": 0.0
+      }
+    },
+    {
+      "hole": [
+        4,
+        40
+      ],
+      "board": [],
+      "values": {
+        "preflop_equity": 0.4931640625,
+        "preflop_equity_sampling_se": 0.007644947152584791,
+        "board_nuts_removed_fraction": 0.0,
+        "board_nuts_legal_mass": 0.0,
+        "runner_runner_straight": 0.0,
+        "runner_runner_flush": 0.0,
+        "currently_strict_nuts": 0.0
+      }
+    },
+    {
+      "hole": [
+        4,
+        41
+      ],
+      "board": [],
+      "values": {
+        "preflop_equity": 0.4932861328125,
+        "preflop_equity_sampling_se": 0.0076420484110713005,
+        "board_nuts_removed_fraction": 0.0,
+        "board_nuts_legal_mass": 0.0,
+        "runner_runner_straight": 0.0,
+        "runner_runner_flush": 0.0,
+        "currently_strict_nuts": 0.0
+      }
+    },
+    {
+      "hole": [
+        4,
+        44
+      ],
+      "board": [],
+      "values": {
+        "preflop_equity": 0.537841796875,
+        "preflop_equity_sampling_se": 0.00764036737382412,
+        "board_nuts_removed_fraction": 0.0,
+        "board_nuts_legal_mass": 0.0,
+        "runner_runner_straight": 0.0,
+        "runner_runner_flush": 0.0,
+        "currently_strict_nuts": 0.0
+      }
+    },
+    {
+      "hole": [
+        4,
+        45
+      ],
+      "board": [],
+      "values": {
+        "preflop_equity": 0.508544921875,
+        "preflop_equity_sampling_se": 0.007628913503140211,
+        "board_nuts_removed_fraction": 0.0,
+        "board_nuts_legal_mass": 0.0,
+        "runner_runner_straight": 0.0,
+        "runner_runner_flush": 0.0,
+        "currently_strict_nuts": 0.0
+      }
+    },
+    {
+      "hole": [
+        4,
+        48
+      ],
+      "board": [],
+      "values": {
+        "preflop_equity": 0.5865478515625,
+        "preflop_equity_sampling_se": 0.007536006160080433,
+        "board_nuts_removed_fraction": 0.0,
+        "board_nuts_legal_mass": 0.0,
+        "runner_runner_straight": 0.0,
+        "runner_runner_flush": 0.0,
+        "currently_strict_nuts": 0.0
+      }
+    },
+    {
+      "hole": [
+        4,
+        49
+      ],
+      "board": [],
+      "values": {
+        "preflop_equity": 0.5582275390625,
+        "preflop_equity_sampling_se": 0.007609984837472439,
+        "board_nuts_removed_fraction": 0.0,
+        "board_nuts_legal_mass": 0.0,
+        "runner_runner_straight": 0.0,
+        "runner_runner_flush": 0.0,
+        "currently_strict_nuts": 0.0
+      }
+    },
+    {
+      "hole": [
+        8,
+        9
+      ],
+      "board": [],
+      "values": {
+        "preflop_equity": 0.5780029296875,
+        "preflop_equity_sampling_se": 0.0076430728659033775,
+        "board_nuts_removed_fraction": 0.0,
+        "board_nuts_legal_mass": 0.0,
+        "runner_runner_straight": 0.0,
+        "runner_runner_flush": 0.0,
+        "currently_strict_nuts": 0.0
+      }
+    },
+    {
+      "hole": [
+        8,
+        12
+      ],
+      "board": [],
+      "values": {
+        "preflop_equity": 0.4139404296875,
+        "preflop_equity_sampling_se": 0.007491752039641142,
+        "board_nuts_removed_fraction": 0.0,
+        "board_nuts_legal_mass": 0.0,
+        "runner_runner_straight": 0.0,
+        "runner_runner_flush": 0.0,
+        "currently_strict_nuts": 0.0
+      }
+    },
+    {
+      "hole": [
+        8,
+        13
+      ],
+      "board": [],
+      "values": {
+        "preflop_equity": 0.3851318359375,
+        "preflop_equity_sampling_se": 0.007356399670243263,
+        "board_nuts_removed_fraction": 0.0,
+        "board_nuts_legal_mass": 0.0,
+        "runner_runner_straight": 0.0,
+        "runner_runner_flush": 0.0,
+        "currently_strict_nuts": 0.0
+      }
+    },
+    {
+      "hole": [
+        8,
+        16
+      ],
+      "board": [],
+      "values": {
+        "preflop_equity": 0.412109375,
+        "preflop_equity_sampling_se": 0.0074716126546263695,
+        "board_nuts_removed_fraction": 0.0,
+        "board_nuts_legal_mass": 0.0,
+        "runner_runner_straight": 0.0,
+        "runner_runner_flush": 0.0,
+        "currently_strict_nuts": 0.0
+      }
+    },
+    {
+      "hole": [
+        8,
+        17
+      ],
+      "board": [],
+      "values": {
+        "preflop_equity": 0.38623046875,
+        "preflop_equity_sampling_se": 0.007323010358959436,
+        "board_nuts_removed_fraction": 0.0,
+        "board_nuts_legal_mass": 0.0,
+        "runner_runner_straight": 0.0,
+        "runner_runner_flush": 0.0,
+        "currently_strict_nuts": 0.0
+      }
+    },
+    {
+      "hole": [
+        8,
+        20
+      ],
+      "board": [],
+      "values": {
+        "preflop_equity": 0.42041015625,
+        "preflop_equity_sampling_se": 0.007494296878576279,
+        "board_nuts_removed_fraction": 0.0,
+        "board_nuts_legal_mass": 0.0,
+        "runner_runner_straight": 0.0,
+        "runner_runner_flush": 0.0,
+        "currently_strict_nuts": 0.0
+      }
+    },
+    {
+      "hole": [
+        8,
+        21
+      ],
+      "board": [],
+      "values": {
+        "preflop_equity": 0.3983154296875,
+        "preflop_equity_sampling_se": 0.007423738483339548,
+        "board_nuts_removed_fraction": 0.0,
+        "board_nuts_legal_mass": 0.0,
+        "runner_runner_straight": 0.0,
+        "runner_runner_flush": 0.0,
+        "currently_strict_nuts": 0.0
+      }
+    },
+    {
+      "hole": [
+        8,
+        24
+      ],
+      "board": [],
+      "values": {
+        "preflop_equity": 0.446044921875,
+        "preflop_equity_sampling_se": 0.007559730671346188,
+        "board_nuts_removed_fraction": 0.0,
+        "board_nuts_legal_mass": 0.0,
+        "runner_runner_straight": 0.0,
+        "runner_runner_flush": 0.0,
+        "currently_strict_nuts": 0.0
+      }
+    },
+    {
+      "hole": [
+        8,
+        25
+      ],
+      "board": [],
+      "values": {
+        "preflop_equity": 0.388427734375,
+        "preflop_equity_sampling_se": 0.007381912786513567,
+        "board_nuts_removed_fraction": 0.0,
+        "board_nuts_legal_mass": 0.0,
+        "runner_runner_straight": 0.0,
+        "runner_runner_flush": 0.0,
+        "currently_strict_nuts": 0.0
+      }
+    },
+    {
+      "hole": [
+        8,
+        28
+      ],
+      "board": [],
+      "values": {
+        "preflop_equity": 0.44677734375,
+        "preflop_equity_sampling_se": 0.007594436407089233,
+        "board_nuts_removed_fraction": 0.0,
+        "board_nuts_legal_mass": 0.0,
+        "runner_runner_straight": 0.0,
+        "runner_runner_flush": 0.0,
+        "currently_strict_nuts": 0.0
+      }
+    },
+    {
+      "hole": [
+        8,
+        29
+      ],
+      "board": [],
+      "values": {
+        "preflop_equity": 0.4161376953125,
+        "preflop_equity_sampling_se": 0.007485897745937109,
+        "board_nuts_removed_fraction": 0.0,
+        "board_nuts_legal_mass": 0.0,
+        "runner_runner_straight": 0.0,
+        "runner_runner_flush": 0.0,
+        "currently_strict_nuts": 0.0
+      }
+    },
+    {
+      "hole": [
+        8,
+        32
+      ],
+      "board": [],
+      "values": {
+        "preflop_equity": 0.4547119140625,
+        "preflop_equity_sampling_se": 0.007604053243994713,
+        "board_nuts_removed_fraction": 0.0,
+        "board_nuts_legal_mass": 0.0,
+        "runner_runner_straight": 0.0,
+        "runner_runner_flush": 0.0,
+        "currently_strict_nuts": 0.0
+      }
+    },
+    {
+      "hole": [
+        8,
+        33
+      ],
+      "board": [],
+      "values": {
+        "preflop_equity": 0.4371337890625,
+        "preflop_equity_sampling_se": 0.007532022427767515,
+        "board_nuts_removed_fraction": 0.0,
+        "board_nuts_legal_mass": 0.0,
+        "runner_runner_straight": 0.0,
+        "runner_runner_flush": 0.0,
+        "currently_strict_nuts": 0.0
+      }
+    },
+    {
+      "hole": [
+        8,
+        36
+      ],
+      "board": [],
+      "values": {
+        "preflop_equity": 0.48828125,
+        "preflop_equity_sampling_se": 0.007635695859789848,
+        "board_nuts_removed_fraction": 0.0,
+        "board_nuts_legal_mass": 0.0,
+        "runner_runner_straight": 0.0,
+        "runner_runner_flush": 0.0,
+        "currently_strict_nuts": 0.0
+      }
+    },
+    {
+      "hole": [
+        8,
+        37
+      ],
+      "board": [],
+      "values": {
+        "preflop_equity": 0.464599609375,
+        "preflop_equity_sampling_se": 0.007611959706991911,
+        "board_nuts_removed_fraction": 0.0,
+        "board_nuts_legal_mass": 0.0,
+        "runner_runner_straight": 0.0,
+        "runner_runner_flush": 0.0,
+        "currently_strict_nuts": 0.0
+      }
+    },
+    {
+      "hole": [
+        8,
+        40
+      ],
+      "board": [],
+      "values": {
+        "preflop_equity": 0.51708984375,
+        "preflop_equity_sampling_se": 0.0076527222990989685,
+        "board_nuts_removed_fraction": 0.0,
+        "board_nuts_legal_mass": 0.0,
+        "runner_runner_straight": 0.0,
+        "runner_runner_flush": 0.0,
+        "currently_strict_nuts": 0.0
+      }
+    },
+    {
+      "hole": [
+        8,
+        41
+      ],
+      "board": [],
+      "values": {
+        "preflop_equity": 0.486083984375,
+        "preflop_equity_sampling_se": 0.007605455350130796,
+        "board_nuts_removed_fraction": 0.0,
+        "board_nuts_legal_mass": 0.0,
+        "runner_runner_straight": 0.0,
+        "runner_runner_flush": 0.0,
+        "currently_strict_nuts": 0.0
+      }
+    },
+    {
+      "hole": [
+        8,
+        44
+      ],
+      "board": [],
+      "values": {
+        "preflop_equity": 0.5501708984375,
+        "preflop_equity_sampling_se": 0.007620073389261961,
+        "board_nuts_removed_fraction": 0.0,
+        "board_nuts_legal_mass": 0.0,
+        "runner_runner_straight": 0.0,
+        "runner_runner_flush": 0.0,
+        "currently_strict_nuts": 0.0
+      }
+    },
+    {
+      "hole": [
+        8,
+        45
+      ],
+      "board": [],
+      "values": {
+        "preflop_equity": 0.5196533203125,
+        "preflop_equity_sampling_se": 0.007658034563064575,
+        "board_nuts_removed_fraction": 0.0,
+        "board_nuts_legal_mass": 0.0,
+        "runner_runner_straight": 0.0,
+        "runner_runner_flush": 0.0,
+        "currently_strict_nuts": 0.0
+      }
+    },
+    {
+      "hole": [
+        8,
+        48
+      ],
+      "board": [],
+      "values": {
+        "preflop_equity": 0.5860595703125,
+        "preflop_equity_sampling_se": 0.007553174626082182,
+        "board_nuts_removed_fraction": 0.0,
+        "board_nuts_legal_mass": 0.0,
+        "runner_runner_straight": 0.0,
+        "runner_runner_flush": 0.0,
+        "currently_strict_nuts": 0.0
+      }
+    },
+    {
+      "hole": [
+        8,
+        49
+      ],
+      "board": [],
+      "values": {
+        "preflop_equity": 0.5748291015625,
+        "preflop_equity_sampling_se": 0.007578394375741482,
+        "board_nuts_removed_fraction": 0.0,
+        "board_nuts_legal_mass": 0.0,
+        "runner_runner_straight": 0.0,
+        "runner_runner_flush": 0.0,
+        "currently_strict_nuts": 0.0
+      }
+    },
+    {
+      "hole": [
+        12,
+        13
+      ],
+      "board": [],
+      "values": {
+        "preflop_equity": 0.6015625,
+        "preflop_equity_sampling_se": 0.0075918943621218204,
+        "board_nuts_removed_fraction": 0.0,
+        "board_nuts_legal_mass": 0.0,
+        "runner_runner_straight": 0.0,
+        "runner_runner_flush": 0.0,
+        "currently_strict_nuts": 0.0
+      }
+    },
+    {
+      "hole": [
+        12,
+        16
+      ],
+      "board": [],
+      "values": {
+        "preflop_equity": 0.4417724609375,
+        "preflop_equity_sampling_se": 0.00755297252908349,
+        "board_nuts_removed_fraction": 0.0,
+        "board_nuts_legal_mass": 0.0,
+        "runner_runner_straight": 0.0,
+        "runner_runner_flush": 0.0,
+        "currently_strict_nuts": 0.0
+      }
+    },
+    {
+      "hole": [
+        12,
+        17
+      ],
+      "board": [],
+      "values": {
+        "preflop_equity": 0.3897705078125,
+        "preflop_equity_sampling_se": 0.007353468798100948,
+        "board_nuts_removed_fraction": 0.0,
+        "board_nuts_legal_mass": 0.0,
+        "runner_runner_straight": 0.0,
+        "runner_runner_flush": 0.0,
+        "currently_strict_nuts": 0.0
+      }
+    },
+    {
+      "hole": [
+        12,
+        20
+      ],
+      "board": [],
+      "values": {
+        "preflop_equity": 0.436767578125,
+        "preflop_equity_sampling_se": 0.007557943928986788,
+        "board_nuts_removed_fraction": 0.0,
+        "board_nuts_legal_mass": 0.0,
+        "runner_runner_straight": 0.0,
+        "runner_runner_flush": 0.0,
+        "currently_strict_nuts": 0.0
+      }
+    },
+    {
+      "hole": [
+        12,
+        21
+      ],
+      "board": [],
+      "values": {
+        "preflop_equity": 0.40771484375,
+        "preflop_equity_sampling_se": 0.0074426583014428616,
+        "board_nuts_removed_fraction": 0.0,
+        "board_nuts_legal_mass": 0.0,
+        "runner_runner_straight": 0.0,
+        "runner_runner_flush": 0.0,
+        "currently_strict_nuts": 0.0
+      }
+    },
+    {
+      "hole": [
+        12,
+        24
+      ],
+      "board": [],
+      "values": {
+        "preflop_equity": 0.4442138671875,
+        "preflop_equity_sampling_se": 0.007543652784079313,
+        "board_nuts_removed_fraction": 0.0,
+        "board_nuts_legal_mass": 0.0,
+        "runner_runner_straight": 0.0,
+        "runner_runner_flush": 0.0,
+        "currently_strict_nuts": 0.0
+      }
+    },
+    {
+      "hole": [
+        12,
+        25
+      ],
+      "board": [],
+      "values": {
+        "preflop_equity": 0.40478515625,
+        "preflop_equity_sampling_se": 0.0074636563658714294,
+        "board_nuts_removed_fraction": 0.0,
+        "board_nuts_legal_mass": 0.0,
+        "runner_runner_straight": 0.0,
+        "runner_runner_flush": 0.0,
+        "currently_strict_nuts": 0.0
+      }
+    },
+    {
+      "hole": [
+        12,
+        28
+      ],
+      "board": [],
+      "values": {
+        "preflop_equity": 0.4420166015625,
+        "preflop_equity_sampling_se": 0.007565261330455542,
+        "board_nuts_removed_fraction": 0.0,
+        "board_nuts_legal_mass": 0.0,
+        "runner_runner_straight": 0.0,
+        "runner_runner_flush": 0.0,
+        "currently_strict_nuts": 0.0
+      }
+    },
+    {
+      "hole": [
+        12,
+        29
+      ],
+      "board": [],
+      "values": {
+        "preflop_equity": 0.4227294921875,
+        "preflop_equity_sampling_se": 0.007505188696086407,
+        "board_nuts_removed_fraction": 0.0,
+        "board_nuts_legal_mass": 0.0,
+        "runner_runner_straight": 0.0,
+        "runner_runner_flush": 0.0,
+        "currently_strict_nuts": 0.0
+      }
+    },
+    {
+      "hole": [
+        12,
+        32
+      ],
+      "board": [],
+      "values": {
+        "preflop_equity": 0.4678955078125,
+        "preflop_equity_sampling_se": 0.0075949495658278465,
+        "board_nuts_removed_fraction": 0.0,
+        "board_nuts_legal_mass": 0.0,
+        "runner_runner_straight": 0.0,
+        "runner_runner_flush": 0.0,
+        "currently_strict_nuts": 0.0
+      }
+    },
+    {
+      "hole": [
+        12,
+        33
+      ],
+      "board": [],
+      "values": {
+        "preflop_equity": 0.4422607421875,
+        "preflop_equity_sampling_se": 0.00757949473336339,
+        "board_nuts_removed_fraction": 0.0,
+        "board_nuts_legal_mass": 0.0,
+        "runner_runner_straight": 0.0,
+        "runner_runner_flush": 0.0,
+        "currently_strict_nuts": 0.0
+      }
+    },
+    {
+      "hole": [
+        12,
+        36
+      ],
+      "board": [],
+      "values": {
+        "preflop_equity": 0.5052490234375,
+        "preflop_equity_sampling_se": 0.0076345233246684074,
+        "board_nuts_removed_fraction": 0.0,
+        "board_nuts_legal_mass": 0.0,
+        "runner_runner_straight": 0.0,
+        "runner_runner_flush": 0.0,
+        "currently_strict_nuts": 0.0
+      }
+    },
+    {
+      "hole": [
+        12,
+        37
+      ],
+      "board": [],
+      "values": {
+        "preflop_equity": 0.484375,
+        "preflop_equity_sampling_se": 0.007632034830749035,
+        "board_nuts_removed_fraction": 0.0,
+        "board_nuts_legal_mass": 0.0,
+        "runner_runner_straight": 0.0,
+        "runner_runner_flush": 0.0,
+        "currently_strict_nuts": 0.0
+      }
+    },
+    {
+      "hole": [
+        12,
+        40
+      ],
+      "board": [],
+      "values": {
+        "preflop_equity": 0.5181884765625,
+        "preflop_equity_sampling_se": 0.007625763304531574,
+        "board_nuts_removed_fraction": 0.0,
+        "board_nuts_legal_mass": 0.0,
+        "runner_runner_straight": 0.0,
+        "runner_runner_flush": 0.0,
+        "currently_strict_nuts": 0.0
+      }
+    },
+    {
+      "hole": [
+        12,
+        41
+      ],
+      "board": [],
+      "values": {
+        "preflop_equity": 0.4991455078125,
+        "preflop_equity_sampling_se": 0.007650553714483976,
+        "board_nuts_removed_fraction": 0.0,
+        "board_nuts_legal_mass": 0.0,
+        "runner_runner_straight": 0.0,
+        "runner_runner_flush": 0.0,
+        "currently_strict_nuts": 0.0
+      }
+    },
+    {
+      "hole": [
+        12,
+        44
+      ],
+      "board": [],
+      "values": {
+        "preflop_equity": 0.5672607421875,
+        "preflop_equity_sampling_se": 0.007583918049931526,
+        "board_nuts_removed_fraction": 0.0,
+        "board_nuts_legal_mass": 0.0,
+        "runner_runner_straight": 0.0,
+        "runner_runner_flush": 0.0,
+        "currently_strict_nuts": 0.0
+      }
+    },
+    {
+      "hole": [
+        12,
+        45
+      ],
+      "board": [],
+      "values": {
+        "preflop_equity": 0.5364990234375,
+        "preflop_equity_sampling_se": 0.007639036513864994,
+        "board_nuts_removed_fraction": 0.0,
+        "board_nuts_legal_mass": 0.0,
+        "runner_runner_straight": 0.0,
+        "runner_runner_flush": 0.0,
+        "currently_strict_nuts": 0.0
+      }
+    },
+    {
+      "hole": [
+        12,
+        48
+      ],
+      "board": [],
+      "values": {
+        "preflop_equity": 0.5970458984375,
+        "preflop_equity_sampling_se": 0.007528508547693491,
+        "board_nuts_removed_fraction": 0.0,
+        "board_nuts_legal_mass": 0.0,
+        "runner_runner_straight": 0.0,
+        "runner_runner_flush": 0.0,
+        "currently_strict_nuts": 0.0
+      }
+    },
+    {
+      "hole": [
+        12,
+        49
+      ],
+      "board": [],
+      "values": {
+        "preflop_equity": 0.59326171875,
+        "preflop_equity_sampling_se": 0.007509477436542511,
+        "board_nuts_removed_fraction": 0.0,
+        "board_nuts_legal_mass": 0.0,
+        "runner_runner_straight": 0.0,
+        "runner_runner_flush": 0.0,
+        "currently_strict_nuts": 0.0
+      }
+    },
+    {
+      "hole": [
+        16,
+        17
+      ],
+      "board": [],
+      "values": {
+        "preflop_equity": 0.6273193359375,
+        "preflop_equity_sampling_se": 0.00750740896910429,
+        "board_nuts_removed_fraction": 0.0,
+        "board_nuts_legal_mass": 0.0,
+        "runner_runner_straight": 0.0,
+        "runner_runner_flush": 0.0,
+        "currently_strict_nuts": 0.0
+      }
+    },
+    {
+      "hole": [
+        16,
+        20
+      ],
+      "board": [],
+      "values": {
+        "preflop_equity": 0.4588623046875,
+        "preflop_equity_sampling_se": 0.007572505157440901,
+        "board_nuts_removed_fraction": 0.0,
+        "board_nuts_legal_mass": 0.0,
+        "runner_runner_straight": 0.0,
+        "runner_runner_flush": 0.0,
+        "currently_strict_nuts": 0.0
+      }
+    },
+    {
+      "hole": [
+        16,
+        21
+      ],
+      "board": [],
+      "values": {
+        "preflop_equity": 0.4249267578125,
+        "preflop_equity_sampling_se": 0.007490761112421751,
+        "board_nuts_removed_fraction": 0.0,
+        "board_nuts_legal_mass": 0.0,
+        "runner_runner_straight": 0.0,
+        "runner_runner_flush": 0.0,
+        "currently_strict_nuts": 0.0
+      }
+    },
+    {
+      "hole": [
+        16,
+        24
+      ],
+      "board": [],
+      "values": {
+        "preflop_equity": 0.4652099609375,
+        "preflop_equity_sampling_se": 0.00760970963165164,
+        "board_nuts_removed_fraction": 0.0,
+        "board_nuts_legal_mass": 0.0,
+        "runner_runner_straight": 0.0,
+        "runner_runner_flush": 0.0,
+        "currently_strict_nuts": 0.0
+      }
+    },
+    {
+      "hole": [
+        16,
+        25
+      ],
+      "board": [],
+      "values": {
+        "preflop_equity": 0.416015625,
+        "preflop_equity_sampling_se": 0.00752230966463685,
+        "board_nuts_removed_fraction": 0.0,
+        "board_nuts_legal_mass": 0.0,
+        "runner_runner_straight": 0.0,
+        "runner_runner_flush": 0.0,
+        "currently_strict_nuts": 0.0
+      }
+    },
+    {
+      "hole": [
+        16,
+        28
+      ],
+      "board": [],
+      "values": {
+        "preflop_equity": 0.466064453125,
+        "preflop_equity_sampling_se": 0.0076331403106451035,
+        "board_nuts_removed_fraction": 0.0,
+        "board_nuts_legal_mass": 0.0,
+        "runner_runner_straight": 0.0,
+        "runner_runner_flush": 0.0,
+        "currently_strict_nuts": 0.0
+      }
+    },
+    {
+      "hole": [
+        16,
+        29
+      ],
+      "board": [],
+      "values": {
+        "preflop_equity": 0.444091796875,
+        "preflop_equity_sampling_se": 0.007577931042760611,
+        "board_nuts_removed_fraction": 0.0,
+        "board_nuts_legal_mass": 0.0,
+        "runner_runner_straight": 0.0,
+        "runner_runner_flush": 0.0,
+        "currently_strict_nuts": 0.0
+      }
+    },
+    {
+      "hole": [
+        16,
+        32
+      ],
+      "board": [],
+      "values": {
+        "preflop_equity": 0.4957275390625,
+        "preflop_equity_sampling_se": 0.007636623922735453,
+        "board_nuts_removed_fraction": 0.0,
+        "board_nuts_legal_mass": 0.0,
+        "runner_runner_straight": 0.0,
+        "runner_runner_flush": 0.0,
+        "currently_strict_nuts": 0.0
+      }
+    },
+    {
+      "hole": [
+        16,
+        33
+      ],
+      "board": [],
+      "values": {
+        "preflop_equity": 0.4527587890625,
+        "preflop_equity_sampling_se": 0.007585447747260332,
+        "board_nuts_removed_fraction": 0.0,
+        "board_nuts_legal_mass": 0.0,
+        "runner_runner_straight": 0.0,
+        "runner_runner_flush": 0.0,
+        "currently_strict_nuts": 0.0
+      }
+    },
+    {
+      "hole": [
+        16,
+        36
+      ],
+      "board": [],
+      "values": {
+        "preflop_equity": 0.5137939453125,
+        "preflop_equity_sampling_se": 0.007655319757759571,
+        "board_nuts_removed_fraction": 0.0,
+        "board_nuts_legal_mass": 0.0,
+        "runner_runner_straight": 0.0,
+        "runner_runner_flush": 0.0,
+        "currently_strict_nuts": 0.0
+      }
+    },
+    {
+      "hole": [
+        16,
+        37
+      ],
+      "board": [],
+      "values": {
+        "preflop_equity": 0.48193359375,
+        "preflop_equity_sampling_se": 0.0076463292352855206,
+        "board_nuts_removed_fraction": 0.0,
+        "board_nuts_legal_mass": 0.0,
+        "runner_runner_straight": 0.0,
+        "runner_runner_flush": 0.0,
+        "currently_strict_nuts": 0.0
+      }
+    },
+    {
+      "hole": [
+        16,
+        40
+      ],
+      "board": [],
+      "values": {
+        "preflop_equity": 0.5286865234375,
+        "preflop_equity_sampling_se": 0.007639371789991856,
+        "board_nuts_removed_fraction": 0.0,
+        "board_nuts_legal_mass": 0.0,
+        "runner_runner_straight": 0.0,
+        "runner_runner_flush": 0.0,
+        "currently_strict_nuts": 0.0
+      }
+    },
+    {
+      "hole": [
+        16,
+        41
+      ],
+      "board": [],
+      "values": {
+        "preflop_equity": 0.5074462890625,
+        "preflop_equity_sampling_se": 0.007649680133908987,
+        "board_nuts_removed_fraction": 0.0,
+        "board_nuts_legal_mass": 0.0,
+        "runner_runner_straight": 0.0,
+        "runner_runner_flush": 0.0,
+        "currently_strict_nuts": 0.0
+      }
+    },
+    {
+      "hole": [
+        16,
+        44
+      ],
+      "board": [],
+      "values": {
+        "preflop_equity": 0.5770263671875,
+        "preflop_equity_sampling_se": 0.00755725521594286,
+        "board_nuts_removed_fraction": 0.0,
+        "board_nuts_legal_mass": 0.0,
+        "runner_runner_straight": 0.0,
+        "runner_runner_flush": 0.0,
+        "currently_strict_nuts": 0.0
+      }
+    },
+    {
+      "hole": [
+        16,
+        45
+      ],
+      "board": [],
+      "values": {
+        "preflop_equity": 0.5330810546875,
+        "preflop_equity_sampling_se": 0.007617442402988672,
+        "board_nuts_removed_fraction": 0.0,
+        "board_nuts_legal_mass": 0.0,
+        "runner_runner_straight": 0.0,
+        "runner_runner_flush": 0.0,
+        "currently_strict_nuts": 0.0
+      }
+    },
+    {
+      "hole": [
+        16,
+        48
+      ],
+      "board": [],
+      "values": {
+        "preflop_equity": 0.6064453125,
+        "preflop_equity_sampling_se": 0.007484490517526865,
+        "board_nuts_removed_fraction": 0.0,
+        "board_nuts_legal_mass": 0.0,
+        "runner_runner_straight": 0.0,
+        "runner_runner_flush": 0.0,
+        "currently_strict_nuts": 0.0
+      }
+    },
+    {
+      "hole": [
+        16,
+        49
+      ],
+      "board": [],
+      "values": {
+        "preflop_equity": 0.58203125,
+        "preflop_equity_sampling_se": 0.007578876800835133,
+        "board_nuts_removed_fraction": 0.0,
+        "board_nuts_legal_mass": 0.0,
+        "runner_runner_straight": 0.0,
+        "runner_runner_flush": 0.0,
+        "currently_strict_nuts": 0.0
+      }
+    },
+    {
+      "hole": [
+        20,
+        21
+      ],
+      "board": [],
+      "values": {
+        "preflop_equity": 0.6536865234375,
+        "preflop_equity_sampling_se": 0.007402047049254179,
+        "board_nuts_removed_fraction": 0.0,
+        "board_nuts_legal_mass": 0.0,
+        "runner_runner_straight": 0.0,
+        "runner_runner_flush": 0.0,
+        "currently_strict_nuts": 0.0
+      }
+    },
+    {
+      "hole": [
+        20,
+        24
+      ],
+      "board": [],
+      "values": {
+        "preflop_equity": 0.4857177734375,
+        "preflop_equity_sampling_se": 0.007623884826898575,
+        "board_nuts_removed_fraction": 0.0,
+        "board_nuts_legal_mass": 0.0,
+        "runner_runner_straight": 0.0,
+        "runner_runner_flush": 0.0,
+        "currently_strict_nuts": 0.0
+      }
+    },
+    {
+      "hole": [
+        20,
+        25
+      ],
+      "board": [],
+      "values": {
+        "preflop_equity": 0.441162109375,
+        "preflop_equity_sampling_se": 0.0075960950925946236,
+        "board_nuts_removed_fraction": 0.0,
+        "board_nuts_legal_mass": 0.0,
+        "runner_runner_straight": 0.0,
+        "runner_runner_flush": 0.0,
+        "currently_strict_nuts": 0.0
+      }
+    },
+    {
+      "hole": [
+        20,
+        28
+      ],
+      "board": [],
+      "values": {
+        "preflop_equity": 0.4949951171875,
+        "preflop_equity_sampling_se": 0.007654061075299978,
+        "board_nuts_removed_fraction": 0.0,
+        "board_nuts_legal_mass": 0.0,
+        "runner_runner_straight": 0.0,
+        "runner_runner_flush": 0.0,
+        "currently_strict_nuts": 0.0
+      }
+    },
+    {
+      "hole": [
+        20,
+        29
+      ],
+      "board": [],
+      "values": {
+        "preflop_equity": 0.46044921875,
+        "preflop_equity_sampling_se": 0.007612843997776508,
+        "board_nuts_removed_fraction": 0.0,
+        "board_nuts_legal_mass": 0.0,
+        "runner_runner_straight": 0.0,
+        "runner_runner_flush": 0.0,
+        "currently_strict_nuts": 0.0
+      }
+    },
+    {
+      "hole": [
+        20,
+        32
+      ],
+      "board": [],
+      "values": {
+        "preflop_equity": 0.5029296875,
+        "preflop_equity_sampling_se": 0.007651402615010738,
+        "board_nuts_removed_fraction": 0.0,
+        "board_nuts_legal_mass": 0.0,
+        "runner_runner_straight": 0.0,
+        "runner_runner_flush": 0.0,
+        "currently_strict_nuts": 0.0
+      }
+    },
+    {
+      "hole": [
+        20,
+        33
+      ],
+      "board": [],
+      "values": {
+        "preflop_equity": 0.4793701171875,
+        "preflop_equity_sampling_se": 0.007653513457626104,
+        "board_nuts_removed_fraction": 0.0,
+        "board_nuts_legal_mass": 0.0,
+        "runner_runner_straight": 0.0,
+        "runner_runner_flush": 0.0,
+        "currently_strict_nuts": 0.0
+      }
+    },
+    {
+      "hole": [
+        20,
+        36
+      ],
+      "board": [],
+      "values": {
+        "preflop_equity": 0.5338134765625,
+        "preflop_equity_sampling_se": 0.007665422745049,
+        "board_nuts_removed_fraction": 0.0,
+        "board_nuts_legal_mass": 0.0,
+        "runner_runner_straight": 0.0,
+        "runner_runner_flush": 0.0,
+        "currently_strict_nuts": 0.0
+      }
+    },
+    {
+      "hole": [
+        20,
+        37
+      ],
+      "board": [],
+      "values": {
+        "preflop_equity": 0.5015869140625,
+        "preflop_equity_sampling_se": 0.007673867978155613,
+        "board_nuts_removed_fraction": 0.0,
+        "board_nuts_legal_mass": 0.0,
+        "runner_runner_straight": 0.0,
+        "runner_runner_flush": 0.0,
+        "currently_strict_nuts": 0.0
+      }
+    },
+    {
+      "hole": [
+        20,
+        40
+      ],
+      "board": [],
+      "values": {
+        "preflop_equity": 0.5418701171875,
+        "preflop_equity_sampling_se": 0.007651809137314558,
+        "board_nuts_removed_fraction": 0.0,
+        "board_nuts_legal_mass": 0.0,
+        "runner_runner_straight": 0.0,
+        "runner_runner_flush": 0.0,
+        "currently_strict_nuts": 0.0
+      }
+    },
+    {
+      "hole": [
+        20,
+        41
+      ],
+      "board": [],
+      "values": {
+        "preflop_equity": 0.5230712890625,
+        "preflop_equity_sampling_se": 0.007667378522455692,
+        "board_nuts_removed_fraction": 0.0,
+        "board_nuts_legal_mass": 0.0,
+        "runner_runner_straight": 0.0,
+        "runner_runner_flush": 0.0,
+        "currently_strict_nuts": 0.0
+      }
+    },
+    {
+      "hole": [
+        20,
+        44
+      ],
+      "board": [],
+      "values": {
+        "preflop_equity": 0.5789794921875,
+        "preflop_equity_sampling_se": 0.00757400831207633,
+        "board_nuts_removed_fraction": 0.0,
+        "board_nuts_legal_mass": 0.0,
+        "runner_runner_straight": 0.0,
+        "runner_runner_flush": 0.0,
+        "currently_strict_nuts": 0.0
+      }
+    },
+    {
+      "hole": [
+        20,
+        45
+      ],
+      "board": [],
+      "values": {
+        "preflop_equity": 0.5555419921875,
+        "preflop_equity_sampling_se": 0.007622710894793272,
+        "board_nuts_removed_fraction": 0.0,
+        "board_nuts_legal_mass": 0.0,
+        "runner_runner_straight": 0.0,
+        "runner_runner_flush": 0.0,
+        "currently_strict_nuts": 0.0
+      }
+    },
+    {
+      "hole": [
+        20,
+        48
+      ],
+      "board": [],
+      "values": {
+        "preflop_equity": 0.5985107421875,
+        "preflop_equity_sampling_se": 0.007533759344369173,
+        "board_nuts_removed_fraction": 0.0,
+        "board_nuts_legal_mass": 0.0,
+        "runner_runner_straight": 0.0,
+        "runner_runner_flush": 0.0,
+        "currently_strict_nuts": 0.0
+      }
+    },
+    {
+      "hole": [
+        20,
+        49
+      ],
+      "board": [],
+      "values": {
+        "preflop_equity": 0.5826416015625,
+        "preflop_equity_sampling_se": 0.007566431071609259,
+        "board_nuts_removed_fraction": 0.0,
+        "board_nuts_legal_mass": 0.0,
+        "runner_runner_straight": 0.0,
+        "runner_runner_flush": 0.0,
+        "currently_strict_nuts": 0.0
+      }
+    },
+    {
+      "hole": [
+        24,
+        25
+      ],
+      "board": [],
+      "values": {
+        "preflop_equity": 0.6922607421875,
+        "preflop_equity_sampling_se": 0.007188920862972736,
+        "board_nuts_removed_fraction": 0.0,
+        "board_nuts_legal_mass": 0.0,
+        "runner_runner_straight": 0.0,
+        "runner_runner_flush": 0.0,
+        "currently_strict_nuts": 0.0
+      }
+    },
+    {
+      "hole": [
+        24,
+        28
+      ],
+      "board": [],
+      "values": {
+        "preflop_equity": 0.5118408203125,
+        "preflop_equity_sampling_se": 0.007656118366867304,
+        "board_nuts_removed_fraction": 0.0,
+        "board_nuts_legal_mass": 0.0,
+        "runner_runner_straight": 0.0,
+        "runner_runner_flush": 0.0,
+        "currently_strict_nuts": 0.0
+      }
+    },
+    {
+      "hole": [
+        24,
+        29
+      ],
+      "board": [],
+      "values": {
+        "preflop_equity": 0.47607421875,
+        "preflop_equity_sampling_se": 0.007657985202968121,
+        "board_nuts_removed_fraction": 0.0,
+        "board_nuts_legal_mass": 0.0,
+        "runner_runner_straight": 0.0,
+        "runner_runner_flush": 0.0,
+        "currently_strict_nuts": 0.0
+      }
+    },
+    {
+      "hole": [
+        24,
+        32
+      ],
+      "board": [],
+      "values": {
+        "preflop_equity": 0.51953125,
+        "preflop_equity_sampling_se": 0.007653243839740753,
+        "board_nuts_removed_fraction": 0.0,
+        "board_nuts_legal_mass": 0.0,
+        "runner_runner_straight": 0.0,
+        "runner_runner_flush": 0.0,
+        "currently_strict_nuts": 0.0
+      }
+    },
+    {
+      "hole": [
+        24,
+        33
+      ],
+      "board": [],
+      "values": {
+        "preflop_equity": 0.5047607421875,
+        "preflop_equity_sampling_se": 0.007687131874263287,
+        "board_nuts_removed_fraction": 0.0,
+        "board_nuts_legal_mass": 0.0,
+        "runner_runner_straight": 0.0,
+        "runner_runner_flush": 0.0,
+        "currently_strict_nuts": 0.0
+      }
+    },
+    {
+      "hole": [
+        24,
+        36
+      ],
+      "board": [],
+      "values": {
+        "preflop_equity": 0.5419921875,
+        "preflop_equity_sampling_se": 0.007654567249119282,
+        "board_nuts_removed_fraction": 0.0,
+        "board_nuts_legal_mass": 0.0,
+        "runner_runner_straight": 0.0,
+        "runner_runner_flush": 0.0,
+        "currently_strict_nuts": 0.0
+      }
+    },
+    {
+      "hole": [
+        24,
+        37
+      ],
+      "board": [],
+      "values": {
+        "preflop_equity": 0.52197265625,
+        "preflop_equity_sampling_se": 0.007659414783120155,
+        "board_nuts_removed_fraction": 0.0,
+        "board_nuts_legal_mass": 0.0,
+        "runner_runner_straight": 0.0,
+        "runner_runner_flush": 0.0,
+        "currently_strict_nuts": 0.0
+      }
+    },
+    {
+      "hole": [
+        24,
+        40
+      ],
+      "board": [],
+      "values": {
+        "preflop_equity": 0.564697265625,
+        "preflop_equity_sampling_se": 0.007619742304086685,
+        "board_nuts_removed_fraction": 0.0,
+        "board_nuts_legal_mass": 0.0,
+        "runner_runner_straight": 0.0,
+        "runner_runner_flush": 0.0,
+        "currently_strict_nuts": 0.0
+      }
+    },
+    {
+      "hole": [
+        24,
+        41
+      ],
+      "board": [],
+      "values": {
+        "preflop_equity": 0.540771484375,
+        "preflop_equity_sampling_se": 0.007650336250662804,
+        "board_nuts_removed_fraction": 0.0,
+        "board_nuts_legal_mass": 0.0,
+        "runner_runner_straight": 0.0,
+        "runner_runner_flush": 0.0,
+        "currently_strict_nuts": 0.0
+      }
+    },
+    {
+      "hole": [
+        24,
+        44
+      ],
+      "board": [],
+      "values": {
+        "preflop_equity": 0.5770263671875,
+        "preflop_equity_sampling_se": 0.007584816310554743,
+        "board_nuts_removed_fraction": 0.0,
+        "board_nuts_legal_mass": 0.0,
+        "runner_runner_straight": 0.0,
+        "runner_runner_flush": 0.0,
+        "currently_strict_nuts": 0.0
+      }
+    },
+    {
+      "hole": [
+        24,
+        45
+      ],
+      "board": [],
+      "values": {
+        "preflop_equity": 0.556640625,
+        "preflop_equity_sampling_se": 0.0076431953348219395,
+        "board_nuts_removed_fraction": 0.0,
+        "board_nuts_legal_mass": 0.0,
+        "runner_runner_straight": 0.0,
+        "runner_runner_flush": 0.0,
+        "currently_strict_nuts": 0.0
+      }
+    },
+    {
+      "hole": [
+        24,
+        48
+      ],
+      "board": [],
+      "values": {
+        "preflop_equity": 0.6129150390625,
+        "preflop_equity_sampling_se": 0.007496178615838289,
+        "board_nuts_removed_fraction": 0.0,
+        "board_nuts_legal_mass": 0.0,
+        "runner_runner_straight": 0.0,
+        "runner_runner_flush": 0.0,
+        "currently_strict_nuts": 0.0
+      }
+    },
+    {
+      "hole": [
+        24,
+        49
+      ],
+      "board": [],
+      "values": {
+        "preflop_equity": 0.59521484375,
+        "preflop_equity_sampling_se": 0.007572694215923548,
+        "board_nuts_removed_fraction": 0.0,
+        "board_nuts_legal_mass": 0.0,
+        "runner_runner_straight": 0.0,
+        "runner_runner_flush": 0.0,
+        "currently_strict_nuts": 0.0
+      }
+    },
+    {
+      "hole": [
+        28,
+        29
+      ],
+      "board": [],
+      "values": {
+        "preflop_equity": 0.715576171875,
+        "preflop_equity_sampling_se": 0.007020255550742149,
+        "board_nuts_removed_fraction": 0.0,
+        "board_nuts_legal_mass": 0.0,
+        "runner_runner_straight": 0.0,
+        "runner_runner_flush": 0.0,
+        "currently_strict_nuts": 0.0
+      }
+    },
+    {
+      "hole": [
+        28,
+        32
+      ],
+      "board": [],
+      "values": {
+        "preflop_equity": 0.5452880859375,
+        "preflop_equity_sampling_se": 0.007658739574253559,
+        "board_nuts_removed_fraction": 0.0,
+        "board_nuts_legal_mass": 0.0,
+        "runner_runner_straight": 0.0,
+        "runner_runner_flush": 0.0,
+        "currently_strict_nuts": 0.0
+      }
+    },
+    {
+      "hole": [
+        28,
+        33
+      ],
+      "board": [],
+      "values": {
+        "preflop_equity": 0.5115966796875,
+        "preflop_equity_sampling_se": 0.007681475952267647,
+        "board_nuts_removed_fraction": 0.0,
+        "board_nuts_legal_mass": 0.0,
+        "runner_runner_straight": 0.0,
+        "runner_runner_flush": 0.0,
+        "currently_strict_nuts": 0.0
+      }
+    },
+    {
+      "hole": [
+        28,
+        36
+      ],
+      "board": [],
+      "values": {
+        "preflop_equity": 0.5540771484375,
+        "preflop_equity_sampling_se": 0.007637001108378172,
+        "board_nuts_removed_fraction": 0.0,
+        "board_nuts_legal_mass": 0.0,
+        "runner_runner_straight": 0.0,
+        "runner_runner_flush": 0.0,
+        "currently_strict_nuts": 0.0
+      }
+    },
+    {
+      "hole": [
+        28,
+        37
+      ],
+      "board": [],
+      "values": {
+        "preflop_equity": 0.51611328125,
+        "preflop_equity_sampling_se": 0.0076940287835896015,
+        "board_nuts_removed_fraction": 0.0,
+        "board_nuts_legal_mass": 0.0,
+        "runner_runner_straight": 0.0,
+        "runner_runner_flush": 0.0,
+        "currently_strict_nuts": 0.0
+      }
+    },
+    {
+      "hole": [
+        28,
+        40
+      ],
+      "board": [],
+      "values": {
+        "preflop_equity": 0.5625,
+        "preflop_equity_sampling_se": 0.007632034830749035,
+        "board_nuts_removed_fraction": 0.0,
+        "board_nuts_legal_mass": 0.0,
+        "runner_runner_straight": 0.0,
+        "runner_runner_flush": 0.0,
+        "currently_strict_nuts": 0.0
+      }
+    },
+    {
+      "hole": [
+        28,
+        41
+      ],
+      "board": [],
+      "values": {
+        "preflop_equity": 0.5550537109375,
+        "preflop_equity_sampling_se": 0.00763139221817255,
+        "board_nuts_removed_fraction": 0.0,
+        "board_nuts_legal_mass": 0.0,
+        "runner_runner_straight": 0.0,
+        "runner_runner_flush": 0.0,
+        "currently_strict_nuts": 0.0
+      }
+    },
+    {
+      "hole": [
+        28,
+        44
+      ],
+      "board": [],
+      "values": {
+        "preflop_equity": 0.6016845703125,
+        "preflop_equity_sampling_se": 0.007533353753387928,
+        "board_nuts_removed_fraction": 0.0,
+        "board_nuts_legal_mass": 0.0,
+        "runner_runner_straight": 0.0,
+        "runner_runner_flush": 0.0,
+        "currently_strict_nuts": 0.0
+      }
+    },
+    {
+      "hole": [
+        28,
+        45
+      ],
+      "board": [],
+      "values": {
+        "preflop_equity": 0.5860595703125,
+        "preflop_equity_sampling_se": 0.007588611450046301,
+        "board_nuts_removed_fraction": 0.0,
+        "board_nuts_legal_mass": 0.0,
+        "runner_runner_straight": 0.0,
+        "runner_runner_flush": 0.0,
+        "currently_strict_nuts": 0.0
+      }
+    },
+    {
+      "hole": [
+        28,
+        48
+      ],
+      "board": [],
+      "values": {
+        "preflop_equity": 0.642822265625,
+        "preflop_equity_sampling_se": 0.0073675126768648624,
+        "board_nuts_removed_fraction": 0.0,
+        "board_nuts_legal_mass": 0.0,
+        "runner_runner_straight": 0.0,
+        "runner_runner_flush": 0.0,
+        "currently_strict_nuts": 0.0
+      }
+    },
+    {
+      "hole": [
+        28,
+        49
+      ],
+      "board": [],
+      "values": {
+        "preflop_equity": 0.6033935546875,
+        "preflop_equity_sampling_se": 0.007545470260083675,
+        "board_nuts_removed_fraction": 0.0,
+        "board_nuts_legal_mass": 0.0,
+        "runner_runner_straight": 0.0,
+        "runner_runner_flush": 0.0,
+        "currently_strict_nuts": 0.0
+      }
+    },
+    {
+      "hole": [
+        32,
+        33
+      ],
+      "board": [],
+      "values": {
+        "preflop_equity": 0.74462890625,
+        "preflop_equity_sampling_se": 0.006774934474378824,
+        "board_nuts_removed_fraction": 0.0,
+        "board_nuts_legal_mass": 0.0,
+        "runner_runner_straight": 0.0,
+        "runner_runner_flush": 0.0,
+        "currently_strict_nuts": 0.0
+      }
+    },
+    {
+      "hole": [
+        32,
+        36
+      ],
+      "board": [],
+      "values": {
+        "preflop_equity": 0.581298828125,
+        "preflop_equity_sampling_se": 0.007598478347063065,
+        "board_nuts_removed_fraction": 0.0,
+        "board_nuts_legal_mass": 0.0,
+        "runner_runner_straight": 0.0,
+        "runner_runner_flush": 0.0,
+        "currently_strict_nuts": 0.0
+      }
+    },
+    {
+      "hole": [
+        32,
+        37
+      ],
+      "board": [],
+      "values": {
+        "preflop_equity": 0.5550537109375,
+        "preflop_equity_sampling_se": 0.007660632487386465,
+        "board_nuts_removed_fraction": 0.0,
+        "board_nuts_legal_mass": 0.0,
+        "runner_runner_straight": 0.0,
+        "runner_runner_flush": 0.0,
+        "currently_strict_nuts": 0.0
+      }
+    },
+    {
+      "hole": [
+        32,
+        40
+      ],
+      "board": [],
+      "values": {
+        "preflop_equity": 0.5799560546875,
+        "preflop_equity_sampling_se": 0.007583308033645153,
+        "board_nuts_removed_fraction": 0.0,
+        "board_nuts_legal_mass": 0.0,
+        "runner_runner_straight": 0.0,
+        "runner_runner_flush": 0.0,
+        "currently_strict_nuts": 0.0
+      }
+    },
+    {
+      "hole": [
+        32,
+        41
+      ],
+      "board": [],
+      "values": {
+        "preflop_equity": 0.584228515625,
+        "preflop_equity_sampling_se": 0.007590681780129671,
+        "board_nuts_removed_fraction": 0.0,
+        "board_nuts_legal_mass": 0.0,
+        "runner_runner_straight": 0.0,
+        "runner_runner_flush": 0.0,
+        "currently_strict_nuts": 0.0
+      }
+    },
+    {
+      "hole": [
+        32,
+        44
+      ],
+      "board": [],
+      "values": {
+        "preflop_equity": 0.6107177734375,
+        "preflop_equity_sampling_se": 0.007524013984948397,
+        "board_nuts_removed_fraction": 0.0,
+        "board_nuts_legal_mass": 0.0,
+        "runner_runner_straight": 0.0,
+        "runner_runner_flush": 0.0,
+        "currently_strict_nuts": 0.0
+      }
+    },
+    {
+      "hole": [
+        32,
+        45
+      ],
+      "board": [],
+      "values": {
+        "preflop_equity": 0.5899658203125,
+        "preflop_equity_sampling_se": 0.0075991456396877766,
+        "board_nuts_removed_fraction": 0.0,
+        "board_nuts_legal_mass": 0.0,
+        "runner_runner_straight": 0.0,
+        "runner_runner_flush": 0.0,
+        "currently_strict_nuts": 0.0
+      }
+    },
+    {
+      "hole": [
+        32,
+        48
+      ],
+      "board": [],
+      "values": {
+        "preflop_equity": 0.647705078125,
+        "preflop_equity_sampling_se": 0.007376365829259157,
+        "board_nuts_removed_fraction": 0.0,
+        "board_nuts_legal_mass": 0.0,
+        "runner_runner_straight": 0.0,
+        "runner_runner_flush": 0.0,
+        "currently_strict_nuts": 0.0
+      }
+    },
+    {
+      "hole": [
+        32,
+        49
+      ],
+      "board": [],
+      "values": {
+        "preflop_equity": 0.61962890625,
+        "preflop_equity_sampling_se": 0.007489634212106466,
+        "board_nuts_removed_fraction": 0.0,
+        "board_nuts_legal_mass": 0.0,
+        "runner_runner_straight": 0.0,
+        "runner_runner_flush": 0.0,
+        "currently_strict_nuts": 0.0
+      }
+    },
+    {
+      "hole": [
+        36,
+        37
+      ],
+      "board": [],
+      "values": {
+        "preflop_equity": 0.767822265625,
+        "preflop_equity_sampling_se": 0.006579924374818802,
+        "board_nuts_removed_fraction": 0.0,
+        "board_nuts_legal_mass": 0.0,
+        "runner_runner_straight": 0.0,
+        "runner_runner_flush": 0.0,
+        "currently_strict_nuts": 0.0
+      }
+    },
+    {
+      "hole": [
+        36,
+        40
+      ],
+      "board": [],
+      "values": {
+        "preflop_equity": 0.59912109375,
+        "preflop_equity_sampling_se": 0.007566356100142002,
+        "board_nuts_removed_fraction": 0.0,
+        "board_nuts_legal_mass": 0.0,
+        "runner_runner_straight": 0.0,
+        "runner_runner_flush": 0.0,
+        "currently_strict_nuts": 0.0
+      }
+    },
+    {
+      "hole": [
+        36,
+        41
+      ],
+      "board": [],
+      "values": {
+        "preflop_equity": 0.5777587890625,
+        "preflop_equity_sampling_se": 0.007630018517374992,
+        "board_nuts_removed_fraction": 0.0,
+        "board_nuts_legal_mass": 0.0,
+        "runner_runner_straight": 0.0,
+        "runner_runner_flush": 0.0,
+        "currently_strict_nuts": 0.0
+      }
+    },
+    {
+      "hole": [
+        36,
+        44
+      ],
+      "board": [],
+      "values": {
+        "preflop_equity": 0.618896484375,
+        "preflop_equity_sampling_se": 0.007498447317630053,
+        "board_nuts_removed_fraction": 0.0,
+        "board_nuts_legal_mass": 0.0,
+        "runner_runner_straight": 0.0,
+        "runner_runner_flush": 0.0,
+        "currently_strict_nuts": 0.0
+      }
+    },
+    {
+      "hole": [
+        36,
+        45
+      ],
+      "board": [],
+      "values": {
+        "preflop_equity": 0.5953369140625,
+        "preflop_equity_sampling_se": 0.0075752707198262215,
+        "board_nuts_removed_fraction": 0.0,
+        "board_nuts_legal_mass": 0.0,
+        "runner_runner_straight": 0.0,
+        "runner_runner_flush": 0.0,
+        "currently_strict_nuts": 0.0
+      }
+    },
+    {
+      "hole": [
+        36,
+        48
+      ],
+      "board": [],
+      "values": {
+        "preflop_equity": 0.650146484375,
+        "preflop_equity_sampling_se": 0.007382512092590332,
+        "board_nuts_removed_fraction": 0.0,
+        "board_nuts_legal_mass": 0.0,
+        "runner_runner_straight": 0.0,
+        "runner_runner_flush": 0.0,
+        "currently_strict_nuts": 0.0
+      }
+    },
+    {
+      "hole": [
+        36,
+        49
+      ],
+      "board": [],
+      "values": {
+        "preflop_equity": 0.6380615234375,
+        "preflop_equity_sampling_se": 0.007418829016387463,
+        "board_nuts_removed_fraction": 0.0,
+        "board_nuts_legal_mass": 0.0,
+        "runner_runner_straight": 0.0,
+        "runner_runner_flush": 0.0,
+        "currently_strict_nuts": 0.0
+      }
+    },
+    {
+      "hole": [
+        40,
+        41
+      ],
+      "board": [],
+      "values": {
+        "preflop_equity": 0.7904052734375,
+        "preflop_equity_sampling_se": 0.006331094540655613,
+        "board_nuts_removed_fraction": 0.0,
+        "board_nuts_legal_mass": 0.0,
+        "runner_runner_straight": 0.0,
+        "runner_runner_flush": 0.0,
+        "currently_strict_nuts": 0.0
+      }
+    },
+    {
+      "hole": [
+        40,
+        44
+      ],
+      "board": [],
+      "values": {
+        "preflop_equity": 0.6319580078125,
+        "preflop_equity_sampling_se": 0.007461900822818279,
+        "board_nuts_removed_fraction": 0.0,
+        "board_nuts_legal_mass": 0.0,
+        "runner_runner_straight": 0.0,
+        "runner_runner_flush": 0.0,
+        "currently_strict_nuts": 0.0
+      }
+    },
+    {
+      "hole": [
+        40,
+        45
+      ],
+      "board": [],
+      "values": {
+        "preflop_equity": 0.611083984375,
+        "preflop_equity_sampling_se": 0.007535563316196203,
+        "board_nuts_removed_fraction": 0.0,
+        "board_nuts_legal_mass": 0.0,
+        "runner_runner_straight": 0.0,
+        "runner_runner_flush": 0.0,
+        "currently_strict_nuts": 0.0
+      }
+    },
+    {
+      "hole": [
+        40,
+        48
+      ],
+      "board": [],
+      "values": {
+        "preflop_equity": 0.6710205078125,
+        "preflop_equity_sampling_se": 0.007273862138390541,
+        "board_nuts_removed_fraction": 0.0,
+        "board_nuts_legal_mass": 0.0,
+        "runner_runner_straight": 0.0,
+        "runner_runner_flush": 0.0,
+        "currently_strict_nuts": 0.0
+      }
+    },
+    {
+      "hole": [
+        40,
+        49
+      ],
+      "board": [],
+      "values": {
+        "preflop_equity": 0.6416015625,
+        "preflop_equity_sampling_se": 0.0074256365187466145,
+        "board_nuts_removed_fraction": 0.0,
+        "board_nuts_legal_mass": 0.0,
+        "runner_runner_straight": 0.0,
+        "runner_runner_flush": 0.0,
+        "currently_strict_nuts": 0.0
+      }
+    },
+    {
+      "hole": [
+        44,
+        45
+      ],
+      "board": [],
+      "values": {
+        "preflop_equity": 0.82080078125,
+        "preflop_equity_sampling_se": 0.005963298492133617,
+        "board_nuts_removed_fraction": 0.0,
+        "board_nuts_legal_mass": 0.0,
+        "runner_runner_straight": 0.0,
+        "runner_runner_flush": 0.0,
+        "currently_strict_nuts": 0.0
+      }
+    },
+    {
+      "hole": [
+        44,
+        48
+      ],
+      "board": [],
+      "values": {
+        "preflop_equity": 0.6685791015625,
+        "preflop_equity_sampling_se": 0.0073020681738853455,
+        "board_nuts_removed_fraction": 0.0,
+        "board_nuts_legal_mass": 0.0,
+        "runner_runner_straight": 0.0,
+        "runner_runner_flush": 0.0,
+        "currently_strict_nuts": 0.0
+      }
+    },
+    {
+      "hole": [
+        44,
+        49
+      ],
+      "board": [],
+      "values": {
+        "preflop_equity": 0.6552734375,
+        "preflop_equity_sampling_se": 0.007352515123784542,
+        "board_nuts_removed_fraction": 0.0,
+        "board_nuts_legal_mass": 0.0,
+        "runner_runner_straight": 0.0,
+        "runner_runner_flush": 0.0,
+        "currently_strict_nuts": 0.0
+      }
+    },
+    {
+      "hole": [
+        48,
+        49
+      ],
+      "board": [],
+      "values": {
+        "preflop_equity": 0.8485107421875,
+        "preflop_equity_sampling_se": 0.005569285713136196,
+        "board_nuts_removed_fraction": 0.0,
+        "board_nuts_legal_mass": 0.0,
+        "runner_runner_straight": 0.0,
+        "runner_runner_flush": 0.0,
+        "currently_strict_nuts": 0.0
+      }
+    }
+  ]
+}

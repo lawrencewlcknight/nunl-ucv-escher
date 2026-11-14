@@ -11,8 +11,9 @@
   "advantage_batch_size": 2048,
   "ave_policy_batch_size": 2048,
   "baseline_batch_size": 2048,
-  "num_layers": 2,
-  "num_hiddens": 128,
+  "regret_network_layers": [256, 256, 256],
+  "critic_network_layers": [192, 192],
+  "calibration_network_layers": [128, 128],
   "reinitialize_advantage_networks": false,
   "reinitialize_imm_regret_networks": true,
   "use_regret_matching_argmax": true,
@@ -55,8 +56,9 @@
   "average_policy_loss": "grouped_soft_target_cross_entropy",
   "average_policy_reset_each_fit": true,
   "average_policy_network_layers": [
-    192,
-    192
+    256,
+    256,
+    256
   ],
   "average_policy_learning_rate": 0.003,
   "average_policy_train_steps": 20000,
@@ -67,9 +69,12 @@
   ],
   "paired_legacy_learning_rate": 0.001,
   "paired_legacy_train_steps": 5000,
-  "structured_branch_width": 64,
+  "regret_branch_width": 128,
+  "critic_branch_width": 96,
+  "calibration_branch_width": 64,
+  "average_policy_branch_width": 128,
   "cache_frozen_critic_targets": true,
-  "feature_encoder_id": "hunl_strategic_public_state_v3",
+  "feature_encoder_id": "hunl_strategic_public_state_v5",
   "action_menu": [
     "fold",
     "check_call",
