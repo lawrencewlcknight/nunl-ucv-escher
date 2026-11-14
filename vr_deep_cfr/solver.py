@@ -675,12 +675,35 @@ class RegretTrainer(Trainer):
         legal_regrets = model(x) * mask
         return legal_regrets
 
+    def _clip_gradients(self):
+        """Optional specialization; inherited learners retain their old behavior."""
+
+    def batched_regret_matching(self, regrets, legal_mask):
+        """Torch equivalent of collection regret_matching, including fallback.
+
+        Terminal replay rows can have no legal actions; return zeros for them.
+        Keep signed regrets until after choosing the fallback action.
+        """
+        legal = legal_mask == 1
+        positive = torch.where(legal, torch.clamp(regrets, min=0), 0.0)
+        mass = positive.sum(dim=-1, keepdim=True)
+        if self.use_regret_matching_argmax:
+            masked = regrets.masked_fill(~legal, float("-inf"))
+            fallback = torch.nn.functional.one_hot(
+                masked.argmax(dim=-1), regrets.shape[-1]
+            ).to(regrets.dtype) * legal
+        else:
+            fallback = legal.to(regrets.dtype) / legal.sum(dim=-1, keepdim=True).clamp(min=1)
+        denominator = torch.where(mass > 0, mass, torch.ones_like(mass))
+        return torch.where(mass > 0, positive / denominator, fallback)
+
     def train_model(self, T):
         for train_step in range(self.train_steps):
             samples = self.buffer.sample(self.batch_size)
             loss = self.compute_loss(samples, T)
             self.optimizer.zero_grad()
             loss.backward()
+            self._clip_gradients()
             self.optimizer.step()
             if train_step % 100 == 0:
                 self.logger.info(

@@ -36,9 +36,12 @@ be positive integers. These fields replace the old shared `num_layers`,
 
 The same configuration constructs both the learner and parallel traversal
 workers. Smoke uses these full-sized networks with reduced replay and fitting
-budgets. The production budgets remain 750 regret steps per player, 2,500 critic
-steps per member, 2,000 calibration steps per iteration and 20,000 policy steps
-per checkpoint. Learning rates, losses and target averaging are retained.
+budgets. Production uses 750 regret steps per player, up to 2,500 critic steps
+per member, up to 2,000 calibration steps per iteration and 20,000 policy steps
+per extraction. Critic/calibration budgets scale with replay occupancy during
+warm-up; full buffers recover the mature budgets. Regret gradients are clipped
+at norm 10. Learning rates, losses, widths and target averaging are retained.
+See [the production schedule](BASELINE.md#production-schedule-and-monitoring).
 
 Start a new output directory for training with these defaults. Continuation
 requires identical configuration and source fingerprint, so an older run cannot

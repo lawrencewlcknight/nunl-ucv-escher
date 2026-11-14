@@ -1,5 +1,30 @@
 # Verification
 
+## Production optimization v0.7.0 — 2026-11-15
+
+* Final offline suite: **143 passed, 2 skipped** (49.31 seconds); skips are the
+  opt-in Ray integration cases. Real two-worker tests: **2 passed** separately
+  (50.01 seconds), including default/custom action menus and exact continuation.
+* Replay-fill boundary tests cover minimum batches, floors, integer ceiling,
+  full buffers and inference-only workers. Real cached/uncached fits verify
+  Adam's actual update counters and preserve mature maximum budgets. Empty
+  control fits do not advance target versions or temporal history.
+* Critic bootstrap policies match collection for negative, tied, positive and
+  tiny positive regrets, both fallback settings, legal masks and terminal rows.
+* Large-label regression exercises actual gradient clipping before optimizer
+  steps while preserving labels. Empty regret batches preserve learner state.
+* A simulated interruption after a recovery-only checkpoint resumes with exact
+  equality of networks, optimizers, replay and RNGs against uninterrupted
+  training. Recovery-clock triggers and independent policy cadence are tested.
+* Per-street row counters are checked in both sequential and real Ray collection.
+  Tests use bounded smoke workloads; no configuration experiments, production
+  training, cloud jobs or external opponent calls were run for this change.
+
+Use `--policy-every` to control extraction. `--checkpoint-every` now controls
+recovery-only saves; `--checkpoint-seconds` defaults to 1,800 seconds, checked
+at completed iterations. Updated source/configuration requires a fresh run;
+existing policy inference remains compatible.
+
 ## Encoder v5 validation — 2026-11-15
 
 * Offline suite: **115 passed, 2 skipped**; skips are opt-in Ray tests.

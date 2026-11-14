@@ -2,7 +2,8 @@
 
 A clean research repository for training Unbiased Control-Variate ESCHER in
 heads-up no-limit Texas Hold'em. The learner is extracted from the efficient
-FHP Experiment 36/38 implementation, with **2,500 updates per critic per fit**.
+FHP Experiment 36/38 implementation, with **up to 2,500 updates per critic per fit**,
+scaled to occupied replay during warm-up.
 See [the baseline specification](docs/BASELINE.md) for the choice and evidence.
 
 The game uses OpenSpiel 1.6.3's full no-limit engine: two players, a full 52-card
@@ -67,22 +68,41 @@ An explicit training invocation using the original eight-worker arrangement is:
 
 ```bash
 python -m hunl_escher.train --iterations 100 --workers 8 --threads 8 \
-  --checkpoint-every 50 --seed 0 --output outputs/baseline-seed0
+  --policy-every 50 --checkpoint-seconds 1800 \
+  --seed 0 --output outputs/baseline-seed0
 ```
 
 This is a substantial workload: 10,000 trajectories **per player per iteration**,
-large replay buffers, and 20,000 policy updates per checkpoint. Benchmark memory
+large replay buffers, and 20,000 policy updates per policy extraction. Check memory
 and throughput on the intended training machine before choosing a long run.
 The command uses the current machine and does not submit any cloud jobs.
 
-Each checkpoint saves a playable policy and a checksummed, sharded continuation
-state containing networks, optimisers, replay, temporal critic history and RNGs,
-including actor RNGs. Only complete outer iterations are saved. `--resume` checks
+Recovery saves write a checksummed, sharded continuation state containing networks,
+optimisers, replay, temporal critic history and RNGs, including actor RNGs. They do
+not fit or export a policy. By default, recovery is due after 1,800 wall seconds,
+checked at the next completed outer iteration; a long iteration can exceed that
+interval. `--checkpoint-every N` additionally saves recovery state every N
+iterations (default 0 disables this trigger). **This flag no longer controls
+policy fitting:** use `--policy-every N` for that (default 50; smoke 1).
+Policy extraction also saves continuation state. The requested final iteration
+always produces both a policy and a recovery save. Time intervals restart after
+a successful save or process restart. No background timer interrupts learning.
+
+`--resume` checks
 the source fingerprint, runtime, seed, configuration and worker arrangement;
 `--iterations` is the desired **total**, not additional iterations. Use trusted
 checkpoint files only; their PyTorch/pickle metadata is not an untrusted format.
 All checkpoint directories are retained; provision disk space for the chosen
 cadence. A retention policy and cloud runner remain future work.
+
+The production schedule retains 750 regret updates/player, scales each critic
+from 250 to 2,500 updates and calibration from 100 to 2,000, and clips regret
+gradient norms at 10. Full replay restores the mature fitting budgets. Warm-up
+is derived from restored occupied replay, so no separate schedule counter is
+required. These changes require a fresh training run; previously saved policies
+remain usable for inference. Per-iteration metrics include actual optimizer
+updates, fit losses/times, clipping counts and fresh regret rows by player/street.
+See [the production specification](docs/BASELINE.md#production-schedule-and-monitoring).
 
 ## Play and verify the API adapters
 

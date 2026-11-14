@@ -270,17 +270,21 @@ def test_repo_has_no_historical_experiments_and_baseline_is_reduced():
 
 def test_cli_checkpoint_cadence_and_resume(tmp_path):
     from hunl_escher.train import main
-    args = ["--smoke", "--checkpoint-every", "2", "--output", str(tmp_path)]
+    args = ["--smoke", "--policy-every", "2", "--checkpoint-every", "1", "--output", str(tmp_path)]
     main([*args, "--iterations", "2"])
     assert not (tmp_path / "policy_000001.pkl").exists()
     assert (tmp_path / "policy_000002.pkl").exists()
     first = json.loads((tmp_path / "metrics_000001.json").read_text())
     assert first["policy_fitted"] is False and first["policy_fit_seconds"] == 0
+    assert first["recovery_saved"] and (tmp_path / "state_000001").exists()
     main([*args, "--iterations", "3", "--resume"])
     last = json.loads((tmp_path / "metrics_000003.json").read_text())
     assert last["iteration"] == 3 and last["trajectories"] == 96
     assert last["training_elapsed_seconds"] > first["training_elapsed_seconds"] > 0
     assert last["iteration_wall_seconds"] >= last["learning_seconds"]
+    assert last["critic_updates_per_member"] == [f["updates"] for f in last["critic_fits"]]
+    assert all(sum(rows) == fit["rows"] for rows, fit in zip(
+        last["regret_rows_by_player_street"], last["regret_fits"]))
     with pytest.raises(ValueError, match="empty output"):
         main([*args, "--iterations", "4"])
 
@@ -297,6 +301,11 @@ def test_real_parallel_collection_and_resume(tmp_path, menu):
     try:
         solver.iteration()
         assert solver.episode == 2 * config["num_traversals"]
+        for player, trainer in enumerate(solver.regret_trainers):
+            assert sum(solver._architecture_stats[f"regret_rows_player_{player}_street_{s}"]
+                       for s in range(4)) == trainer.last_fit_stats["rows"]
+        assert all(m.last_fit_stats["updates"] <= config["baseline_network_train_steps"]
+                   for m in solver.q_value_trainer.members)
         save_training_state(tmp_path / "state", build_training_state(
             solver, **kwargs, checkpoint_id="1", captured_checkpoints=[]))
         solver.iteration()

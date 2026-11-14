@@ -1,6 +1,7 @@
 """Selected source learning settings and deliberately small engineering smoke."""
 from copy import deepcopy
 import json
+import math
 from pathlib import Path
 
 from .features import ENCODER_ID
@@ -24,6 +25,8 @@ def smoke_config():
                 "average_policy_train_steps"):
         config[key] = 2
     config["num_traversals"] = 16
+    config["critic_min_train_steps"] = 1
+    config["calibration_min_train_steps"] = 1
     return config
 
 
@@ -48,6 +51,13 @@ def validate_config(config):
                 "calibration_train_steps", "average_policy_train_steps"):
         if type(config[key]) is not int or config[key] <= 0:
             raise ValueError(f"{key} must be a positive integer")
+    for key, maximum_key in (("critic_min_train_steps", "baseline_network_train_steps"),
+                             ("calibration_min_train_steps", "calibration_train_steps")):
+        if type(config[key]) is not int or not 1 <= config[key] <= config[maximum_key]:
+            raise ValueError(f"{key} must be a positive integer no larger than {maximum_key}")
+    clip = config["regret_policy_gradient_clip_norm"]
+    if type(clip) not in (float, int) or not math.isfinite(clip) or clip <= 0:
+        raise ValueError("regret_policy_gradient_clip_norm must be positive and finite")
     if config["game_name"] != "HUNL" or config["feature_encoder_id"] != ENCODER_ID:
         raise ValueError("Use the versioned HUNL game and encoder")
     if config["q_ensemble_size"] != 2 or config["use_instantaneous_predictor"]:

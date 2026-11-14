@@ -2,12 +2,16 @@
 
 ## Decision
 
-Use the **FHP Experiment 36 learner, continued unchanged in Experiment 38**:
+The starting point is the **FHP Experiment 36 learner, continued unchanged in Experiment 38**:
 the structured, cached, synchronous parallel UCV implementation with **2,500
 TD updates for each of two critic members per outer iteration**. This is 5,000
 critic optimiser steps in total, compared with 20,000 at the old 10,000-per-member
 setting. It is the best-supported reduced-budget starting point, not a proven
 optimum for no-limit Hold'em.
+
+The HUNL production specification below retains those mature budgets and adds
+replay-fill warm-up, regret gradient clipping, consistent critic fallback
+policies, and recovery saves independent of policy extraction.
 
 The extraction uses FHP source commit
 `c2d7a5cf5c1bfeb98393fb185457b68c7854ce13`. The historical source has unrelated
@@ -54,15 +58,16 @@ it beneficial.
 | Algorithm | Outcome-sampling UCV-ESCHER with corrected all-action estimates and DCFR+ cumulative-regret fitting |
 | Control coefficient | Fixed beta = 1 |
 | Critics | Two cross-fit members; trajectory assignment determines held-out collection control |
-| Critic fitting | Persistent online networks/Adam; 2,500 updates per member per iteration; batch 2,048; LR 0.001; gradient norm cap 10 |
+| Critic fitting | Persistent online networks/Adam; 250–2,500 updates per member per iteration, scaled to occupied replay; batch 2,048; LR 0.001; gradient norm cap 10 |
 | Target critics | Frozen during collection/fit; parameter average over the last four completed fits (available history during warmup) |
 | TD target cache | Rebuilt once per eligible fit; no cache reused across target/replay/iteration changes |
 | Sampling | Learned residual-standard-deviation proposal, mixed with 20% uniform legal-action probability mass |
-| Calibration | Enabled; 2,000 updates per iteration; batch 2,048; LR 0.001; minimum variance 1e-5 |
-| Regret fitting | One network per player; 750 updates per player per iteration; batch 2,048; LR 0.001; alpha 2.3; persistent cumulative networks |
+| Calibration | Enabled; 100–2,000 updates per iteration, scaled to occupied replay; batch 2,048; LR 0.001; minimum variance 1e-5 |
+| Regret fitting | One network per player; 750 updates per player per iteration; batch 2,048; LR 0.001; alpha 2.3; persistent cumulative networks; gradient norm cap 10 |
 | Instantaneous predictor | Disabled; prediction gate fixed at zero |
 | Average policy | Grouped soft-target cross entropy; iteration weighting gamma 2; reset each fit; 20,000 updates; batch 2,048; LR 0.003 |
-| Policy fit cadence | Checkpoints only, preserving the FHP approach; the initial runner uses completed-iteration checkpoints (50 by default), plus the final endpoint |
+| Policy fit cadence | Every 50 completed iterations by default, plus the final endpoint; independent of recovery-only saves |
+| Recovery cadence | After 1,800 wall seconds, at the next completed iteration; optional additional iteration cadence; no policy fit required |
 | Collection | 10,000 trajectories per player per iteration, 20,000 total; alternating player updates |
 | Networks | Regret and policy: 128-wide exact-card/strategic-card/context branches, 3×256 trunk; critics: 96-wide branches, 2×192 trunk; calibration: 64-wide branches, 2×128 trunk. See [network configuration](NETWORK_CONFIGURATION.md). |
 | Regret replay | Capacity 1,000,000 per player, reset for each player collection batch |
@@ -75,10 +80,57 @@ it beneficial.
 
 **Leduc and FHP policy-fitting cadences differ.** Experiment 51 retained 20,000
 policy updates every iteration, whereas the selected FHP system only fits its
-policy at checkpoints. The new runner preserves checkpoint-only fitting and
-restores training RNG state after each policy fit. Its iteration checkpoint
-interval replaces the old experiment's six-active-hour schedule; it is configurable,
-and should be selected using a measured HUNL iteration cost.
+policy at checkpoints. The runner preserves occasional policy extraction and
+restores training RNG state after each policy fit. Recovery-only saves do not
+change the learner or its RNGs. Both cadences are recorded in the run manifest.
+
+## Production schedule and monitoring
+
+The agreed production configuration preserves the evidence-backed mature budgets
+without requiring a configuration sweep. Before each fit, use occupied rows N
+and that learner's configured capacity C:
+
+* Critic: `min(2500, max(250, ceil(2500 * N / 500000)))` at default capacity.
+* Calibration: `min(2000, max(100, ceil(2000 * N / 1000000)))` at default capacity.
+
+More generally, `min(maximum, max(minimum, ceil(maximum * N / C)))` uses the
+configured maximum, minimum and capacity. Critics use their individual fold's
+occupancy and capacity, never the combined count. Fits are skipped until a full
+minibatch is available. Occupancy stops increasing at capacity, regardless of
+lifetime insertions. Integer arithmetic makes scheduling deterministic.
+`critic_min_train_steps` and `calibration_min_train_steps` expose the floors;
+the existing train-step settings remain the mature maxima. Smoke uses floors 1
+and maxima 2, with its existing small buffers and batches.
+
+All decisions are made before the fit. Critics remain frozen throughout
+collection and target construction; target versions and four-fit averaging
+advance only after an actual completed fit. The cache is rebuilt per fit as
+before. Restoring replay, network/optimizer states and RNGs completely restores
+the schedule; no mutable warm-up counter or wall-time schedule affects learning.
+
+The existing `regret_policy_gradient_clip_norm` setting now enables clipping of
+the **regret** networks at 10. It does not clip policy gradients or change regret
+labels/losses. Nonfinite regret gradient norms raise an error. If a player has
+no regret rows because every hand ended before its turn, its network and
+optimizer are preserved instead of attempting an empty fit.
+
+Critic bootstrap policies now retain signed regret predictions when selecting
+the fallback action. They match collection's highest-regret fallback when all
+legal regrets are non-positive; the optional uniform fallback also agrees.
+Empty terminal masks produce zero continuation strategy.
+
+Per-iteration JSON records actual versus maximum control updates, occupied rows,
+fit losses and seconds, regret pre-clipping maximum norms/clipping counts, fresh
+regret rows by player and street, and policy-replay occupancy. Collection plus
+other iteration overhead is reported separately from sequential learner fits.
+Critic cache-build time is nested inside critic fit time and must not be added
+again. Recovery writes and policy extraction have their own timers. These
+diagnostics monitor one production run; they do not automatically tune budgets.
+
+Start a fresh run for this optimization version. Strict source/configuration
+checks reject older continuation states; saved policy inference remains
+compatible. Scheduling and numerical tests establish implementation behavior,
+not improved playing strength or optimality in full HUNL.
 
 ## HUNL-specific changes
 
@@ -122,11 +174,10 @@ checkpoint-only policy fits are retained immediately. No historical paired
 policy diagnostic, exact game-tree enumeration, old experiment orchestration or
 automatic cloud launch is retained.
 
-The next profiling pass must include collection, feature construction, critic
+Production monitoring should include collection, feature construction, critic
 cache building, calibration, regret fitting, policy grouping/fitting, persistence,
 peak resident memory and total wall time. Do not infer full-game training cost
 from the tiny smoke run. Grouping may save less work in full Hold'em because
-repeated information sets are rarer. Only then test 500 critic steps, more
-selective policy extraction, richer bet menus, or accelerator changes against
-quality per total compute. Neither training nor opponent API benchmarking has
-been run at production scale in this repository.
+repeated information sets are rarer. The selected production specification does
+not require budget or architecture sweeps. Neither training nor opponent API
+benchmarking has been run at production scale in this repository.

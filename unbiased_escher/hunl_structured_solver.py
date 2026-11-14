@@ -4,11 +4,13 @@ from __future__ import annotations
 
 from copy import deepcopy
 import random
+import time
 
 import numpy as np
 import torch
 
 from hunl_escher.game import DEFAULT_ACTION_MENU, load_hunl_game
+from hunl_escher.optimization import ReplayScaledFitMixin
 from hunl_escher.features import (
     HUNLFeatureEncoder,
     ENCODER_ID,
@@ -48,14 +50,39 @@ class StructuredHUNLRegretTrainer(_StructuredModelMixin, VRDCFRPlusRegretTrainer
         feature_encoder: HUNLFeatureEncoder,
         branch_width: int,
         replay_seed: int,
+        gradient_clip_norm=None,
         **kwargs,
     ):
         self.feature_encoder = feature_encoder
         self.feature_layout = feature_encoder.policy_layout
         self.structured_branch_width = int(branch_width)
         self.replay_seed = int(replay_seed)
+        self.gradient_clip_norm = gradient_clip_norm
         super().__init__(*args, **kwargs)
         self.predictor_enabled = False
+
+    def train_model(self, iteration):
+        started = time.perf_counter()
+        self.last_fit_stats = {"rows": len(self.buffer), "updates": 0,
+                               "clipped_updates": 0, "max_gradient_norm": 0.0}
+        # A deterministic opponent can terminate every hand before this player
+        # acts. Preserve the network/optimizer instead of fitting an empty batch.
+        if not len(self.buffer) or self.train_steps <= 0:
+            self.last_fit_stats.update(loss=None, seconds=0.0)
+            return None
+        loss = super().train_model(iteration)
+        self.last_fit_stats.update(loss=loss, updates=self.train_steps,
+                                   seconds=time.perf_counter() - started)
+        return loss
+
+    def _clip_gradients(self):
+        if self.gradient_clip_norm is not None:
+            norm = float(torch.nn.utils.clip_grad_norm_(
+                self.model.parameters(), self.gradient_clip_norm, error_if_nonfinite=True
+            ).item())
+            self.last_fit_stats["max_gradient_norm"] = max(
+                self.last_fit_stats["max_gradient_norm"], norm)
+            self.last_fit_stats["clipped_updates"] += int(norm > self.gradient_clip_norm)
 
     def get_infostate_tensor(self, state, player=None):
         return self.feature_encoder.information_state(state, player)
@@ -101,7 +128,7 @@ class StructuredHUNLAveragePolicyTrainer(
 
 
 class StructuredHUNLQMember(
-    _StructuredModelMixin, TemporallyAveragedCrossFittedQMember
+    ReplayScaledFitMixin, _StructuredModelMixin, TemporallyAveragedCrossFittedQMember
 ):
     def __init__(
         self,
@@ -109,12 +136,14 @@ class StructuredHUNLQMember(
         feature_encoder: HUNLFeatureEncoder,
         branch_width: int,
         replay_seed: int,
+        minimum_train_steps: int,
         **kwargs,
     ):
         self.feature_encoder = feature_encoder
         self.feature_layout = feature_encoder.full_state_layout
         self.structured_branch_width = int(branch_width)
         self.replay_seed = int(replay_seed)
+        self.minimum_train_steps = int(minimum_train_steps)
         super().__init__(*args, **kwargs)
 
     def get_history_tensor(self, state):
@@ -148,6 +177,7 @@ class StructuredHUNLQEnsemble(TemporallyAveragedCrossFittedQEnsemble):
         total_buffer_size: int,
         batch_size: int,
         train_steps: int,
+        minimum_train_steps: int,
         logger,
         regret_trainers,
         device: str,
@@ -173,6 +203,7 @@ class StructuredHUNLQEnsemble(TemporallyAveragedCrossFittedQEnsemble):
                 device,
                 gradient_clip_norm=gradient_clip_norm,
                 target_average_window=self.target_average_window,
+                minimum_train_steps=minimum_train_steps,
                 feature_encoder=feature_encoder,
                 branch_width=branch_width,
                 replay_seed=int(replay_seed) + index,
@@ -183,7 +214,7 @@ class StructuredHUNLQEnsemble(TemporallyAveragedCrossFittedQEnsemble):
         self._active_add_count = 0
 
 
-class StructuredHUNLResidualCalibrationTrainer(ResidualCalibrationTrainer):
+class StructuredHUNLResidualCalibrationTrainer(ReplayScaledFitMixin, ResidualCalibrationTrainer):
     def __init__(
         self,
         *,
@@ -194,12 +225,14 @@ class StructuredHUNLResidualCalibrationTrainer(ResidualCalibrationTrainer):
         buffer_size: int,
         batch_size: int,
         train_steps: int,
+        minimum_train_steps: int,
         device: str,
         minimum_variance: float,
         feature_encoder: HUNLFeatureEncoder,
         branch_width: int,
     ):
         self.feature_encoder = feature_encoder
+        self.minimum_train_steps = int(minimum_train_steps)
         super().__init__(
             infostate_size=infostate_size,
             action_size=action_size,
@@ -246,6 +279,8 @@ class StructuredHUNLGroupedWideUCVEscher(GroupedWideUnbiasedControlVariateEscher
         critic_branch_width: int = 96,
         calibration_branch_width: int = 64,
         average_policy_branch_width: int = 128,
+        critic_min_train_steps: int = 250,
+        calibration_min_train_steps: int = 100,
         feature_encoder_id: str = ENCODER_ID,
         action_menu=DEFAULT_ACTION_MENU,
         **kwargs,
@@ -258,6 +293,8 @@ class StructuredHUNLGroupedWideUCVEscher(GroupedWideUnbiasedControlVariateEscher
         self.critic_branch_width = critic_branch_width
         self.calibration_branch_width = calibration_branch_width
         self.average_policy_branch_width = average_policy_branch_width
+        self.critic_min_train_steps = int(critic_min_train_steps)
+        self.calibration_min_train_steps = int(calibration_min_train_steps)
         self.feature_replay_seed = int(kwargs.get("seed", 0))
         super().__init__(*args, average_policy_network_layers=average_policy_network_layers,
                          **kwargs)
@@ -266,6 +303,18 @@ class StructuredHUNLGroupedWideUCVEscher(GroupedWideUnbiasedControlVariateEscher
 
     def load_game(self):
         return load_hunl_game(self.feature_encoder.action_menu)
+
+    def _reset_architecture_diagnostics(self):
+        super()._reset_architecture_diagnostics()
+        for player in range(2):
+            for street in range(4):
+                self._architecture_stats[f"regret_rows_player_{player}_street_{street}"] = 0
+
+    def dfs(self, state, traverser, *args, **kwargs):
+        if not state.is_terminal() and state.current_player() == traverser:
+            street = state.decision_view().street
+            self._architecture_stats[f"regret_rows_player_{traverser}_street_{street}"] += 1
+        return super().dfs(state, traverser, *args, **kwargs)
 
     def init_ave_policy_trainer(self):
         # DeepCumuAdv initially discovers OpenSpiel's raw size. From this hook
@@ -338,6 +387,7 @@ class StructuredHUNLGroupedWideUCVEscher(GroupedWideUnbiasedControlVariateEscher
                 feature_encoder=self.feature_encoder,
                 branch_width=self.regret_branch_width,
                 replay_seed=self.feature_replay_seed + 200 + player,
+                gradient_clip_norm=self.regret_policy_gradient_clip_norm,
             )
             for player in range(self.num_players)
         ]
@@ -357,6 +407,7 @@ class StructuredHUNLGroupedWideUCVEscher(GroupedWideUnbiasedControlVariateEscher
             total_buffer_size=self.baseline_buffer_size,
             batch_size=self.baseline_batch_size,
             train_steps=self.baseline_network_train_steps,
+            minimum_train_steps=self.critic_min_train_steps,
             logger=self.logger,
             regret_trainers=self.regret_trainers,
             device=self.device,
@@ -372,6 +423,7 @@ class StructuredHUNLGroupedWideUCVEscher(GroupedWideUnbiasedControlVariateEscher
             buffer_size=self.calibration_buffer_size,
             batch_size=self.calibration_batch_size,
             train_steps=self.calibration_train_steps,
+            minimum_train_steps=self.calibration_min_train_steps,
             device=self.device,
             minimum_variance=self.calibration_minimum_variance,
             feature_encoder=self.feature_encoder,

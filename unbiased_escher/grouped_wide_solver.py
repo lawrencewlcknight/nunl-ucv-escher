@@ -276,8 +276,11 @@ class GroupedWideUnbiasedControlVariateEscher(UnbiasedControlVariateEscher):
             raise ValueError("The baseline policy must reset for every fit")
         if self.regret_network_type != "mlp":
             raise ValueError("The baseline requires the MLP regret network")
-        if self.regret_policy_gradient_clip_norm is not None:
-            raise ValueError("The baseline does not clip regret gradients")
+        if self.regret_policy_gradient_clip_norm is not None and (
+            not math.isfinite(self.regret_policy_gradient_clip_norm)
+            or self.regret_policy_gradient_clip_norm <= 0
+        ):
+            raise ValueError("Regret gradient clipping must be positive and finite")
         if any(
             value is not None
             for value in (
