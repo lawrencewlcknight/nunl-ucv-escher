@@ -1,5 +1,23 @@
 # Verification
 
+## Training continuation across process exits — 2026-11-15
+
+* Focused checkpoint, recovery and resume suite: **20 passed, 2 skipped**.
+  Skips are the existing opt-in Ray tests, previously verified separately.
+* A new regression test launches separate Python CLI processes: one trains for
+  three iterations continuously; another trains for two, exits, reloads its
+  saved recovery, and trains the third iteration. Both use full production
+  network dimensions with reduced smoke replay and update budgets.
+* The resulting online/target networks, Adam states, persistent replay, critic
+  target history, gate state, RNG states and training counters match exactly.
+  Target versions advance after reload, demonstrating further training rather
+  than inference-only loading. Latest-only retention also remains effective.
+* Existing tests cover recovery-only and policy-bearing checkpoints, save
+  failures, schedule restoration and rejection of incompatible continuation.
+* Resume usage and required run-directory files are documented in the README.
+  No changes to learner or checkpoint implementation were necessary.
+
+
 ## Six-hour wall-clock recovery — 2026-11-15
 
 * Final focused scheduler, retention and cross-variant checks: **16 passed**.
@@ -184,3 +202,46 @@ python -m hunl_escher.feature_audit --hands 100
 This compares the retained v2 exact channels, v3 and v5 encoders on the same 800 check/call
 decisions, reports cold/repeated timings and replay allocation estimates, and
 checks exact prefix retention. It is not a training-throughput benchmark.
+
+## Replay retention and indexed grouping v0.9.0 — 2026-11-15
+
+`tests/test_replay_grouping.py` compares the grouped targets, masks and objective
+weights exactly with the former dense NumPy reference across chunk sizes and
+reservoir overflow. It exercises forced fingerprint collisions, signed zero,
+invalid rows, inconsistent masks, legacy float64 storage, lazy minibatch gradients,
+validation losses, replay mutation and untouched RNG state. Production grouping
+retains a view of the original float32 feature matrix.
+
+`tests/test_replay_integration.py` checks the new default capacity, all four real
+encoder street labels for both players, saturated occupancy metrics, allocated
+bytes, and a complete smoke collection/policy fit. Cross-variant tests permit the
+intentional policy-capacity difference and require identical grouping code.
+
+Bounded memory checks use `tools/check_policy_replay_memory.py`; add `--reference`
+in a separate process to measure the former implementation. Measured 100,000-row
+HUNL incremental peaks were 18.5 MB indexed versus 373.0 MB dense; 250,000-row
+checks completed too. See [raw measurements](docs/REPLAY_MEMORY_CHECK.json).
+The host has 8 GiB RAM, so no full-capacity multi-worker training-memory claim is
+made. Synthetic timing and memory results do not establish policy strength.
+
+## Four-plus-four-hour learning experiment — 2026-11-15
+
+`tests/test_learning_experiment.py` exercises real training in two separate
+processes, full recovery reload, two playable policy exports and local matches.
+It checks exact duplicate-deal cancellation for identical deterministic agents,
+reproducible serial/multiprocess evaluation, bb/100 units, paired versus
+independent-arm sample sizing, excluded pilots, fixed confirmation counts,
+degenerate samples, and suppression of claims for incomplete or smoke runs.
+
+The existing OpenSpiel-backed mock server exercises both external wire protocols
+with saved policies. Tests cover missing keys, denied access, ambiguous POSTs,
+partial main samples and changed GTO versions. Cloud bundle tests check the
+source archive, credential exclusion, shell syntax, VM limits and recovery
+publication ordering, including failed uploads retaining the old checkpoint.
+
+Validation: the full suite with `RUN_RAY_TESTS=1` passed **201 tests**, including
+real Ray collection and bit-exact continuation. The subsequently added report-only
+smoke/regression-label test is run separately. No cloud VM was created and no live
+benchmark hands were played. The offline experiment uses tiny training budgets;
+production throughput, peak memory, API access and learning improvement remain
+measurements for the actual experiment.

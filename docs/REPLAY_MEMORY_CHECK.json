@@ -1,0 +1,73 @@
+{
+  "date": "2026-11-15",
+  "kind": "bounded synthetic grouping check; not a training or playing-strength experiment",
+  "platform": "macOS; 8 GiB host; Python 3.12",
+  "measurement": "resource.getrusage(RUSAGE_SELF).ru_maxrss; bytes on macOS; fresh process per measurement",
+  "limitations": [
+    "Synthetic unique rows, production feature widths; no full 4m/8m replay allocation.",
+    "Peak RSS is affected by host memory pressure/compression; differences are observations, not VM-sizing guarantees.",
+    "The baseline is the former NumPy unique grouping path, not an entire training process.",
+    "No GTO Wizard or Fell Omen 2 requests and no cloud training jobs."
+  ],
+  "measurements": [
+    {
+      "game": "HUNL",
+      "mode": "indexed",
+      "rows": 100000,
+      "features": 569,
+      "replay_bytes": 233600000,
+      "peak_before_bytes": 362643456,
+      "peak_after_bytes": 381124608,
+      "incremental_peak_bytes": 18481152,
+      "seconds": 0.5112665420165285
+    },
+    {
+      "game": "HUNL",
+      "mode": "dense_reference",
+      "rows": 100000,
+      "features": 569,
+      "replay_bytes": 233600000,
+      "peak_before_bytes": 361005056,
+      "peak_after_bytes": 734052352,
+      "incremental_peak_bytes": 373047296,
+      "seconds": 1.147670750040561
+    },
+    {
+      "game": "HUNL",
+      "mode": "indexed",
+      "rows": 250000,
+      "features": 569,
+      "replay_bytes": 584000000,
+      "peak_before_bytes": 411942912,
+      "peak_after_bytes": 692060160,
+      "incremental_peak_bytes": 280117248,
+      "seconds": 1.418336582952179
+    },
+    {
+      "game": "HUNL",
+      "mode": "dense_reference",
+      "rows": 250000,
+      "features": 569,
+      "replay_bytes": 584000000,
+      "peak_before_bytes": 641204224,
+      "peak_after_bytes": 1034960896,
+      "incremental_peak_bytes": 393756672,
+      "seconds": 3.1157659160671756
+    },
+    {
+      "game": "HULHE",
+      "mode": "indexed",
+      "rows": 100000,
+      "features": 417,
+      "replay_bytes": 169600000,
+      "peak_before_bytes": 415547392,
+      "peak_after_bytes": 473841664,
+      "incremental_peak_bytes": 58294272,
+      "seconds": 0.305345542030409
+    }
+  ],
+  "production_dense_replay_bytes": {
+    "HULHE": 15847000000,
+    "HUNL": 33475000000
+  }
+}

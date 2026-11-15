@@ -32,7 +32,9 @@ This is a runnable development learner, not a trained competitive model.
 Slumbot and GTO Wizard API adapters, inference-only play and offline equivalence
 tests are implemented in [the API interface](docs/API_INTERFACE.md). Slumbot has
 a small live smoke test; GTO Wizard remains verified offline pending an API key.
-Large-scale strength evaluation remains future work.
+The [four-plus-four-hour learning check](docs/LEARNING_EXPERIMENT.md) implements
+checkpoint restart, paired head-to-head statistics and isolated external benchmarks.
+Production playing strength has not yet been measured.
 
 ## Install
 
@@ -48,6 +50,36 @@ Core dependencies are pinned in `pyproject.toml`. The parallel extra adds Ray;
 sequential training does not need it. The source repository and copied-file
 hashes are recorded in [provenance.json](docs/provenance.json). Upstream attribution
 and the original licence-status note remain in [UPSTREAM.md](vr_deep_cfr/UPSTREAM.md).
+
+## Continue training from a checkpoint
+
+Full recovery checkpoints support continued training. Re-run the original
+training command with the same output directory and options, add `--resume`, and
+set `--iterations` to the desired **total** iteration count. For example, after
+training the eight-worker baseline to iteration 100:
+
+```bash
+python -m hunl_escher.train --iterations 200 --workers 8 --threads 8 \
+  --policy-seconds 21600 --recovery-seconds 21600 \
+  --seed 0 --output outputs/baseline-seed0 --resume
+```
+
+The runner automatically loads the recovery directory referenced by `latest.json`
+and continues at the next iteration. It restores all online/target networks,
+Adam states, persistent replay, critic target history, counters, random-number
+states (including workers), and recovery/policy scheduling. Fresh regret batches
+and temporary caches are rebuilt as they are during uninterrupted training.
+
+Keep the whole run directory: `manifest.json`, `latest.json`, and the latest
+`state_*` directory with all its shards. Shards are verified before loading.
+Use the same source, configuration, Python/dependency versions, seed, worker
+count, thread count and scheduling options. The total iteration limit and the
+additional active-time stopping budget may change. If the iteration target has
+already been reached, resume performs no further work.
+
+`policy_*.pkl` files are inference exports; they do not contain the replay and
+optimizer state required for full training continuation. Every policy export
+also produces a full recovery snapshot, subject to latest-only recovery retention.
 
 ## Verify and run
 
@@ -115,7 +147,8 @@ future work.
 
 Both Hold'em implementations use 750 regret updates/player, replay-scaled
 250–2,500 critic updates and 100–2,000 calibration updates, regret target caching,
-gradient norm clipping at 10, and a two-million-row historical policy reservoir.
+and gradient norm clipping at 10. Historical policy reservoirs hold eight million
+rows for no-limit and four million for fixed-limit Hold'em.
 Policy fitting uses a 5% grouped holdout to select within one 20,000-update fit.
 See the [shared training specification](docs/TRAINING_ALIGNMENT.md) for the exact
 settings and deliberate game-size differences. These changes require a fresh

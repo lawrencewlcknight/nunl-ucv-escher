@@ -8,14 +8,18 @@ import time
 import numpy as np
 import torch
 
+from .replay_grouping import CHUNK_ROWS, reservoir_counts, retained_context_counts
+
 
 class RegretFitMixin:
     """Identical cached/uncached fitting, clipping and skip semantics for both games."""
 
     def train_model(self, iteration):
         started = time.perf_counter()
-        self.last_fit_stats = {"rows": len(self.buffer), "updates": 0,
+        self.last_fit_stats = {"rows": len(self.buffer), "replay": reservoir_counts(self.buffer), "updates": 0,
                                "clipped_updates": 0, "max_gradient_norm": 0.0}
+        self.last_fit_stats["replay"]["retained_by_player_street"] = retained_context_counts(
+            self.buffer, self.feature_encoder.replay_context_columns())
         self.last_target_cache_stats = {}
         # A deterministic opponent can terminate every hand before this player
         # acts. Preserve the network/optimizer instead of fitting an empty batch.
@@ -79,11 +83,16 @@ def fit_cached_regrets(trainer, iteration):
 
 def policy_validation_mask(features, fraction):
     """Stable membership across fits; grouped identical infosets cannot leak."""
-    array = features.detach().cpu().numpy()
     threshold = int(fraction * 2**64)
-    return np.fromiter((int.from_bytes(blake2b(row.tobytes(), digest_size=8,
-                        person=b"holdem-policy-v1").digest(), "little") < threshold
-                        for row in array), dtype=bool, count=len(array))
+    heldout = np.empty(len(features), dtype=bool)
+    for start in range(0, len(features), CHUNK_ROWS):
+        stop = min(start + CHUNK_ROWS, len(features))
+        array = (features.numpy_batch(start, stop) if hasattr(features, "numpy_batch")
+                 else features[start:stop].detach().cpu().numpy().copy())
+        array[array == 0] = 0
+        heldout[start:stop] = [int.from_bytes(blake2b(row.tobytes(), digest_size=8,
+            person=b"holdem-policy-v1").digest(), "little") < threshold for row in array]
+    return heldout
 
 
 def weighted_policy_ce(model, features, targets, masks, weights, indices, batch_size):

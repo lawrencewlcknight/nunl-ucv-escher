@@ -12,6 +12,8 @@ import torch
 from vr_deep_cfr.solver import AvePolicyTrainer
 from vr_deep_cfr.variants import VRDCFRPlusRegretTrainer
 
+from .replay_grouping import grouped_policy_data
+
 from .solver import (
     CrossFittedQEnsemble,
     CrossFittedQMember,
@@ -40,54 +42,16 @@ class GroupedSoftTargetCrossEntropyAvePolicyTrainer(AvePolicyTrainer):
         self.grouped_reduction_ratio = 0.0
 
     def _grouped_training_data(self, iteration):
-        size = min(int(self.buffer.cur_id), int(self.buffer.buffer_size))
-        if size <= 0:
-            raise ValueError("Cannot fit an average policy from an empty reservoir")
-        features = np.asarray(self.buffer.infostate_buf[:size], dtype=np.float32)
-        policies = np.asarray(self.buffer.q_value_buf[:size], dtype=np.float64)
-        masks = np.asarray(self.buffer.q_value_mask_buf[:size], dtype=np.float32)
-        iterations = np.asarray(
-            self.buffer.iteration_buf[:size], dtype=np.float64
-        ).reshape(-1)
-        raw_weights = np.power(
-            np.maximum(iterations, 0.0) / float(iteration) * 2.0,
-            self.gamma,
-            dtype=np.float64,
-        )
-        unique, first, inverse = np.unique(
-            features, axis=0, return_index=True, return_inverse=True
-        )
-        masses = np.zeros(len(unique), dtype=np.float64)
-        numerators = np.zeros((len(unique), policies.shape[1]), dtype=np.float64)
-        np.add.at(masses, inverse, raw_weights)
-        np.add.at(numerators, inverse, policies * raw_weights[:, None])
-        if np.any(masses <= 0.0):
-            raise ValueError("Grouped average-policy target has non-positive mass")
-        targets = numerators / masses[:, None]
-
-        grouped_masks = masks[first]
-        # Bound temporary memory and avoid one Python comparison per replay row.
-        # Target summation above deliberately retains the original row order.
-        for start in range(0, size, 65_536):
-            stop = min(start + 65_536, size)
-            if not np.all(masks[start:stop] == grouped_masks[inverse[start:stop]]):
-                raise ValueError(
-                    "Legal-action masks differ within an information set"
-                )
-
-        objective_weights = masses * (float(len(unique)) / float(size))
-        self.grouped_num_rows = int(size)
-        self.grouped_num_information_sets = int(len(unique))
-        self.grouped_reduction_ratio = float(len(unique)) / float(size)
-        # Experiment 35 retained a lookup solely for exact Leduc empirical-
-        # policy diagnostics. HUNL cannot perform that tree enumeration; keeping
-        # up to one million byte-string keys would add material memory without
-        # affecting the grouped training objective.
+        encoder = getattr(self, "feature_encoder", None)
+        columns = encoder.replay_context_columns() if encoder is not None else None
+        data, summary = grouped_policy_data(self.buffer, iteration, self.gamma,
+                                             self.device, context_columns=columns)
+        self.grouped_num_rows = summary["retained"]
+        self.grouped_num_information_sets = summary["unique_groups"]
+        self.grouped_reduction_ratio = summary["unique_fraction"]
         self.grouped_target_lookup = {}
-        return tuple(
-            torch.as_tensor(value, dtype=torch.float32, device=self.device)
-            for value in (unique, targets, grouped_masks, objective_weights)
-        )
+        self.last_replay_diagnostics = summary
+        return data
 
     def train_model(self, iteration):
         features, targets, masks, weights = self._grouped_training_data(iteration)

@@ -1,7 +1,7 @@
 {
   "game_name": "HUNL",
   "advantage_buffer_size": 1000000,
-  "ave_policy_buffer_size": 2000000,
+  "ave_policy_buffer_size": 8000000,
   "baseline_buffer_size": 1000000,
   "learning_rate": 0.001,
   "num_traversals": 10000,

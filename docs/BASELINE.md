@@ -1,5 +1,14 @@
 # Selected UCV-ESCHER baseline
 
+## Replay capacity revision v0.9.0
+
+Historical policy replay is 8,000,000 rows, shared across players. Regret, critic,
+calibration and fitting budgets are unchanged. Exact indexed grouping avoids a
+full duplicate feature matrix, and coverage diagnostics distinguish retained
+rows from lifetime arrivals. See [the shared specification](TRAINING_ALIGNMENT.md)
+for memory costs, validation and checkpoint compatibility. These changes improve
+retention capacity; they do not establish world-leading playing strength.
+
 ## Cross-variant alignment v0.8.0
 
 The current common settings and deliberate game-size differences are specified
@@ -101,7 +110,7 @@ it beneficial.
 | Collection | 10,000 trajectories per player per iteration, 20,000 total; alternating player updates |
 | Networks | Regret and policy: 128-wide exact-card/strategic-card/context branches, 3×256 trunk; critics: 96-wide branches, 2×192 trunk; calibration: 64-wide branches, 2×128 trunk. See [network configuration](NETWORK_CONFIGURATION.md). |
 | Regret replay | Capacity 1,000,000 per player, reset for each player collection batch |
-| Policy replay | 2,000,000-row historical reservoir |
+| Policy replay | 8,000,000-row historical reservoir |
 | Critic replay | 1,000,000 transitions total, divided into two 500,000-row circular buffers |
 | Calibration replay | 1,000,000 rows |
 | Storage | Dense compact float32 replay, integer bookkeeping; no inherited FHP-only feature codebook |
@@ -151,7 +160,7 @@ regrets when all legal regrets are non-positive; unequal negative regrets still
 select the highest value. Tiny positive regrets are normalized without a floor
 that would reduce total probability. Terminal masks produce zero continuation.
 
-The historical policy reservoir holds two million rows. Policy fitting resets
+The historical policy reservoir holds eight million rows. Policy fitting resets
 the model, runs all 20,000 updates, and selects the best iteration-weighted
 held-out cross-entropy at 2,500/5,000/10,000/20,000 updates. A stable, game-neutral
 hash holds out 5% of canonical feature groups; identical features cannot appear

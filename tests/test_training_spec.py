@@ -51,7 +51,7 @@ def test_policy_split_is_stable_and_groups_duplicates():
     perm=rng.permutation(100)
     np.testing.assert_array_equal(policy_validation_mask(features[perm],.2),split[perm])
     # Later fits retain the same membership for existing information sets.
-    more=torch.cat([features,torch.ones(1,trainer.input_size)])
+    more=torch.cat([features.full_batch(),torch.ones(1,trainer.input_size)])
     np.testing.assert_array_equal(policy_validation_mask(more,.2)[:100],split)
 
 
