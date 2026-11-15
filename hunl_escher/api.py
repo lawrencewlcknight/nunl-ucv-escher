@@ -36,7 +36,9 @@ class JSONTransport:
         if timeout <= 0 or min_interval < 0 or not 1 <= get_attempts <= 5:
             raise ValueError("Invalid HTTP timing/retry settings")
         self.base_url = base_url.rstrip("/")
-        self.headers = dict(headers or {})
+        # Identify the research client: GTO Wizard's edge filter rejects the
+        # default Python-urllib signature before API-key validation occurs.
+        self.headers = {"User-Agent": "UCV-Escher-Research/1.0", **(headers or {})}
         self.timeout, self.min_interval = timeout, min_interval
         self.get_attempts, self.sleep, self.clock = get_attempts, sleep, clock
         self.last_request = None
