@@ -39,8 +39,9 @@ workers. Smoke uses these full-sized networks with reduced replay and fitting
 budgets. Production uses 750 regret steps per player, up to 2,500 critic steps
 per member, up to 2,000 calibration steps per iteration and 20,000 policy steps
 per extraction. Critic/calibration budgets scale with replay occupancy during
-warm-up; full buffers recover the mature budgets. Regret gradients are clipped
-at norm 10. Learning rates, losses, widths and target averaging are retained.
+warm-up; full buffers recover the mature budgets. Frozen regret targets are cached once per fit; regret gradients are clipped
+at norm 10. Policy replay holds two million rows and a 5% grouped holdout
+selects the policy model within each 20,000-update fit. Learning rates, losses, widths and target averaging are retained.
 See [the production schedule](BASELINE.md#production-schedule-and-monitoring).
 
 Start a new output directory for training with these defaults. Continuation

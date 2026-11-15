@@ -1,5 +1,61 @@
 # Verification
 
+## Six-hour wall-clock recovery — 2026-11-15
+
+* Final focused scheduler, retention and cross-variant checks: **16 passed**.
+* Timed recovery checks default to six wall-clock hours, on a fixed run-start
+  grid. Saves less than one hour old suppress that slot; exactly one hour is
+  eligible. Tests cover skipped slots, long downtime and disabled timing.
+* A real interrupted smoke run verifies that a skipped six-hour check persists
+  in latest-pointer metadata without rewriting replay. Resume at hour seven
+  does not repeat the skipped save; the next grid boundary remains hour twelve.
+* Actual successful save completion starts the suppression window. Policy and
+  final saves remain unconditional. Latest-only retention and failure protection
+  continue to pass; no production training or cloud jobs were run.
+
+
+## Latest-only recovery retention — 2026-11-15
+
+* Focused retention, runner/resume, fitting and cross-variant checks: **91
+  passed, 2 skipped** (opt-in Ray tests; collection code is unchanged).
+* A real smoke run leaves only its newest recovery, keeps all playable policies,
+  and successfully resumes from the retained state.
+* Injected write, verification and latest-pointer publication failures preserve
+  the previous recovery. Cleanup cannot begin before latest-pointer publication.
+* Multiple older saves are removed together. Unrelated files/directories and
+  directory symlinks are preserved. Cleanup does not repeat checksum scans of
+  the new replay arrays; its time is included in persistence metrics.
+
+
+
+## Cross-variant training alignment v0.8.0 — 2026-11-15
+
+* Full offline suite after implementation: **149 passed**, 2 opt-in cases
+  skipped. After adding the final regression cases, the affected tests passed
+  again: **41 passed**. Real Ray collection and exact continuation:
+  **2 passed** separately. Ray required execution outside the macOS sandbox
+  because its process inspection is restricted there.
+* Cached and uncached regret fitting agree on weights, Adam state and replay
+  RNG progression, including partial/full batches and reservoir replacement.
+  Large targets exercise actual clipping before optimizer steps. Empty regret
+  batches preserve the learner; underfilled control replay preserves targets.
+* Collection and critic bootstrap policies agree for signed, tied, tiny positive
+  and masked regrets. Explicit cases verify uniform ties only among maxima.
+* Stable grouped policy holdout and iteration-mass-weighted validation are tested;
+  selecting an earlier checkpoint restores its model and optimizer together.
+* Simulated interruption after recovery-only **and** policy-bearing saves resumes
+  with exact networks, optimizer states, replay and RNGs. Independent active and
+  wall clocks, overdue recovery after downtime, and final saves are covered.
+* The sibling-repository guard allows only the documented game-size differences
+  and checks identical fitting, replay scheduling and checkpoint scheduling code.
+  It skips when the other repository is not checked out alongside this one.
+
+Defaults and CLI semantics: [shared specification](docs/TRAINING_ALIGNMENT.md).
+Use a fresh output directory; older continuation fingerprints are rejected.
+Saved policy inference remains compatible. No production training, parameter
+sweeps, cloud jobs or external opponent calls were run for this alignment.
+
+
 ## Production optimization v0.7.0 — 2026-11-15
 
 * Final offline suite: **143 passed, 2 skipped** (49.31 seconds); skips are the

@@ -276,7 +276,7 @@ def test_cli_checkpoint_cadence_and_resume(tmp_path):
     assert (tmp_path / "policy_000002.pkl").exists()
     first = json.loads((tmp_path / "metrics_000001.json").read_text())
     assert first["policy_fitted"] is False and first["policy_fit_seconds"] == 0
-    assert first["recovery_saved"] and (tmp_path / "state_000001").exists()
+    assert first["recovery_saved"] and not (tmp_path / "state_000001").exists()
     main([*args, "--iterations", "3", "--resume"])
     last = json.loads((tmp_path / "metrics_000003.json").read_text())
     assert last["iteration"] == 3 and last["trajectories"] == 96

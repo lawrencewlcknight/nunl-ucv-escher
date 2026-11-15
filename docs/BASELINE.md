@@ -1,5 +1,35 @@
 # Selected UCV-ESCHER baseline
 
+## Cross-variant alignment v0.8.0
+
+The current common settings and deliberate game-size differences are specified
+in [TRAINING_ALIGNMENT.md](TRAINING_ALIGNMENT.md).
+
+Automatic recovery checks run every **21,600 wall-clock seconds (six hours)**,
+on a fixed grid from run start. A check skips saving if a successful recovery
+checkpoint was completed less than **3,600 seconds (one hour)** ago. This includes
+recovery snapshots saved alongside policy fits. At exactly one hour, saving is
+eligible again. A skipped check advances to the next six-hour slot; it does not
+retry when the one-hour window expires. For example, a save at 5.5 hours suppresses
+the six-hour check, with the next check at 12 hours.
+
+Checks run after completed iterations, so long iterations can delay them.
+Downtime counts as wall time; missed slots cause at most one check on resumption.
+The grid, last successful save time and skipped checks survive restart. A skipped
+check updates only the small latest-pointer metadata, without rewriting replay.
+Policy fitting remains every **21,600 active learner seconds**, excluding policy
+fitting, persistence and downtime. Policy-triggered, explicit iteration and final
+saves remain unconditional.
+
+`--checkpoint-every N` adds recovery-only saves every N iterations (default 0).
+`--policy-every N` adds policy fits every N iterations (production default 0;
+smoke default 1). Set `--policy-every 0` for time-only policy scheduling in smoke.
+`--recovery-seconds 0` disables timed recovery; `--checkpoint-seconds` is an alias
+for `--recovery-seconds`. Policy fits also save full recovery state, including the
+selected policy and matching optimizer. The final requested iteration always
+fits a policy and saves recovery state. Both schedule clocks survive resume;
+recovery-only saves never fit a policy. No background timer interrupts learning.
+
 ## Decision
 
 The starting point is the **FHP Experiment 36 learner, continued unchanged in Experiment 38**:
@@ -63,15 +93,15 @@ it beneficial.
 | TD target cache | Rebuilt once per eligible fit; no cache reused across target/replay/iteration changes |
 | Sampling | Learned residual-standard-deviation proposal, mixed with 20% uniform legal-action probability mass |
 | Calibration | Enabled; 100–2,000 updates per iteration, scaled to occupied replay; batch 2,048; LR 0.001; minimum variance 1e-5 |
-| Regret fitting | One network per player; 750 updates per player per iteration; batch 2,048; LR 0.001; alpha 2.3; persistent cumulative networks; gradient norm cap 10 |
+| Regret fitting | One network per player; 750 updates per player per iteration; batch 2,048; LR 0.001; alpha 2.3; persistent cumulative networks; frozen targets cached once per fit; gradient norm cap 10 |
 | Instantaneous predictor | Disabled; prediction gate fixed at zero |
-| Average policy | Grouped soft-target cross entropy; iteration weighting gamma 2; reset each fit; 20,000 updates; batch 2,048; LR 0.003 |
-| Policy fit cadence | Every 50 completed iterations by default, plus the final endpoint; independent of recovery-only saves |
-| Recovery cadence | After 1,800 wall seconds, at the next completed iteration; optional additional iteration cadence; no policy fit required |
+| Average policy | Grouped soft-target cross entropy; iteration weighting gamma 2; reset each fit; 20,000 updates with best validation-checkpoint selection; batch 2,048; LR 0.003 |
+| Policy fit cadence | Every six active learner hours by default, plus the final endpoint; independent of recovery-only saves |
+| Recovery cadence | Every six wall-clock hours, unless a recovery was saved in the preceding hour; checked at completed iterations |
 | Collection | 10,000 trajectories per player per iteration, 20,000 total; alternating player updates |
 | Networks | Regret and policy: 128-wide exact-card/strategic-card/context branches, 3×256 trunk; critics: 96-wide branches, 2×192 trunk; calibration: 64-wide branches, 2×128 trunk. See [network configuration](NETWORK_CONFIGURATION.md). |
 | Regret replay | Capacity 1,000,000 per player, reset for each player collection batch |
-| Policy replay | 1,000,000-row reservoir |
+| Policy replay | 2,000,000-row historical reservoir |
 | Critic replay | 1,000,000 transitions total, divided into two 500,000-row circular buffers |
 | Calibration replay | 1,000,000 rows |
 | Storage | Dense compact float32 replay, integer bookkeeping; no inherited FHP-only feature codebook |
@@ -106,7 +136,7 @@ All decisions are made before the fit. Critics remain frozen throughout
 collection and target construction; target versions and four-fit averaging
 advance only after an actual completed fit. The cache is rebuilt per fit as
 before. Restoring replay, network/optimizer states and RNGs completely restores
-the schedule; no mutable warm-up counter or wall-time schedule affects learning.
+the schedule; no mutable warm-up counter is required.
 
 The existing `regret_policy_gradient_clip_norm` setting now enables clipping of
 the **regret** networks at 10. It does not clip policy gradients or change regret
@@ -114,10 +144,21 @@ labels/losses. Nonfinite regret gradient norms raise an error. If a player has
 no regret rows because every hand ended before its turn, its network and
 optimizer are preserved instead of attempting an empty fit.
 
-Critic bootstrap policies now retain signed regret predictions when selecting
-the fallback action. They match collection's highest-regret fallback when all
-legal regrets are non-positive; the optional uniform fallback also agrees.
-Empty terminal masks produce zero continuation strategy.
+Both variants cache frozen regret targets once per fit, clip regret gradient
+norms at 10, and skip empty regret batches without modifying learner state.
+Collection and critic bootstrapping use uniform probabilities among tied maximum
+regrets when all legal regrets are non-positive; unequal negative regrets still
+select the highest value. Tiny positive regrets are normalized without a floor
+that would reduce total probability. Terminal masks produce zero continuation.
+
+The historical policy reservoir holds two million rows. Policy fitting resets
+the model, runs all 20,000 updates, and selects the best iteration-weighted
+held-out cross-entropy at 2,500/5,000/10,000/20,000 updates. A stable, game-neutral
+hash holds out 5% of canonical feature groups; identical features cannot appear
+in both partitions. The selected model and matching Adam state are restored.
+Tiny replays without both partitions use all groups and report validation
+unavailable. This selection is within one fit, not extra self-play experiments;
+held-out policy error is not exploitability.
 
 Per-iteration JSON records actual versus maximum control updates, occupied rows,
 fit losses and seconds, regret pre-clipping maximum norms/clipping counts, fresh

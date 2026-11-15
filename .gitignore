@@ -11,3 +11,5 @@ cloud_outputs/
 *.pt
 *.pkl
 .env
+.env.*
+!.env.example

@@ -68,7 +68,7 @@ An explicit training invocation using the original eight-worker arrangement is:
 
 ```bash
 python -m hunl_escher.train --iterations 100 --workers 8 --threads 8 \
-  --policy-every 50 --checkpoint-seconds 1800 \
+  --policy-seconds 21600 --recovery-seconds 21600 \
   --seed 0 --output outputs/baseline-seed0
 ```
 
@@ -77,32 +77,49 @@ large replay buffers, and 20,000 policy updates per policy extraction. Check mem
 and throughput on the intended training machine before choosing a long run.
 The command uses the current machine and does not submit any cloud jobs.
 
-Recovery saves write a checksummed, sharded continuation state containing networks,
-optimisers, replay, temporal critic history and RNGs, including actor RNGs. They do
-not fit or export a policy. By default, recovery is due after 1,800 wall seconds,
-checked at the next completed outer iteration; a long iteration can exceed that
-interval. `--checkpoint-every N` additionally saves recovery state every N
-iterations (default 0 disables this trigger). **This flag no longer controls
-policy fitting:** use `--policy-every N` for that (default 50; smoke 1).
-Policy extraction also saves continuation state. The requested final iteration
-always produces both a policy and a recovery save. Time intervals restart after
-a successful save or process restart. No background timer interrupts learning.
+Automatic recovery checks run every **21,600 wall-clock seconds (six hours)**,
+on a fixed grid from run start. A check skips saving if a successful recovery
+checkpoint was completed less than **3,600 seconds (one hour)** ago. This includes
+recovery snapshots saved alongside policy fits. At exactly one hour, saving is
+eligible again. A skipped check advances to the next six-hour slot; it does not
+retry when the one-hour window expires. For example, a save at 5.5 hours suppresses
+the six-hour check, with the next check at 12 hours.
+
+Checks run after completed iterations, so long iterations can delay them.
+Downtime counts as wall time; missed slots cause at most one check on resumption.
+The grid, last successful save time and skipped checks survive restart. A skipped
+check updates only the small latest-pointer metadata, without rewriting replay.
+Policy fitting remains every **21,600 active learner seconds**, excluding policy
+fitting, persistence and downtime. Policy-triggered, explicit iteration and final
+saves remain unconditional.
+
+`--checkpoint-every N` adds recovery-only saves every N iterations (default 0).
+`--policy-every N` adds policy fits every N iterations (production default 0;
+smoke default 1). Set `--policy-every 0` for time-only policy scheduling in smoke.
+`--recovery-seconds 0` disables timed recovery; `--checkpoint-seconds` is an alias
+for `--recovery-seconds`. Policy fits also save full recovery state, including the
+selected policy and matching optimizer. The final requested iteration always
+fits a policy and saves recovery state. Both schedule clocks survive resume;
+recovery-only saves never fit a policy. No background timer interrupts learning.
 
 `--resume` checks
 the source fingerprint, runtime, seed, configuration and worker arrangement;
 `--iterations` is the desired **total**, not additional iterations. Use trusted
 checkpoint files only; their PyTorch/pickle metadata is not an untrusted format.
-All checkpoint directories are retained; provision disk space for the chosen
-cadence. A retention policy and cloud runner remain future work.
+Only the newest recovery checkpoint is retained. After a new save passes checksum
+verification and `latest.json` is updated, all older recovery checkpoints in that
+run directory are deleted. Failed saves preserve the previous recovery checkpoint.
+Playable `policy_*.pkl` files and metrics are retained separately. Allow room for
+the old and new recovery checkpoints during saving. Cloud orchestration remains
+future work.
 
-The production schedule retains 750 regret updates/player, scales each critic
-from 250 to 2,500 updates and calibration from 100 to 2,000, and clips regret
-gradient norms at 10. Full replay restores the mature fitting budgets. Warm-up
-is derived from restored occupied replay, so no separate schedule counter is
-required. These changes require a fresh training run; previously saved policies
-remain usable for inference. Per-iteration metrics include actual optimizer
-updates, fit losses/times, clipping counts and fresh regret rows by player/street.
-See [the production specification](docs/BASELINE.md#production-schedule-and-monitoring).
+Both Hold'em implementations use 750 regret updates/player, replay-scaled
+250–2,500 critic updates and 100–2,000 calibration updates, regret target caching,
+gradient norm clipping at 10, and a two-million-row historical policy reservoir.
+Policy fitting uses a 5% grouped holdout to select within one 20,000-update fit.
+See the [shared training specification](docs/TRAINING_ALIGNMENT.md) for the exact
+settings and deliberate game-size differences. These changes require a fresh
+training run; previously saved policies remain usable for inference.
 
 ## Play and verify the API adapters
 

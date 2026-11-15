@@ -102,6 +102,27 @@ arguments. GTO Wizard hands are genuine account evaluations and may affect its
 leaderboard. No GTO Wizard live test was performed for this implementation: no
 approved key was available. Its schema/client compatibility is verified offline.
 
+### Local credentials with `.env`
+
+Keep local credentials in the repository-root `.env`, which Git ignores.
+For a new checkout, copy `.env.example` to `.env`, run `chmod 600 .env`, and
+populate `GTO_WIZARD_API_KEY` locally. Do not commit the populated file.
+The CLI does not automatically load `.env`; from the repository root, load it
+into the current shell before running the play commands above:
+
+```bash
+set -a
+source ./.env
+set +a
+```
+
+Only source your own trusted file, since `source` executes shell code. Avoid
+shell tracing (`set -x`) while loading credentials. After evaluation, remove
+the key from the shell environment with `unset GTO_WIZARD_API_KEY`.
+The matching Google Cloud Secret Manager secret is
+`gtowizard-benchmark-api-key` in project `clever-overview-399515`.
+Keep the local copy in sync when rotating the cloud secret.
+
 ## Network failures and recovery
 
 Requests are sequential, with at least 0.5 seconds between starts and a default

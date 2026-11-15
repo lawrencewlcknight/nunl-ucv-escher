@@ -24,6 +24,7 @@ def smoke_config():
                 "baseline_network_train_steps", "calibration_train_steps",
                 "average_policy_train_steps"):
         config[key] = 2
+    config["policy_validation_steps"] = [1, 2]
     config["num_traversals"] = 16
     config["critic_min_train_steps"] = 1
     config["calibration_min_train_steps"] = 1
@@ -64,6 +65,18 @@ def validate_config(config):
         raise ValueError("Baseline requires two cross-fit critics and no predictor")
     if config["evaluation_frequency"] != 0 or config["evaluate_initial_policy"]:
         raise ValueError("The HUNL runner owns evaluation and checkpoint boundaries")
+
+    for key in ("cache_frozen_regret_targets", "uniform_regret_ties"):
+        if type(config[key]) is not bool:
+            raise ValueError(f"{key} must be boolean")
+    fraction = config["policy_validation_fraction"]
+    if type(fraction) not in (int, float) or not 0 < fraction < 1:
+        raise ValueError("policy_validation_fraction must be between zero and one")
+    steps = config["policy_validation_steps"]
+    if (not isinstance(steps, list) or not steps
+            or any(type(step) is not int or step <= 0 for step in steps)
+            or steps != sorted(set(steps))):
+        raise ValueError("policy_validation_steps must be increasing positive integers")
 
 
 def make_solver(config=None, *, seed=0, workers=1):

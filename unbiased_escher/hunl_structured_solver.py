@@ -4,7 +4,6 @@ from __future__ import annotations
 
 from copy import deepcopy
 import random
-import time
 
 import numpy as np
 import torch
@@ -28,6 +27,7 @@ from .grouped_wide_solver import (
     TemporallyAveragedCrossFittedQEnsemble,
     TemporallyAveragedCrossFittedQMember,
 )
+from .holdem_fitting import RegretFitMixin, fit_validated_policy
 from .efficient_replay import CompactCircularBuffer, CompactReservoirBuffer
 from .solver import ResidualCalibrationTrainer, CalibrationBuffer
 class _StructuredModelMixin:
@@ -43,7 +43,7 @@ class _StructuredModelMixin:
         ).to(self.device)
 
 
-class StructuredHUNLRegretTrainer(_StructuredModelMixin, VRDCFRPlusRegretTrainer):
+class StructuredHUNLRegretTrainer(RegretFitMixin, _StructuredModelMixin, VRDCFRPlusRegretTrainer):
     def __init__(
         self,
         *args,
@@ -51,6 +51,8 @@ class StructuredHUNLRegretTrainer(_StructuredModelMixin, VRDCFRPlusRegretTrainer
         branch_width: int,
         replay_seed: int,
         gradient_clip_norm=None,
+        cache_frozen_targets: bool = True,
+        uniform_regret_ties: bool = True,
         **kwargs,
     ):
         self.feature_encoder = feature_encoder
@@ -58,31 +60,10 @@ class StructuredHUNLRegretTrainer(_StructuredModelMixin, VRDCFRPlusRegretTrainer
         self.structured_branch_width = int(branch_width)
         self.replay_seed = int(replay_seed)
         self.gradient_clip_norm = gradient_clip_norm
+        self.cache_frozen_targets = cache_frozen_targets
+        self.uniform_regret_ties = uniform_regret_ties
         super().__init__(*args, **kwargs)
         self.predictor_enabled = False
-
-    def train_model(self, iteration):
-        started = time.perf_counter()
-        self.last_fit_stats = {"rows": len(self.buffer), "updates": 0,
-                               "clipped_updates": 0, "max_gradient_norm": 0.0}
-        # A deterministic opponent can terminate every hand before this player
-        # acts. Preserve the network/optimizer instead of fitting an empty batch.
-        if not len(self.buffer) or self.train_steps <= 0:
-            self.last_fit_stats.update(loss=None, seconds=0.0)
-            return None
-        loss = super().train_model(iteration)
-        self.last_fit_stats.update(loss=loss, updates=self.train_steps,
-                                   seconds=time.perf_counter() - started)
-        return loss
-
-    def _clip_gradients(self):
-        if self.gradient_clip_norm is not None:
-            norm = float(torch.nn.utils.clip_grad_norm_(
-                self.model.parameters(), self.gradient_clip_norm, error_if_nonfinite=True
-            ).item())
-            self.last_fit_stats["max_gradient_norm"] = max(
-                self.last_fit_stats["max_gradient_norm"], norm)
-            self.last_fit_stats["clipped_updates"] += int(norm > self.gradient_clip_norm)
 
     def get_infostate_tensor(self, state, player=None):
         return self.feature_encoder.information_state(state, player)
@@ -106,13 +87,20 @@ class StructuredHUNLAveragePolicyTrainer(
         feature_encoder: HUNLFeatureEncoder,
         branch_width: int,
         replay_seed: int,
+        validation_fraction: float = 0.05,
+        validation_steps=(2500, 5000, 10000, 20000),
         **kwargs,
     ):
         self.feature_encoder = feature_encoder
         self.feature_layout = feature_encoder.policy_layout
         self.structured_branch_width = int(branch_width)
         self.replay_seed = int(replay_seed)
+        self.validation_fraction = validation_fraction
+        self.validation_steps = tuple(validation_steps)
         super().__init__(*args, **kwargs)
+
+    def train_model(self, iteration):
+        return fit_validated_policy(self, iteration)
 
     def get_infostate_tensor(self, state, player=None):
         return self.feature_encoder.information_state(state, player)
@@ -283,9 +271,17 @@ class StructuredHUNLGroupedWideUCVEscher(GroupedWideUnbiasedControlVariateEscher
         calibration_min_train_steps: int = 100,
         feature_encoder_id: str = ENCODER_ID,
         action_menu=DEFAULT_ACTION_MENU,
+        cache_frozen_regret_targets: bool = True,
+        uniform_regret_ties: bool = True,
+        policy_validation_fraction: float = 0.05,
+        policy_validation_steps=(2500, 5000, 10000, 20000),
         **kwargs,
     ):
         self.feature_encoder = make_feature_encoder(feature_encoder_id, action_menu)
+        self.cache_frozen_regret_targets = cache_frozen_regret_targets
+        self.uniform_regret_ties = uniform_regret_ties
+        self.policy_validation_fraction = policy_validation_fraction
+        self.policy_validation_steps = tuple(policy_validation_steps)
         self.regret_network_layers = list(regret_network_layers)
         self.critic_network_layers = list(critic_network_layers)
         self.calibration_network_layers = list(calibration_network_layers)
@@ -360,6 +356,8 @@ class StructuredHUNLGroupedWideUCVEscher(GroupedWideUnbiasedControlVariateEscher
             feature_encoder=self.feature_encoder,
             branch_width=self.average_policy_branch_width,
             replay_seed=self.feature_replay_seed + 100,
+            validation_fraction=self.policy_validation_fraction,
+            validation_steps=self.policy_validation_steps,
         )
         random.setstate(rng_after_legacy["python"])
         np.random.set_state(rng_after_legacy["numpy"])
@@ -388,6 +386,8 @@ class StructuredHUNLGroupedWideUCVEscher(GroupedWideUnbiasedControlVariateEscher
                 branch_width=self.regret_branch_width,
                 replay_seed=self.feature_replay_seed + 200 + player,
                 gradient_clip_norm=self.regret_policy_gradient_clip_norm,
+                cache_frozen_targets=self.cache_frozen_regret_targets,
+                uniform_regret_ties=self.uniform_regret_ties,
             )
             for player in range(self.num_players)
         ]

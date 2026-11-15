@@ -8,7 +8,7 @@ import torch
 
 from hunl_escher.config import baseline_config, smoke_config, make_solver, validate_config
 from hunl_escher.optimization import replay_scaled_updates
-from hunl_escher.train import checkpoint_due
+from hunl_escher.checkpoint_schedule import CheckpointSchedule
 from hunl_escher.training_state import read_training_state
 
 
@@ -61,6 +61,8 @@ def test_critic_bootstrap_matches_collection_for_signed_regrets(argmax, monkeypa
                           [0., 1., 1., 0., 0., 0., 0.],
                           [1., 1., 1., 1., 1., 1., 1.],
                           [0., 0., 0., 0., 0., 0., 0.]])
+    scores = scores[:, :solver.action_size]
+    masks = masks[:, :solver.action_size]
     for p, trainer in enumerate(solver.regret_trainers):
         trainer.use_regret_matching_argmax = argmax
         values = scores if p == 0 else scores.flip(-1)
@@ -74,14 +76,14 @@ def test_critic_bootstrap_matches_collection_for_signed_regrets(argmax, monkeypa
             legal = torch.nonzero(masks[row]).flatten().tolist()
             expected = solver.regret_trainers[player].regret_matching(values[row].numpy(), legal)
             np.testing.assert_allclose(actual[row].numpy(), expected, atol=1e-7)
-        assert torch.equal(actual[-1], torch.zeros(7))
+        assert torch.equal(actual[-1], torch.zeros(solver.action_size))
 
 
 def test_regret_gradients_are_actually_clipped_without_clipping_labels(monkeypatch):
     solver = make_solver(smoke_config())
     trainer = solver.regret_trainers[0]
     for _ in range(8):
-        trainer.add_data(np.zeros(trainer.input_size), np.full(7, 1e6), np.ones(7), 1)
+        trainer.add_data(np.zeros(trainer.input_size), np.full(trainer.output_size, 1e6), np.ones(trainer.output_size), 1)
     step = trainer.optimizer.step
     observed = []
     def checked_step(*args, **kwargs):
@@ -148,13 +150,63 @@ def test_real_fits_follow_fill_schedule_and_keep_maximum(cache):
 
 
 def test_recovery_clock_and_policy_cadence_are_independent():
-    options = dict(policy_every=50, checkpoint_every=0, checkpoint_seconds=1800)
-    assert checkpoint_due(1, 100, seconds_since_save=1799, **options) == (False, False)
-    assert checkpoint_due(1, 100, seconds_since_save=1800, **options) == (False, True)
-    assert checkpoint_due(50, 100, seconds_since_save=10, **options) == (True, True)
-    assert checkpoint_due(3, 3, seconds_since_save=10, **options) == (True, True)
-    assert checkpoint_due(2, 100, policy_every=50, checkpoint_every=2,
-                          checkpoint_seconds=0, seconds_since_save=0) == (False, True)
+    schedule = CheckpointSchedule(last_recovery_wall_seconds=1000)
+    options = dict(iteration=1, final=False, recovery_seconds=21600, policy_seconds=21600)
+    assert schedule.due(active_seconds=100, wall_seconds=22599, **options) == (False, False)
+    # Wall recovery is due despite only 100 seconds of active learning.
+    assert schedule.due(active_seconds=100, wall_seconds=22600, **options) == (True, False)
+    schedule.completed(100, wall_seconds=22600, recovery=True, policy=False)
+    restored = CheckpointSchedule(**json.loads(json.dumps(schedule.state())))
+    assert restored.last_policy_seconds == 0
+    assert restored.due(active_seconds=21599, wall_seconds=22601, **options) == (False, False)
+    assert restored.due(active_seconds=21600, wall_seconds=22601, **options) == (True, True)
+    restored.completed(21600, wall_seconds=22601, recovery=True, policy=True)
+    assert restored.due(active_seconds=21601, wall_seconds=22602, **options) == (False, False)
+    assert restored.due(active_seconds=21601, wall_seconds=44200, **options) == (True, False)
+    # Only timed recovery is suppressed by the recent-save rule.
+    restored.completed(21601, wall_seconds=44200, recovery=True, policy=False)
+    assert restored.due(active_seconds=21601, wall_seconds=44201,
+                        **dict(options, final=True)) == (True, True)
+    assert restored.due(active_seconds=21601, wall_seconds=44201,
+                        checkpoint_every=1, **options) == (True, False)
+    assert restored.due(active_seconds=21601, wall_seconds=44201,
+                        policy_every=1, **options) == (True, True)
+
+
+@pytest.mark.parametrize("age,expected", [(3599, False), (3600, True), (3601, True)])
+def test_recovery_recent_save_boundary(age, expected):
+    schedule = CheckpointSchedule(last_recovery_wall_seconds=0)
+    schedule.completed(1, wall_seconds=21600-age, recovery=True, policy=False)
+    assert schedule.due(iteration=1, final=False, active_seconds=1,
+                        wall_seconds=21600, recovery_seconds=21600,
+                        policy_seconds=21600) == (expected, False)
+    assert schedule.last_recovery_check_wall_seconds == 21600
+
+
+def test_skipped_slot_and_fixed_grid_survive_resume_and_downtime():
+    options = dict(iteration=1, final=False, active_seconds=1,
+                   recovery_seconds=21600, policy_seconds=21600)
+    schedule = CheckpointSchedule(last_recovery_wall_seconds=0)
+    schedule.completed(1, wall_seconds=19800, recovery=True, policy=True)
+    assert schedule.due(wall_seconds=21600, **options) == (False, False)
+    schedule = CheckpointSchedule(**json.loads(json.dumps(schedule.state())))
+    # No retry at hour 7, even though the recent-save window expired.
+    assert schedule.due(wall_seconds=25200, **options) == (False, False)
+    assert schedule.due(wall_seconds=43200, **options) == (True, False)
+    schedule.completed(1, wall_seconds=43320, recovery=True, policy=False)
+    # Long downtime coalesces missed slots; the grid does not drift to hour 25.
+    assert schedule.due(wall_seconds=90000, **options) == (True, False)
+    assert schedule.last_recovery_check_wall_seconds == 86400
+    schedule.completed(1, wall_seconds=90000, recovery=True, policy=False)
+    assert schedule.due(wall_seconds=90001, **options) == (False, False)
+    assert schedule.due(wall_seconds=108000, **options) == (True, False)
+
+
+def test_disabled_timed_recovery_does_not_consume_slots():
+    schedule = CheckpointSchedule(last_recovery_wall_seconds=0)
+    assert schedule.due(iteration=1, final=False, active_seconds=1, wall_seconds=90000,
+                        recovery_seconds=0, policy_seconds=21600) == (False, False)
+    assert schedule.last_recovery_check_wall_seconds == 0
 
 
 def assert_tree_equal(left, right):
@@ -174,10 +226,11 @@ def assert_tree_equal(left, right):
         assert left == right
 
 
-def test_resume_after_recovery_without_policy_matches_uninterrupted(tmp_path, monkeypatch):
+@pytest.mark.parametrize("policy_every", [0, 1])
+def test_resume_after_recovery_matches_uninterrupted(tmp_path, monkeypatch, policy_every):
     import hunl_escher.train as runner
     original = runner.make_solver
-    args = ["--smoke", "--iterations", "2", "--policy-every", "50",
+    args = ["--smoke", "--iterations", "2", "--policy-every", str(policy_every),
             "--checkpoint-every", "1", "--checkpoint-seconds", "0", "--seed", "43"]
     control, interrupted = tmp_path / "control", tmp_path / "interrupted"
     runner.main([*args, "--output", str(control)])
@@ -194,7 +247,7 @@ def test_resume_after_recovery_without_policy_matches_uninterrupted(tmp_path, mo
     with pytest.raises(RuntimeError, match="simulated interruption"):
         runner.main([*args, "--output", str(interrupted)])
     assert json.loads((interrupted / "latest.json").read_text())["iteration"] == 1
-    assert not list(interrupted.glob("policy_*.pkl"))
+    assert bool(list(interrupted.glob("policy_*.pkl"))) == bool(policy_every)
     monkeypatch.setattr(runner, "make_solver", original)
     runner.main([*args, "--output", str(interrupted), "--resume"])
     expected = read_training_state(control / "state_000002")
@@ -203,4 +256,58 @@ def test_resume_after_recovery_without_policy_matches_uninterrupted(tmp_path, mo
                 "rng", "replay_rng"):
         assert_tree_equal(expected[key], actual[key])
     first = json.loads((interrupted / "metrics_000001.json").read_text())
-    assert first["policy_fitted"] is False and first["recovery_saved"] is True
+    assert first["policy_fitted"] == bool(policy_every) and first["recovery_saved"] is True
+
+
+def test_skipped_check_is_persisted_without_rewriting_replay(tmp_path, monkeypatch):
+    from hunl_escher import train
+    now = [0.0]
+    resuming = [False]
+    monkeypatch.setattr(train.time, 'time', lambda: now[0])
+    make = train.make_solver
+    def make_with_clock(*args, **kwargs):
+        solver = make(*args, **kwargs)
+        iterate = solver.iteration
+        def iteration():
+            if solver.num_iteration == 0:
+                now[0] = 19800  # Incidental recovery at 5.5 hours.
+            elif solver.num_iteration == 1:
+                now[0] = 25200 if resuming[0] else 21600
+            elif not resuming[0]:
+                raise RuntimeError('interruption after skipped check')
+            else:
+                now[0] = 43200
+            return iterate()
+        solver.iteration = iteration
+        return solver
+    monkeypatch.setattr(train, 'make_solver', make_with_clock)
+    due = train.CheckpointSchedule.due
+    def with_incidental_save(self, **kwargs):
+        result = due(self, **kwargs)
+        return (True, False) if kwargs['iteration'] == 1 else result
+    monkeypatch.setattr(train.CheckpointSchedule, 'due', with_incidental_save)
+    args = ['--smoke', '--iterations', '3', '--policy-every', '0', '--output', str(tmp_path)]
+    with pytest.raises(RuntimeError, match='interruption after skipped check'):
+        train.main(args)
+    pointer = json.loads((tmp_path / 'latest.json').read_text())
+    assert pointer['iteration'] == 1
+    assert pointer['checkpoint_schedule']['last_recovery_check_wall_seconds'] == 21600
+    assert pointer['checkpoint_schedule']['last_recovery_wall_seconds'] == 19800
+    assert json.loads((tmp_path / 'manifest.json').read_text())['recovery_seconds'] == 21600
+    assert sorted(p.name for p in tmp_path.glob('state_*')) == ['state_000001']
+    # The full state was saved BEFORE the skipped check; only the pointer
+    # has the updated grid. Resume must load the pointer's schedule.
+    saved = read_training_state(tmp_path / 'state_000001')
+    assert saved['checkpoint_schedule']['last_recovery_check_wall_seconds'] == 0
+    resuming[0] = True
+    now[0] = 25200
+    train.main([*args, '--resume'])
+    assert json.loads((tmp_path / 'metrics_000002.json').read_text())['recovery_saved'] is False
+    assert sorted(p.name for p in tmp_path.glob('state_*')) == ['state_000003']
+
+
+def test_run_start_is_not_treated_as_a_successful_checkpoint():
+    schedule = CheckpointSchedule(last_recovery_check_wall_seconds=0)
+    # A shorter explicit interval must not suppress the first ever save.
+    assert schedule.due(iteration=1, final=False, active_seconds=1, wall_seconds=600,
+                        recovery_seconds=600, policy_seconds=21600) == (True, False)
