@@ -56,6 +56,17 @@ for _mask in range(8192):
             _STRAIGHT[_mask] = _start + 6
 
 
+# Every possible set of the 13 ranks, descending with zero padding. Keep the
+# original integer dtype and return owned rows: rank_cards mutates its kickers.
+_TOP_RANKS = np.sort(np.where(
+    (np.arange(8192)[:, None] & _RANK_BITS) != 0, np.arange(2, 15), 0), axis=1)[:, ::-1].copy()
+_TOP_RANKS.flags.writeable = False
+
+
+def _top_ranks(mask, k=5):
+    return _TOP_RANKS[(mask * _RANK_BITS).sum(axis=1), :k]
+
+
 def rank_cards(cards):
     """Vectorised exact best-five evaluator for N x (5, 6 or 7) rank*4+suit IDs.
 
@@ -72,8 +83,7 @@ def rank_cards(cards):
     category = np.zeros(len(cards), dtype=np.int8)
     rank_values = np.arange(2, 15)
 
-    def top(where, n=5):
-        return np.sort(np.where(where, rank_values, 0), axis=1)[:, -n:][:, ::-1]
+    top = _top_ranks
 
     tie = top(counts > 0)
     pairs, trips, quads = top(counts >= 2, 3), top(counts >= 3, 2), top(counts == 4, 1)

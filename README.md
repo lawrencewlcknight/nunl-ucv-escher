@@ -33,9 +33,15 @@ encoder and observing player. Every action clears the cache; returned arrays
 remain independently mutable. Binary suit ordering uses packed bits, inference
 uses explicit tensor devices, and frozen-target construction takes contiguous
 replay views while preserving final-batch padding and skipping unused fields.
+Both Hold'em variants also replace repeated rank sorting with an exact, read-only
+8,192-mask lookup (832 KiB per process); tests exhaust all masks and compare
+30,000 random hands against the previous sorting operation.
 These execution optimisations preserve the feature contract and learning
 configuration. `tests/test_training_efficiency.py` compares replay, RNG, model
 and Adam states with the previous operations, including production minibatches.
+Existing source-fingerprint checks for training continuation still apply. Worker
+pipelining and persistent replay-hash caches remain deferred until VM profiling
+supports them.
 
 This is a runnable development learner, not a trained competitive model.
 Slumbot and GTO Wizard API adapters, inference-only play and offline equivalence

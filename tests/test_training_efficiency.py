@@ -7,7 +7,7 @@ import pytest
 import torch
 
 from adaptive_escher import frozen_target_cache as targets
-from hunl_escher import features
+from hunl_escher import features, strategic_features as cards
 from hunl_escher.config import make_solver, smoke_config
 from hunl_escher.training_state import build_training_state
 from unbiased_escher import holdem_fitting
@@ -31,6 +31,41 @@ def assert_tree_equal(left, right):
         assert left.tobytes() == right.tobytes()
     else:
         np.testing.assert_equal(left, right)  # Includes matching NaN diagnostics.
+
+
+def reference_top_ranks(mask, k=5):
+    return np.sort(np.where(mask, np.arange(2, 15), 0), axis=1)[:, ::-1][:, :k]
+
+
+def clear_card_caches():
+    # Reference and optimised runs must both compute features, including preflop.
+    for value in vars(cards).values():
+        if hasattr(value, 'cache_clear'):
+            value.cache_clear()
+
+
+def test_rank_lookup_exhausts_all_masks_and_preserves_owned_rows():
+    masks = (np.arange(8192)[:, None] & (1 << np.arange(13))) != 0
+    for k in range(1, 6):
+        actual = cards._top_ranks(masks, k)
+        expected = reference_top_ranks(masks, k)
+        assert_tree_equal(actual, expected)
+        actual[:] = -1
+        assert_tree_equal(cards._top_ranks(masks, k), expected)
+    assert not cards._TOP_RANKS.flags.writeable
+    assert cards._TOP_RANKS.nbytes < 1024 * 1024
+
+
+@pytest.mark.parametrize('size', [5, 6, 7])
+def test_rank_lookup_matches_sort_for_random_hands_and_empty_batches(monkeypatch, size):
+    rng = np.random.default_rng(2026)
+    hands = np.array([rng.choice(52, size, replace=False) for _ in range(10000)])
+    for batch in (hands, hands[:0]):
+        actual = cards.rank_cards(batch)
+        with monkeypatch.context() as patch:
+            patch.setattr(cards, '_top_ranks', reference_top_ranks)
+            expected = cards.rank_cards(batch)
+        assert_tree_equal(actual, expected)
 
 
 def reference_suits(*channels):
@@ -59,6 +94,7 @@ def reference_batch(buffer, indices, device):
 
 def install_reference(monkeypatch):
     """The pre-optimisation operations; no alternate learning configuration."""
+    monkeypatch.setattr(cards, '_top_ranks', reference_top_ranks)
     monkeypatch.setattr(features, '_canonicalise_suits', reference_suits)
     monkeypatch.setattr(features.LegacyHUNLFeatureEncoder, '_cached_state_features',
                         lambda self, state, key, build: build())
@@ -163,6 +199,7 @@ def test_target_batches_share_full_rows_and_preserve_tail_padding():
 
 
 def training_snapshot(config):
+    clear_card_caches()
     solver = make_solver(config, seed=771)
     snapshots = []
     for _ in range(3):
