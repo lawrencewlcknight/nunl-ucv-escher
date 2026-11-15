@@ -28,6 +28,15 @@ with separately sized exact-card, strategic-card and context branches. The six o
 1.31 million parameters. These defaults require a fresh training run; saved v3/v4
 policies with the previous widths remain usable for inference.
 
+Training reuses encoded features within each unchanged game state, keyed by
+encoder and observing player. Every action clears the cache; returned arrays
+remain independently mutable. Binary suit ordering uses packed bits, inference
+uses explicit tensor devices, and frozen-target construction takes contiguous
+replay views while preserving final-batch padding and skipping unused fields.
+These execution optimisations preserve the feature contract and learning
+configuration. `tests/test_training_efficiency.py` compares replay, RNG, model
+and Adam states with the previous operations, including production minibatches.
+
 This is a runnable development learner, not a trained competitive model.
 Slumbot and GTO Wizard API adapters, inference-only play and offline equivalence
 tests are implemented in [the API interface](docs/API_INTERFACE.md). Slumbot has

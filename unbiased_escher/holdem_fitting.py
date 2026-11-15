@@ -8,6 +8,7 @@ import time
 import numpy as np
 import torch
 
+from adaptive_escher.frozen_target_cache import target_batch_indices
 from .replay_grouping import CHUNK_ROWS, reservoir_counts, retained_context_counts
 
 
@@ -55,7 +56,7 @@ def fit_cached_regrets(trainer, iteration):
     with torch.no_grad():
         for start in range(0, size, batch):
             stop = min(start + batch, size)
-            indices = np.resize(np.arange(start, stop), batch)
+            indices = target_batch_indices(start, stop, batch)
             features = torch.as_tensor(trainer.buffer.infostate_buf[indices], device=trainer.device)
             masks = torch.as_tensor(trainer.buffer.q_value_mask_buf[indices], device=trainer.device)
             previous = trainer.predict(trainer.target_model, features, masks)

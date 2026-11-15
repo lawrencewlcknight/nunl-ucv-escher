@@ -115,6 +115,9 @@ class HUNLState:
         self._public_history = ()
         self._street_start = (0, 0)
         self._bounds_cache = self._spent_cache = self._menu_cache = None
+        # Encoder-owned entries live only as long as this unchanged state.
+        # Clones start empty so parent and child caches never share ownership.
+        self._feature_cache = {}
 
     def get_game(self):
         return self._game
@@ -265,6 +268,7 @@ class HUNLState:
         if not valid:
             raise ValueError(f"Illegal native action {action}")
         self._native.apply_action(action)
+        self._feature_cache.clear()
         code = 0.0 if chance else (-1.0 if action == 0 else
                                     -0.5 if action == 1 else action / STACK_CHIPS)
         self._public_history += (code,)

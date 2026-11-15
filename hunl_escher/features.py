@@ -39,9 +39,11 @@ class FeatureLayout:
 
 
 def _canonicalise_suits(*channels):
-    signatures = [tuple(float(x) for channel in channels for x in channel[suit])
-                  for suit in range(4)]
-    order = sorted(range(4), key=lambda suit: signatures[suit], reverse=True)
+    # Channels are binary card indicators. Big-endian packed bits have the
+    # same lexicographic ordering as the old float tuples, including suit ties.
+    signatures = np.packbits(np.concatenate(channels, axis=1).astype(bool),
+                             axis=1, bitorder="big")
+    order = sorted(range(4), key=lambda suit: signatures[suit].tobytes(), reverse=True)
     return tuple(channel[order].reshape(-1) for channel in channels)
 
 
@@ -134,7 +136,23 @@ class LegacyHUNLFeatureEncoder:
                                view.legal_mask, sizes, history))
 
     def information_state(self, state, player=None):
-        return self.encode_decision(self._view(state, player))
+        player = state.current_player() if player is None else player
+        return self._cached_state_features(state, ("information", player),
+            lambda: self.encode_decision(self._view(state, player)))
+
+    def _cached_state_features(self, state, key, build):
+        # Use the encoder object, not its id: distinct versions/menus cannot
+        # collide, even if a previous encoder is garbage-collected. Return a
+        # copy to preserve the caller's ownership of the original API's arrays.
+        cache_key = (self, key)
+        cache = state._feature_cache
+        if cache_key not in cache:
+            cache[cache_key] = build()
+        return cache[cache_key].copy()
+
+    def full_state(self, state):
+        return self._cached_state_features(state, ("full",),
+            lambda: self._encode_full_state(state))
 
     def _validate_decision(self, view):
         if view.action_menu != self.action_menu:
@@ -157,7 +175,7 @@ class LegacyHUNLFeatureEncoder:
                                                     *self._board(view)),
                                self._context(view), own, betting_features(view, own))).astype(np.float32)
 
-    def full_state(self, state):
+    def _encode_full_state(self, state):
         if state.is_terminal():
             return np.zeros(self.full_state_size, dtype=np.float32)
         view = self._view(state)
@@ -209,7 +227,7 @@ class StrategicV4HUNLFeatureEncoder(LegacyHUNLFeatureEncoder):
         return np.concatenate((*_canonicalise_suits(self._cards(view.hole_cards), *self._board(view)),
                                own, self._context(view), strategic.betting_features(view, own))).astype(np.float32)
 
-    def full_state(self, state):
+    def _encode_full_state(self, state):
         strategic = self.card_module
         if state.is_terminal():
             return np.zeros(self.full_state_size, dtype=np.float32)

@@ -22,12 +22,22 @@ def replay_indices(buffer, count):
 
 
 def transition_batch(buffer, indices, device):
-    floats = ("history", "next_history", "next_state", "reward")
-    integers = ("next_legal_actions_mask", "next_player", "action", "done")
-    return tuple(torch.as_tensor(getattr(buffer, name + "_buf")[indices],
+    # Frozen labels never use current histories/actions. Keep their tuple
+    # positions for frozen_targets(), without gathering their replay arrays.
+    floats = (None, "next_history", "next_state", "reward")
+    integers = ("next_legal_actions_mask", "next_player", None, "done")
+    return tuple(None if name is None else
+                 torch.as_tensor(getattr(buffer, name + "_buf")[indices],
                                  dtype=dtype, device=device)
                  for names, dtype in ((floats, torch.float32), (integers, torch.int64))
                  for name in names)
+
+
+def target_batch_indices(start, stop, batch_size):
+    """Zero-copy full batches; preserve the existing padded final batch."""
+    if stop - start == batch_size:
+        return slice(start, stop)
+    return np.resize(np.arange(start, stop), batch_size)
 
 
 def frozen_targets(member, batch, iteration):
@@ -55,11 +65,9 @@ def build_target_cache(member, iteration):
     targets = torch.empty(size, dtype=torch.float32, device=member.device)
     for start in range(0, size, batch_size):
         stop = min(start + batch_size, size)
-        indices = np.arange(start, stop)
         # Same forward batch shape as the baseline, including the final tail.
         # These networks are row-independent; padding consumes no RNG.
-        if len(indices) < batch_size:
-            indices = np.resize(indices, batch_size)
+        indices = target_batch_indices(start, stop, batch_size)
         batch = transition_batch(member.buffer, indices, member.device)
         targets[start:stop] = frozen_targets(member, batch, iteration)[:stop-start]
     if not torch.isfinite(targets).all():

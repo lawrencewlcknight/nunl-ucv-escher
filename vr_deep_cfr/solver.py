@@ -664,12 +664,11 @@ class RegretTrainer(Trainer):
         self.target_model.load_state_dict(self.model.state_dict())
 
     def forward(self, model, x, mask):
-        with torch.device(self.device):
-            x = torch.as_tensor(x, dtype=torch.float32)
-            mask = torch.as_tensor(mask, dtype=torch.float32)
-            with torch.no_grad():
-                legal_regrets = self.predict(model, x, mask)
-                return legal_regrets.cpu().numpy()
+        x = torch.as_tensor(x, dtype=torch.float32, device=self.device)
+        mask = torch.as_tensor(mask, dtype=torch.float32, device=self.device)
+        with torch.no_grad():
+            legal_regrets = self.predict(model, x, mask)
+            return legal_regrets.cpu().numpy()
 
     def predict(self, model, x, mask):
         legal_regrets = model(x) * mask
