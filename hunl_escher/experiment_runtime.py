@@ -8,7 +8,7 @@ import time
 from .train import write_json
 
 
-def run_child(command, log, *, timeout):
+def run_child(command, log, *, timeout, cwd=None, env=None):
     """Each child owns a process group, including any local Ray actors."""
     import psutil
     log = Path(log)
@@ -16,7 +16,7 @@ def run_child(command, log, *, timeout):
     peak_rss = peak_host_used = 0
     monitoring_available = True
     with log.open("x") as handle:
-        child = subprocess.Popen(command, stdout=handle, stderr=subprocess.STDOUT, start_new_session=True)
+        child = subprocess.Popen(command, stdout=handle, stderr=subprocess.STDOUT, start_new_session=True, cwd=cwd, env=env)
         timed_out = False
         try:
             while child.poll() is None:

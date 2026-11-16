@@ -182,6 +182,15 @@ For GTO Wizard, set `GTO_WIZARD_API_KEY` securely and use `--opponent gtow`.
 Install the `api` extra for the CA-bundle fallback. See the [API guide](docs/API_INTERFACE.md)
 for exact units, resumption limits, logs and credential handling.
 
+## Continue P8 for another 24 hours
+
+See the [continuation experiment protocol](docs/CONTINUATION_EXPERIMENT.md) for
+full-state recovery, six-hour P14/P20/P26/P32 policies, final reload verification,
+five local head-to-head comparisons and a final-policy-only Slumbot benchmark.
+The training and Slumbot launchers are separate: the small evaluator can be
+started only after verified P32 publication, avoiding an idle paid VM.
+Launchers require `--execute` to create cloud resources.
+
 ## Layout
 
 | Directory | Purpose |

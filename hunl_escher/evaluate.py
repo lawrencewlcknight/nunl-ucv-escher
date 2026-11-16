@@ -84,11 +84,13 @@ def collect(executor, *, count, seed, path, deadline):
 
 def run_evaluation(a, b, output, *, seed=8301, workers=8, pilot_pairs=10000,
                    minimum=100000, maximum=1000000, max_seconds=7200,
-                   effect_bb100=10.):
+                   effect_bb100=10., alpha=.05):
     if workers < 1 or pilot_pairs < 2 or max_seconds <= 0:
         raise ValueError("Invalid evaluation limits")
     if not (2 <= minimum <= maximum) or not np.isfinite(max_seconds) or seed < 0:
         raise ValueError("Invalid sample, time or seed limits")
+    if not (0 < alpha < 1 and np.isfinite(effect_bb100) and effect_bb100 > 0):
+        raise ValueError("Invalid alpha or effect size")
     output = Path(output)
     output.mkdir(parents=True, exist_ok=False)
     b = str(b)
@@ -100,7 +102,7 @@ def run_evaluation(a, b, output, *, seed=8301, workers=8, pilot_pairs=10000,
     write_json(output / "manifest.json", dict(agents=identity, seed=seed,
                unit="independent_duplicate_pair_average_bb", pilot_pairs=pilot_pairs,
                minimum=minimum, maximum=maximum, max_seconds=max_seconds,
-               effect_bb100=effect_bb100, workers=workers))
+               effect_bb100=effect_bb100, alpha=alpha, workers=workers))
     deadline = time.monotonic() + max_seconds
     pool = None
     try:
@@ -117,7 +119,7 @@ def run_evaluation(a, b, output, *, seed=8301, workers=8, pilot_pairs=10000,
             rate = pilot_pairs / (time.monotonic()-pilot_started)
             affordable = max(minimum, int(.8 * rate * max(0, deadline-time.monotonic())))
             effective_maximum = min(maximum, affordable)
-            plan = sample_plan(pilot, minimum=minimum, maximum=effective_maximum, effect_bb100=effect_bb100)
+            plan = sample_plan(pilot, minimum=minimum, maximum=effective_maximum, effect_bb100=effect_bb100, alpha=alpha)
             plan.update(pilot_pairs_per_second=rate, requested_maximum=maximum,
                         runtime_planning_maximum=effective_maximum)
             write_json(output / "plan.json", plan)  # Freeze BEFORE confirmatory sampling.
@@ -126,7 +128,7 @@ def run_evaluation(a, b, output, *, seed=8301, workers=8, pilot_pairs=10000,
             complete = len(main) == plan["selected"]
             report = dict(status="COMPLETE" if complete else "INCOMPLETE_TIME_LIMIT",
                           plan=plan, completed_pairs=len(main),
-                          result=estimate(main, complete=complete) if len(main) >= 2 else None)
+                          result=estimate(main, alpha=alpha, complete=complete) if len(main) >= 2 else None)
         write_json(output / "report.json", report)
         return report
     finally:
@@ -145,6 +147,7 @@ def main(argv=None):
     p.add_argument("--minimum", type=int, default=100000)
     p.add_argument("--maximum", type=int, default=1000000)
     p.add_argument("--max-seconds", type=float, default=7200)
+    p.add_argument("--alpha", type=float, default=.05)
     args = p.parse_args(argv)
     print(json.dumps(run_evaluation(**vars(args)), indent=2))
 
