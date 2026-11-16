@@ -12,6 +12,7 @@ import re
 
 from .checkpointing import load_checkpoint_payload, sha256_file
 from .experiment_runtime import run_child
+from .storage_transfer import run_transfer
 from .preflight import preflight
 from .train import source_fingerprint, write_json
 
@@ -36,10 +37,10 @@ def upload_recovery(root, uri):
     training = root / "training"
     pointer = json.loads((training / "latest.json").read_text())
     remote = uri.rstrip("/")
-    subprocess.run(["gcloud", "storage", "rsync", "--recursive", str(training / pointer["state"]),
-                    remote+"/training/"+pointer["state"]], check=True, timeout=1200)
+    run_transfer(["gcloud", "storage", "rsync", "--recursive", str(training / pointer["state"]),
+                    remote+"/training/"+pointer["state"]], timeout=1200)
     for name in ("manifest.json", "latest.json"):
-        subprocess.run(["gcloud", "storage", "cp", str(training / name), remote+"/training/"+name], check=True, timeout=120)
+        run_transfer(["gcloud", "storage", "cp", str(training / name), remote+"/training/"+name], timeout=120)
     publication = root / "cloud_checkpoint.json"
     previous = json.loads(publication.read_text())["state"] if publication.exists() else None
     if previous and previous != pointer["state"]:
@@ -54,8 +55,8 @@ def upload_checkpoint(root, uri, label):
     """Recovery upload completes before publishing a cloud policy marker."""
     upload_recovery(root, uri)
     for suffix in ("pkl", "json"):
-        subprocess.run(["gcloud", "storage", "cp", str(root / f"{label}.{suffix}"),
-                        uri.rstrip("/")+f"/{label}.{suffix}"], check=True, timeout=120)
+        run_transfer(["gcloud", "storage", "cp", str(root / f"{label}.{suffix}"),
+                        uri.rstrip("/")+f"/{label}.{suffix}"], timeout=120)
 
 
 def training_diagnostics(root):
