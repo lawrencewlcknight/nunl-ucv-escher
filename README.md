@@ -53,6 +53,11 @@ Production playing strength has not yet been measured.
 
 ## Install
 
+For a controlled sampler comparison using saved replay, see the
+[policy sampler experiment](docs/POLICY_SAMPLER_EXPERIMENT.md). It refits matched
+policies without new self-play, evaluates them locally, and provides a separate
+Slumbot follow-up after a positive primary result. Production defaults are unchanged.
+
 Use Python 3.10–3.12 (3.12 is the development reference):
 
 ```bash
