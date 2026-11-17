@@ -2,7 +2,6 @@
 from copy import deepcopy
 from hashlib import blake2b
 import math
-import random
 import time
 
 import numpy as np
@@ -10,6 +9,7 @@ import torch
 
 from adaptive_escher.frozen_target_cache import target_batch_indices
 from .replay_grouping import CHUNK_ROWS, reservoir_counts, retained_context_counts
+from .policy_sampling import PolicyGroupSampler
 
 
 class RegretFitMixin:
@@ -121,14 +121,15 @@ def fit_validated_policy(trainer, iteration):
     checkpoints = {step for step in trainer.validation_steps if step <= trainer.train_steps}
     checkpoints.add(trainer.train_steps)
     history, best, best_score = [], None, float("inf")
+    sampler = PolicyGroupSampler(train_ids, weights, batch_size,
+        mode=getattr(trainer, "policy_group_sampling", "uniform"),
+        seed=getattr(trainer, "policy_sampling_seed", 0))
     trainer.model.train()
     for step in range(1, trainer.train_steps + 1):
-        selected = (train_ids if batch_size == len(train_ids) else
-                    train_ids[random.sample(range(len(train_ids)), batch_size)])
-        idx = torch.as_tensor(selected, device=features.device)
+        idx, loss_weights = sampler.sample()
         logits = trainer.model(features[idx]).masked_fill(masks[idx] != 1, -1e20)
         losses = -(targets[idx] * torch.log_softmax(logits, -1)).sum(-1)
-        loss = (losses * weights[idx]).mean()
+        loss = (losses * loss_weights).mean()
         trainer.optimizer.zero_grad()
         loss.backward()
         trainer.optimizer.step()
@@ -157,5 +158,6 @@ def fit_validated_policy(trainer, iteration):
         "validation_available": validating, "updates_completed": trainer.train_steps,
         "selected_update": selected_step, "validation_weighted_ce": best_score if validating else None,
         "validation_history": history,
+        "group_sampling": sampler.mode,
     }
     return selected_loss
