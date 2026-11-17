@@ -141,8 +141,31 @@ gcloud compute instances list --project=clever-overview-399515 \
 
 ## Local verification
 
+### Recover a completed run after publication failure
+
+`python -m hunl_escher.recover_continuation --workspace /var/lib/hunl-continuation
+--uri gs://BUCKET/hunl/RUN` uses the existing VM workspace. It never trains.
+Before starting it, replace the original startup script (which intentionally
+shuts down on a second boot), protect the boot disk from automatic deletion,
+and impose a six-hour VM stop limit. Keep the archived trainer unchanged.
+
+The recovery verifies all five recorded policy identities and completed stage
+targets, checks the final disk recovery, retries its upload, downloads a separate
+cloud copy, and verifies every SHA256 plus a full eight-worker reload. Only after
+both verifications succeed does it publish P32 and prune older continuation
+recoveries. The original baseline run is a separate prefix and is preserved.
+It then runs the existing four-hour local evaluation suite and publishes the
+readiness marker for the separate Slumbot job. It keeps the original failure
+record in `continuation-before-recovery.json`; `recovery-audit.json` records the
+new status. A failed verification cannot publish readiness or prune recoveries.
+
+Periodic publication stages diagnostic files only; recovery directories,
+playable policies, and training pointers use the synchronous checkpoint
+publisher. Cloud retention enumerates all older recovery directories within
+the current run instead of relying on a single previous-state marker.
+
 ```bash
-python -m pytest -q tests/test_continuation.py
+python -m pytest -q tests/test_continuation.py tests/test_cloud_recovery.py tests/test_storage_transfer.py
 ```
 
 These offline tests create a small full-architecture recovery, continue four

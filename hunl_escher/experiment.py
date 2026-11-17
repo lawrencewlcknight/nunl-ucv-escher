@@ -36,19 +36,40 @@ def upload_recovery(root, uri):
     """Publish a verified local recovery, then prune the previous cloud recovery."""
     training = root / "training"
     pointer = json.loads((training / "latest.json").read_text())
+    if not re.fullmatch(r"state_[0-9]+", pointer['state']):
+        raise ValueError('Invalid recovery directory')
     remote = uri.rstrip("/")
     run_transfer(["gcloud", "storage", "rsync", "--recursive", str(training / pointer["state"]),
                     remote+"/training/"+pointer["state"]], timeout=1200)
     for name in ("manifest.json", "latest.json"):
         run_transfer(["gcloud", "storage", "cp", str(training / name), remote+"/training/"+name], timeout=120)
     publication = root / "cloud_checkpoint.json"
-    previous = json.loads(publication.read_text())["state"] if publication.exists() else None
-    if previous and previous != pointer["state"]:
-        if not re.fullmatch(r"state_[0-9]+", previous):
-            raise ValueError("Invalid previous cloud checkpoint directory")
-        subprocess.run(["gcloud", "storage", "rm", "--recursive", remote+"/training/"+previous],
-                       check=True, timeout=300)
+    prune_cloud_recoveries(remote, pointer['state'])
     write_json(publication, {"state": pointer["state"]})
+
+
+def prune_cloud_recoveries(uri, keep):
+    """Prune every older recovery in this run, after successful publication."""
+    if not re.fullmatch(r'state_[0-9]+', keep):
+        raise ValueError('Invalid retained recovery')
+    prefix = uri.rstrip('/') + '/training/'
+    result = subprocess.run(['gcloud', 'storage', 'ls', prefix], check=True,
+                            capture_output=True, text=True, timeout=120)
+    removed = []
+    for line in result.stdout.splitlines():
+        candidate = line.strip().rstrip('/')
+        if not candidate.startswith(prefix):
+            continue
+        name = candidate[len(prefix):]
+        if not re.fullmatch(r'state_[0-9]+', name) or name == keep:
+            continue
+        # Never delete a newer state if an old publisher finishes late.
+        if int(name.split('_')[1]) >= int(keep.split('_')[1]):
+            continue
+        subprocess.run(['gcloud', 'storage', 'rm', '--recursive', candidate],
+                       check=True, timeout=300)
+        removed.append(name)
+    return removed
 
 
 def upload_checkpoint(root, uri, label):

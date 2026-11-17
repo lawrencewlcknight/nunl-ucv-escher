@@ -20,7 +20,8 @@ def test_503_retries_complete_before_pointer_and_policy_publication(tmp_path, mo
         calls.append(command)
         if len(calls) == 1:
             raise subprocess.CalledProcessError(1, command, stderr='ERROR: HTTPError 503\n')
-        return subprocess.CompletedProcess(command, 0, stderr='')
+        return subprocess.CompletedProcess(command, 0,
+            stdout='gs://bucket/run/training/state_000301/\ngs://bucket/run/training/state_000507/\n', stderr='')
     monkeypatch.setattr(subprocess, 'run', run)
     monkeypatch.setattr(storage_transfer.time, 'sleep', sleeps.append)
     upload_checkpoint(tmp_path, 'gs://bucket/run', 'P14')
@@ -28,6 +29,7 @@ def test_503_retries_complete_before_pointer_and_policy_publication(tmp_path, mo
     assert sleeps == [5]
     assert [c[-1] for c in calls[2:]] == [
         'gs://bucket/run/training/manifest.json', 'gs://bucket/run/training/latest.json',
+        'gs://bucket/run/training/',
         'gs://bucket/run/training/state_000301', 'gs://bucket/run/P14.pkl', 'gs://bucket/run/P14.json']
     assert json.loads((tmp_path/'cloud_checkpoint.json').read_text())['state'] == 'state_000507'
 

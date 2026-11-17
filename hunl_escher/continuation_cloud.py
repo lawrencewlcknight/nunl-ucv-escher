@@ -5,6 +5,8 @@ from pathlib import Path
 import subprocess
 import tarfile
 import threading
+import shutil
+import tempfile
 from contextlib import contextmanager
 
 from .checkpointing import sha256_file
@@ -57,15 +59,16 @@ def download_source(uri, workspace, expected_p8_sha256):
 def publisher(output, uri, *, training=False):
     """Periodic report uploads; checkpoint publication remains transactional."""
     stop = threading.Event()
+    lock = threading.Lock()
     def sync(final=False):
         if not output.exists():
             return
-        exclude = (r'^training/(?:state_[0-9]+(?:/.*)?|manifest\.json|latest\.json)$'
-                   r'|^P[0-9]+\.(?:pkl|json)$|^cloud_checkpoint\.json$') if training else r'^$'
-        if not final:
-            exclude += r'|\.jsonl$'
-        if sync_output(output, uri, exclude=exclude) != 0:
-            raise RuntimeError('Continuation report upload failed')
+        # Stage only reports. Do not depend on gcloud's path interpretation of
+        # exclude regexes to protect transactional checkpoints and pointers.
+        with lock, tempfile.TemporaryDirectory(prefix='hunl-reports-') as staging:
+            stage_reports(output, Path(staging), training=training, final=final)
+            if sync_output(Path(staging), uri) != 0:
+                raise RuntimeError('Continuation report upload failed')
     def loop():
         while not stop.wait(120):
             try:
@@ -80,6 +83,29 @@ def publisher(output, uri, *, training=False):
         stop.set()
         thread.join(timeout=1250)
         sync(final=True)
+
+
+def stage_reports(output, destination, *, training, final):
+    import re
+    for source in Path(output).rglob('*'):
+        relative = source.relative_to(output)
+        if not source.is_file() or source.is_symlink():
+            continue
+        if any(re.fullmatch(r'state_[0-9]+', part) for part in relative.parts):
+            continue
+        if source.suffix not in ('.json', '.jsonl', '.log', '.md'):
+            continue
+        if not final and source.suffix == '.jsonl':
+            continue
+        if training and (str(relative) in ('training/manifest.json', 'training/latest.json', 'cloud_checkpoint.json')
+                         or re.fullmatch(r'P[0-9]+\.json', str(relative))):
+            continue
+        target = destination / relative
+        target.parent.mkdir(parents=True, exist_ok=True)
+        try:
+            shutil.copy2(source, target)
+        except FileNotFoundError:
+            pass  # A rotating diagnostic can disappear; checkpoints are excluded.
 
 
 def run_cloud(workspace, source_uri, output_uri, expected_p8_sha256):
@@ -172,4 +198,3 @@ def main():
 
 if __name__ == '__main__':
     main()
-

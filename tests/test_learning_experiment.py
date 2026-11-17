@@ -198,6 +198,7 @@ def test_cloud_recovery_publication_prunes_only_after_success(tmp_path, monkeypa
     commands = []
     def run(command, **kwargs):
         commands.append(command)
+        return subprocess.CompletedProcess(command, 0, stdout='gs://bucket/run/training/state_000001/\ngs://bucket/run/training/state_000002/\n', stderr='')
     monkeypatch.setattr(subprocess, "run", run)
     upload_recovery(tmp_path, "gs://bucket/run")
     assert commands[0][2] == "rsync"
