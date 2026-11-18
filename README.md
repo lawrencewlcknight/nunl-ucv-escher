@@ -6,6 +6,12 @@ FHP Experiment 36/38 implementation, with **up to 2,500 updates per critic per f
 scaled to occupied replay during warm-up.
 See [the baseline specification](docs/BASELINE.md) for the choice and evidence.
 
+The [strategic-position evaluation suite](docs/STRATEGIC_AUDIT.md) audits saved
+policies offline on 526 fixed positions. It includes exact river action costs,
+turn all-in draw equity, blocker/kicker contrasts, checkpoint comparisons and a
+locked assessment split. A self-contained HTML report identifies specific costly
+decisions; no training or external API is required.
+
 The game uses OpenSpiel 1.6.3's full no-limit engine: two players, a full 52-card
 deck, preflop/flop/turn/river, 50/100 blinds, and 20,000-chip stacks reset every hand.
 A versioned Python adapter supplies exact chip amounts, public history and
