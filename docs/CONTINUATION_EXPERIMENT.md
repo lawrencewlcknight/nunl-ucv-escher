@@ -1,5 +1,43 @@
 # P8 plus 24 active training hours
 
+## Chaining another 24 hours from P32
+
+The same launcher accepts `--baseline-hours 32` and
+`--expected-baseline-sha256 SHA256`, with `--source-uri` pointing to the completed
+P8-to-P32 continuation. This exports P38, P44, P50 and P56. The primary comparison
+is P56/P32; the four adjacent comparisons are P38/P32, P44/P38, P50/P44 and P56/P50.
+Final Slumbot evaluation uses P56 and optionally the completed historical P32
+Slumbot result. All sample sizes, confidence levels, seeds, budgets and VM sizes
+below remain unchanged. Further continuations advance the baseline by 24 hours.
+
+This can start while the previous evaluation is running: each run has a separate
+VM, disk and sibling cloud prefix. The previous continuation must have published
+its final full-recovery verification and matching policy hash; its evaluation
+does not need to be complete. The source loader uses `training_source.tar.gz`
+from a continuation, preserving the original trainer rather than substituting
+the coordinator. It restores replay, optimisers, RNGs and counters with strict
+source/runtime/configuration checks. The previous run is read-only.
+
+Example for the verified P32 recovery from `hunl-plus24-20261116-074857`:
+
+```bash
+python3 tools/launch_continuation.py \
+  --project clever-overview-399515 --zone europe-west1-b \
+  --bucket gs://clever-overview-399515-fhp-escher-results/hunl \
+  --service-account fhp-escher-runner@clever-overview-399515.iam.gserviceaccount.com \
+  --source-uri gs://clever-overview-399515-fhp-escher-results/hunl/hunl-plus24-20261116-074857 \
+  --baseline-hours 32 \
+  --expected-baseline-sha256 73eec96257ba92f0c6b8e4fb43f040d8f88a7eb80c589dcffd71f567bb49f129 \
+  --run-name UNIQUE-RUN-NAME --output outputs/cloud-UNIQUE-RUN-NAME
+```
+
+Use a new lowercase run name and add `--execute` to submit. The existing
+`launch_continuation_slumbot.py` command below reads final-policy labels from the
+saved plan. Smoke tests cover two consecutive full-state continuations, the
+shifted local matchups, archive selection and offline P56 Slumbot play.
+
+## Original P8-to-P32 protocol
+
 This is a continuation of the original 200bb, blinds 50/100, no-rake HUNL run.
 Restore its **full P8 recovery**, including replay, optimisers, random states and
 iteration counters. A playable policy alone cannot continue learning.

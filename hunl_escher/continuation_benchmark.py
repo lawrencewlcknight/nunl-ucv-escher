@@ -1,4 +1,4 @@
-"""Cost-bounded Slumbot benchmark of P32 only, with an optional historical P8 reference."""
+"""Cost-bounded final-policy Slumbot benchmark with an optional historical baseline."""
 import argparse
 import json
 import math
@@ -12,6 +12,7 @@ from .api import APIError
 from .benchmark import client_for, collect_hand, version_for
 from .checkpointing import sha256_file
 from .continuation_evaluate import verified_checkpoint
+from .continuation import report_labels
 from .evaluation_stats import estimate
 from .play import Agent, Journal
 from .remote import ProtocolError
@@ -26,20 +27,28 @@ def historical_comparison(path, root, main):
     path, root = Path(path), Path(root)
     try:
         old = json.loads(path.read_text())
-        marker = json.loads(path.with_name('P8.json').read_text())
-        baseline = json.loads((root / 'P8.json').read_text())
         training = json.loads((root / 'continuation.json').read_text())
-        if marker['sha256'] != baseline['sha256'] or marker['sha256'] != training['checkpoints']['P8']['sha256']:
+        baseline_label = report_labels(training)[0]
+        marker = json.loads(path.with_name(f'{baseline_label}.json').read_text())
+        baseline = json.loads((root / f'{baseline_label}.json').read_text())
+        if marker['sha256'] != baseline['sha256'] or marker['sha256'] != training['checkpoints'][baseline_label]['sha256']:
             raise ValueError('Historical baseline identity mismatch')
         if old['provider'] != 'slumbot' or old['primary_metric'] != 'raw_bb':
             raise ValueError('Historical report is not raw Slumbot scoring')
         if old.get('smoke', False):
             raise ValueError('Historical report is a smoke test')
-        selected = old['plan']['selected']
-        values = old['scores']['P8']['main']
-        # The old fixed-sample experiment must finish both arms successfully.
-        if old['status'] != 'COMPLETE' or any(len(old['scores'][label]['main']) != selected for label in ('P4', 'P8')):
-            return dict(status='BASELINE_INCOMPLETE', confirmatory=False)
+        if 'policy' in old:
+            if old['policy'] != baseline_label or old['sha256'] != marker['sha256']:
+                raise ValueError('Historical policy identity differs')
+            values = old['scores']['main']
+            # Completed final-policy benchmarks use a fixed 20,000-hand main sample.
+            if old['status'] != 'COMPLETE' or len(values) != 20000:
+                return dict(status='BASELINE_INCOMPLETE', confirmatory=False)
+        else:
+            selected = old['plan']['selected']
+            values = old['scores'][baseline_label]['main']
+            if old['status'] != 'COMPLETE' or any(len(old['scores'][label]['main']) != selected for label in ('P4', 'P8')):
+                return dict(status='BASELINE_INCOMPLETE', confirmatory=False)
         result = estimate(main, other=values, complete=False)
         result.update(status='AVAILABLE', confirmatory=False, conclusion='descriptive_historical_comparison',
             report_sha256=sha256_file(path), baseline_sha256=marker['sha256'],
@@ -56,14 +65,16 @@ def run_final_benchmark(experiment, output, *, max_seconds=86400, seed=39501,
     if smoke and client_factory is None:
         raise ValueError('Smoke benchmark requires an offline client; no live API calls')
     root, output = Path(experiment), Path(output)
-    policy, marker = verified_checkpoint(root, 'P32', smoke=smoke)
+    labels = report_labels(json.loads((root / 'continuation.json').read_text()))
+    baseline_label, final_label = labels[0], labels[-1]
+    policy, marker = verified_checkpoint(root, final_label, smoke=smoke)
     output.mkdir(parents=True, exist_ok=False)
     pilot_count, main_count = (4, 8) if smoke else (1000, 20000)
-    report = dict(provider='slumbot', policy='P32', sha256=marker['sha256'], smoke=smoke,
+    report = dict(provider='slumbot', policy=final_label, sha256=marker['sha256'], smoke=smoke,
         status='STARTING', primary_metric='raw_bb', scores={'pilot': [], 'main': []},
         purpose='descriptive_final_policy_benchmark', alpha=.05,
         opponent_version_verified=False, estimate=None, historical_comparison=None)
-    design = dict(policy='P32', sha256=marker['sha256'], seed=seed, alpha=.05,
+    design = dict(policy=final_label, sha256=marker['sha256'], seed=seed, alpha=.05,
         pilot_hands=pilot_count, confirmation_hands=main_count, pilot_excluded=True,
         max_seconds=max_seconds, smoke=smoke, fixed_sample=True,
         interpretation='Cost-limited score estimate, not a guaranteed-powered test of improvement')
@@ -79,7 +90,7 @@ def run_final_benchmark(experiment, output, *, max_seconds=86400, seed=39501,
         client = (client_factory or client_for)('slumbot', agent.action_menu)
         if client.provider != 'slumbot':
             raise ValueError('This benchmark accepts only Slumbot')
-        journal.write('policy', label='P32', sha256=marker['sha256'])
+        journal.write('policy', label=final_label, sha256=marker['sha256'])
         report['opponent_version_before'] = version_for(client)
         for phase, count in [('pilot', pilot_count), ('main', main_count)]:
             # Independent action RNGs for pilot and confirmation.
@@ -89,7 +100,7 @@ def run_final_benchmark(experiment, output, *, max_seconds=86400, seed=39501,
             for ordinal in range(count):
                 if time.monotonic() >= deadline:
                     raise TimeoutError('Slumbot wall budget exhausted')
-                score, _ = collect_hand(client, agent, journal, phase, 'P32', ordinal)
+                score, _ = collect_hand(client, agent, journal, phase, final_label, ordinal)
                 if not math.isfinite(score):
                     raise ProtocolError('Non-finite completed hand score')
                 report['scores'][phase].append(score)
@@ -123,14 +134,14 @@ def run_final_benchmark(experiment, output, *, max_seconds=86400, seed=39501,
         report.update(completed_pilot_hands=len(report['scores']['pilot']), completed_hands=len(main))
         journal.close()
         write_json(output / 'report.json', report)
-        lines = ['# P32 versus Slumbot', '', f"Status: {report['status']}",
+        lines = [f'# {final_label} versus Slumbot', '', f"Status: {report['status']}",
                  f'Confirmation hands: {len(main)} / {main_count}. Pilot excluded.',
                  'Descriptive score only; no significance-based stopping.']
         if report['estimate']:
             result = report['estimate']
             lines += [f"Score: {result['bb_per_100']:.2f} bb/100; 95% interval {result['interval']}."]
         if report['historical_comparison']:
-            lines += ['Historical P8 comparison: ' + json.dumps(report['historical_comparison'])]
+            lines += [f'Historical {baseline_label} comparison: ' + json.dumps(report['historical_comparison'])]
         (output / 'slumbot_report.md').write_text('\n\n'.join(lines) + '\n')
     return report
 

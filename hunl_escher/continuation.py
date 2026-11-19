@@ -21,6 +21,19 @@ from .train import write_json
 LABELS = ('P8', 'P14', 'P20', 'P26', 'P32')
 
 
+def continuation_labels(baseline_hours=8):
+    if not isinstance(baseline_hours, int) or baseline_hours < 8 or (baseline_hours-8) % 24:
+        raise ValueError('Baseline must be P8 plus a whole number of 24-hour continuations')
+    return tuple(f'P{baseline_hours + 6*i}' for i in range(5))
+
+
+def report_labels(report):
+    labels = continuation_labels(report.get('baseline_hours', 8))
+    if tuple(report.get('labels', labels)) != labels:
+        raise ValueError('Continuation labels differ from its baseline')
+    return labels
+
+
 def checked_pointer(training):
     pointer = json.loads((Path(training) / 'latest.json').read_text())
     if not re.fullmatch(r'state_[0-9]{6,}', pointer['state']):
@@ -48,22 +61,25 @@ def trainer_command(training, contract, seconds):
 
 
 def run_continuation(source_run, trainer_source, output, *, stage_seconds=21600.,
-                     wall_seconds=108000., upload_uri=None, allow_smoke=False):
+                     wall_seconds=108000., upload_uri=None, allow_smoke=False, baseline_hours=8,
+                     verify_each_stage=False):
+    labels = continuation_labels(baseline_hours)
+    baseline, final = labels[0], labels[-1]
     if not all(math.isfinite(x) and x > 0 for x in (stage_seconds, wall_seconds)):
         raise ValueError('Time budgets must be positive and finite')
     source, trainer, root = map(lambda p: Path(p).resolve(), (source_run, trainer_source, output))
     if root == source or source in root.parents or root in source.parents:
         raise ValueError('Use a separate output directory; preserve the original recovery')
     contract = json.loads((source / 'training/manifest.json').read_text())
-    marker = json.loads((source / 'P8.json').read_text())
+    marker = json.loads((source / f'{baseline}.json').read_text())
     pointer = checked_pointer(source / 'training')
     if marker['recovery'] != pointer['state'] or marker['outer_iteration'] != pointer['iteration']:
-        raise ValueError('P8 is not the latest full recovery')
-    if sha256_file(source / 'P8.pkl') != marker['sha256']:
-        raise ValueError('P8 policy hash mismatch')
-    payload = load_checkpoint_payload(source / 'P8.pkl')
+        raise ValueError(f'{baseline} is not the latest full recovery')
+    if sha256_file(source / f'{baseline}.pkl') != marker['sha256']:
+        raise ValueError(f'{baseline} policy hash mismatch')
+    payload = load_checkpoint_payload(source / f'{baseline}.pkl')
     if payload['outer_iteration'] != pointer['iteration'] or payload['training_elapsed_seconds'] != marker['active_seconds']:
-        raise ValueError('P8 policy and publication marker differ')
+        raise ValueError('Baseline policy and publication marker differ')
     if bool(contract['smoke']) != bool(marker.get('smoke', contract['smoke'])):
         raise ValueError('Inconsistent smoke metadata')
     if contract['smoke'] and not allow_smoke:
@@ -72,7 +88,8 @@ def run_continuation(source_run, trainer_source, output, *, stage_seconds=21600.
     report = dict(status='PREPARING', source_run=str(source), trainer_source=str(trainer),
                   training_source_fingerprint=contract['source_fingerprint'],
                   stage_seconds=stage_seconds, additional_active_seconds=4*stage_seconds,
-                  smoke=contract['smoke'], checkpoints={'P8': marker}, stages={})
+                  smoke=contract['smoke'], baseline_hours=baseline_hours, labels=labels,
+                  checkpoints={baseline: marker}, stages={})
     write_json(root / 'continuation.json', report)
     started = time.monotonic()
     deadline = started + wall_seconds
@@ -96,13 +113,13 @@ def run_continuation(source_run, trainer_source, output, *, stage_seconds=21600.
         shutil.copy2(source / 'training/latest.json', training / 'latest.json')
         shutil.copytree(source / 'training' / pointer['state'], training / pointer['state'])
         for suffix in ('pkl', 'json'):
-            shutil.copy2(source / f'P8.{suffix}', root / f'P8.{suffix}')
+            shutil.copy2(source / f'{baseline}.{suffix}', root / f'{baseline}.{suffix}')
         write_json(training / 'continuation-config.json', contract['config'])
-        verify('P8')  # Source/runtime, every shard checksum, actual solver and actor restore.
+        verify(baseline)  # Source/runtime, every shard checksum, actual solver and actor restore.
         if upload_uri:
-            upload_checkpoint(root, upload_uri, 'P8')
+            upload_checkpoint(root, upload_uri, baseline)
         previous = marker['active_seconds']
-        for index, label in enumerate(LABELS[1:], 1):
+        for index, label in enumerate(labels[1:], 1):
             report.update(status='TRAINING', current_stage=label)
             write_json(root / 'continuation.json', report)
             remaining = deadline-time.monotonic()
@@ -122,18 +139,21 @@ def run_continuation(source_run, trainer_source, output, *, stage_seconds=21600.
             if outcome['returncode'] != 0:
                 raise RuntimeError(f'Training {label} failed; see stage log')
             record = publish_policy(training, root, label)
-            if record['active_seconds'] < target or record['outer_iteration'] <= report['checkpoints'][LABELS[index-1]]['outer_iteration']:
+            if record['active_seconds'] < target or record['outer_iteration'] <= report['checkpoints'][labels[index-1]]['outer_iteration']:
                 raise RuntimeError('Training stage did not reach its target')
             record['target_active_seconds'] = target
             write_json(root / f'{label}.json', record)
             report['checkpoints'][label] = record
             previous = record['active_seconds']
+            if verify_each_stage:
+                verify(label)
             if upload_uri:
                 upload_checkpoint(root, upload_uri, label)
             write_json(root / 'continuation.json', report)
         report['status'] = 'VERIFYING_FINAL_RECOVERY'
         write_json(root / 'continuation.json', report)
-        verify('P32')
+        if not verify_each_stage:
+            verify(final)
         report['status'] = 'TRAINING_COMPLETE'
         report['final_recovery_verified'] = True
     except Exception as exc:
@@ -154,6 +174,7 @@ def main():
     p.add_argument('--wall-seconds', type=float, default=108000)
     p.add_argument('--upload-uri')
     p.add_argument('--allow-smoke', action='store_true')
+    p.add_argument('--baseline-hours', type=int, default=8)
     run_continuation(**vars(p.parse_args()))
 
 

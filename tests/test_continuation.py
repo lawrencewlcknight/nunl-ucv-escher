@@ -276,3 +276,88 @@ def test_slumbot_launcher_waits_for_verified_p32_and_uses_small_vm(tmp_path):
     training['final_recovery_verified'] = False
     with pytest.raises(ValueError, match='not ready'):
         module.validate_ready(plan, ready, training, marker)
+
+
+@pytest.fixture(scope='module')
+def continued_again(continued, tmp_path_factory):
+    _, archived, baseline = continued
+    output = tmp_path_factory.mktemp('second-continuation')/'run'
+    report = run_continuation(baseline, archived, output, baseline_hours=32,
+                             stage_seconds=.001, wall_seconds=180, allow_smoke=True)
+    assert report['status'] == 'TRAINING_COMPLETE'
+    assert list(report['checkpoints']) == ['P32', 'P38', 'P44', 'P50', 'P56']
+    assert [m['outer_iteration'] for m in report['checkpoints'].values()] == [5, 6, 7, 8, 9]
+    assert (baseline/'training/state_000005').exists()
+    assert (output/'P32.pkl').read_bytes() == (baseline/'P32.pkl').read_bytes()
+    assert json.loads((output/'reload-P56.json').read_text())['status'] == 'VERIFIED'
+    assert (output/'training/manifest.json').read_bytes() == (baseline/'training/manifest.json').read_bytes()
+    return output
+
+
+def test_second_continuation_evaluates_shifted_pairs_and_final_slumbot(continued_again, tmp_path):
+    from hunl_escher.continuation_evaluate import run_suite
+    from hunl_escher.continuation_benchmark import run_final_benchmark
+    from hunl_escher.api import SlumbotClient
+    from test_remote import MockServer
+    report = run_suite(continued_again, tmp_path/'evaluation', workers=1, max_seconds=240, smoke=True)
+    assert report['status'] == 'COMPLETE'
+    assert report['primary'] == 'P56-vs-P32'
+    assert list(report['head_to_head']) == ['P56-vs-P32', 'P38-vs-P32', 'P44-vs-P38', 'P50-vs-P44', 'P56-vs-P50']
+    assert report['head_to_head']['P56-vs-P32']['result']['confidence'] == .95
+    assert report['head_to_head']['P44-vs-P38']['result']['confidence'] == .99
+    server = MockServer('slumbot')
+    result = run_final_benchmark(continued_again, tmp_path/'slumbot', smoke=True,
+        client_factory=lambda _, menu: SlumbotClient(action_menu=menu, transport=server))
+    assert result['status'] == 'COMPLETE' and result['policy'] == 'P56'
+    assert result['completed_hands'] == 8 and result['completed_pilot_hands'] == 4
+    assert result['estimate']['observations'] == [8]
+
+
+def test_chained_cloud_download_uses_original_trainer_not_coordinator(continued, tmp_path, monkeypatch):
+    import shutil
+    import hunl_escher.continuation_cloud as cloud
+    _, archived, baseline = continued
+    requests = []
+    def storage(operation, *args):
+        remote, destination = args[-2:]
+        name = str(remote).removeprefix('gs://previous/')
+        requests.append(name)
+        if operation == 'rsync':
+            shutil.copytree(baseline/name, destination, dirs_exist_ok=True)
+        else:
+            origin = archived.parent/'source.tar.gz' if name == 'training_source.tar.gz' else baseline/name
+            shutil.copy2(origin, destination)
+    monkeypatch.setattr(cloud, 'storage', storage)
+    sha = json.loads((baseline/'P32.json').read_text())['sha256']
+    source, trainer = cloud.download_source('gs://previous', tmp_path/'download', sha, baseline_hours=32)
+    assert 'training_source.tar.gz' in requests and 'source.tar.gz' not in requests
+    assert (trainer/'hunl_escher/train.py').read_bytes() == (archived/'hunl_escher/train.py').read_bytes()
+    assert (source/'training/state_000005').exists()
+    with pytest.raises(ValueError, match='requested baseline'):
+        cloud.download_source('gs://previous', tmp_path/'wrong-hash', '0'*64, baseline_hours=32)
+
+
+def test_shifted_launch_and_historical_baseline(continued_again, tmp_path):
+    from hunl_escher.continuation_benchmark import historical_comparison
+    plan = launcher_module().build_bundle(tmp_path/'bundle', project='test-project', zone='europe-west1-b',
+        bucket='gs://test-bucket/hunl', service_account='runner@test-project.iam.gserviceaccount.com',
+        run_name='hunl-chained-test', source_uri='gs://test-bucket/hunl/previous',
+        expected_p8_sha256='a'*64, baseline_hours=32)
+    assert plan['labels'] == ['P32', 'P38', 'P44', 'P50', 'P56']
+    assert '--baseline-hours 32' in (tmp_path/'bundle/startup.sh').read_text()
+    spec = importlib.util.spec_from_file_location('slumbot_launcher_shifted', REPO/'tools/launch_continuation_slumbot.py')
+    module = importlib.util.module_from_spec(spec); spec.loader.exec_module(module)
+    training = dict(status='TRAINING_COMPLETE', final_recovery_verified=True, smoke=False,
+                    checkpoints={'P32': {'sha256': 'a'*64}, 'P56': {'sha256': 'b'*64}})
+    ready = dict(status='READY', policy='P56', source_uri=plan['source_uri'], sha256='b'*64)
+    assert module.validate_ready(plan, ready, training, {'sha256': 'b'*64}) == 'b'*64
+    marker = json.loads((continued_again/'P32.json').read_text())
+    (tmp_path/'P32.json').write_text(json.dumps(marker))
+    historical = dict(status='COMPLETE', provider='slumbot', primary_metric='raw_bb',
+                      policy='P32', sha256=marker['sha256'], scores={'main': [-1., 1.]*10000})
+    path = tmp_path/'report.json'; path.write_text(json.dumps(historical))
+    result = historical_comparison(path, continued_again, [2., 4.])
+    assert result['status'] == 'AVAILABLE' and result['observations'] == [2, 20000]
+    assert not result['confirmatory']
+    historical['scores']['main'].pop(); path.write_text(json.dumps(historical))
+    assert historical_comparison(path, continued_again, [2., 4.])['status'] == 'BASELINE_INCOMPLETE'

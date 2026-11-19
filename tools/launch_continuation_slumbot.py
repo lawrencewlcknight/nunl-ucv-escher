@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Launch the small Slumbot VM only after the continuation has published P32 readiness."""
+"""Launch the small Slumbot VM after verified final-policy publication."""
 import argparse
 import json
 from pathlib import Path
@@ -15,15 +15,16 @@ def read_remote(uri):
 
 
 def validate_ready(plan, ready, training, marker):
-    if (ready.get('status') != 'READY' or ready.get('policy') != 'P32' or
+    baseline, final = plan.get('labels', ['P8', 'P14', 'P20', 'P26', 'P32'])[::4]
+    if (ready.get('status') != 'READY' or ready.get('policy') != final or
         ready.get('source_uri') != plan['source_uri'] or
         training.get('status') != 'TRAINING_COMPLETE' or
         not training.get('final_recovery_verified') or training.get('smoke', True)):
         raise ValueError('Continuation is not ready for production Slumbot evaluation')
-    expected = training['checkpoints']['P32']['sha256']
+    expected = training['checkpoints'][final]['sha256']
     if not re.fullmatch('[a-f0-9]{64}', expected) or ready['sha256'] != expected or marker['sha256'] != expected:
-        raise ValueError('P32 publication identities do not agree')
-    if training['checkpoints']['P8']['sha256'] != plan['baseline_sha256']:
+        raise ValueError('Final policy publication identities do not agree')
+    if training['checkpoints'][baseline]['sha256'] != plan['baseline_sha256']:
         raise ValueError('Continuation baseline differs from the launch plan')
     return expected
 
@@ -82,8 +83,9 @@ def main():
     plan = json.loads(args.training_plan.read_text())
     uri = plan['uri'].rstrip('/')
     # Missing/unready markers fail before creating any VM or reserving a launch.
+    final = plan.get('labels', ['P8', 'P14', 'P20', 'P26', 'P32'])[-1]
     expected = validate_ready(plan, *[read_remote(uri+'/'+name) for name in
-        ('slumbot_ready.json', 'continuation.json', 'P32.json')])
+        ('slumbot_ready.json', 'continuation.json', f'{final}.json')])
     launch = build_bundle(plan, args.output, expected)
     print(json.dumps(launch, indent=2))
     if args.execute:

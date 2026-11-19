@@ -7,7 +7,7 @@ import sys
 import time
 
 from .checkpointing import sha256_file
-from .continuation import LABELS
+from .continuation import report_labels
 from .experiment_runtime import run_child
 from .train import write_json
 
@@ -41,7 +41,7 @@ def gate_secondary(result, primary_passed, smoke):
 
 def render(output, report):
     lines = ['# No-limit Holdem continuation: local evaluation', '',
-             'Primary: P32 vs P8, 95% interval. Four adjacent comparisons: 99% intervals;',
+             f"Primary: {report['primary']}, 95% interval. Four adjacent comparisons: 99% intervals;",
              'secondary improvement claims require the primary test to pass.',
              'One training seed; these matches do not measure exploitability.', '',
              '| Comparison | Status | bb/100 | Interval | Conclusion |',
@@ -54,20 +54,25 @@ def render(output, report):
                          f"{100*result['confidence']:.0f}% [{lo:.2f}, {hi:.2f}] | {result['conclusion']} |")
         else:
             lines.append(f"| {name} | {item['status']} | — | — | — |")
-    lines += ['', 'Slumbot is a separate final-policy-only job; see benchmarks/slumbot/report.json.']
+    lines += ['', ('External benchmarks are disabled for this experiment.'
+                  if not report.get('external_benchmarks', True) else
+                  'Slumbot is a separate final-policy-only job; see benchmarks/slumbot/report.json.')]
     (Path(output) / 'continuation_report.md').write_text('\n'.join(lines) + '\n')
 
 
-def run_suite(experiment, output, *, workers=8, max_seconds=14400, smoke=False):
+def run_suite(experiment, output, *, workers=8, max_seconds=14400, smoke=False,
+              external_benchmarks=True):
     if workers < 1 or not math.isfinite(max_seconds) or max_seconds <= 0:
         raise ValueError('Invalid evaluation limits')
     root, output = Path(experiment).resolve(), Path(output).resolve()
-    for label in LABELS:
+    labels = report_labels(json.loads((root / 'continuation.json').read_text()))
+    for label in labels:
         verified_checkpoint(root, label, smoke=smoke)
     output.mkdir(parents=True, exist_ok=False)
-    report = dict(status='EVALUATING', smoke=smoke, primary='P32-vs-P8',
-                  secondary_alpha=SECONDARY_ALPHA, secondary_family_size=4, head_to_head={})
-    write_json(output / 'design.json', dict(labels=LABELS, primary=report['primary'],
+    report = dict(status='EVALUATING', smoke=smoke, primary=labels[-1]+'-vs-'+labels[0],
+                  secondary_alpha=SECONDARY_ALPHA, secondary_family_size=4, head_to_head={},
+                  external_benchmarks=external_benchmarks)
+    write_json(output / 'design.json', dict(labels=labels, primary=report['primary'],
         primary_alpha=.05, secondary_alpha=SECONDARY_ALPHA, secondary_family_size=4,
         effect_bb100=10, power=.8, pilot_excluded=True, workers=workers,
         max_seconds=max_seconds, smoke=smoke,
@@ -75,7 +80,7 @@ def run_suite(experiment, output, *, workers=8, max_seconds=14400, smoke=False):
         maximum=8 if smoke else 1000000))
     deadline = time.monotonic() + max_seconds
     primary_passed = False
-    matches = [('P32', 'P8'), *zip(LABELS[1:], LABELS[:-1])]
+    matches = [(labels[-1], labels[0]), *zip(labels[1:], labels[:-1])]
     for index, (a, b) in enumerate(matches):
         name = a + '-vs-' + b
         remaining = deadline - time.monotonic()

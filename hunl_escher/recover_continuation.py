@@ -1,4 +1,4 @@
-"""Finish publication/evaluation of completed P32 training; never train again."""
+"""Finish publication/evaluation of completed continuation training; never train again."""
 import argparse
 import json
 import os
@@ -8,7 +8,7 @@ import subprocess
 import sys
 
 from .checkpointing import sha256_file
-from .continuation import LABELS, checked_pointer
+from .continuation import report_labels, checked_pointer
 from .continuation_cloud import publisher
 from .continuation_evaluate import run_suite
 from .experiment import upload_checkpoint
@@ -19,15 +19,16 @@ from .train import write_json
 def validate_completed_training(root):
     root = Path(root)
     report = json.loads((root / 'continuation.json').read_text())
+    labels = report_labels(report)
     pointer = checked_pointer(root / 'training')
-    if report.get('smoke') or set(report['checkpoints']) != set(LABELS):
+    if report.get('smoke') or set(report['checkpoints']) != set(labels):
         raise ValueError('All five production checkpoints are required')
-    final = report['checkpoints']['P32']
+    final = report['checkpoints'][labels[-1]]
     if pointer['state'] != final['recovery'] or pointer['iteration'] != final['outer_iteration']:
-        raise ValueError('Final recovery pointer differs from P32')
-    for label in LABELS:
+        raise ValueError('Final recovery pointer differs from final policy')
+    for label in labels:
         marker = report['checkpoints'][label]
-        if label != 'P8':
+        if label != labels[0]:
             stage = report['stages'][label]
             if stage['returncode'] != 0 or stage['timed_out'] or marker['active_seconds'] < marker['target_active_seconds']:
                 raise ValueError('A training stage did not complete')
@@ -52,6 +53,7 @@ def recover(workspace, uri, *, evaluation_seconds=14400):
     workspace = Path(workspace).resolve()
     root, source = workspace / 'run', workspace / 'archived-trainer'
     original, pointer = validate_completed_training(root)
+    final_label = report_labels(original)[-1]
     run_transfer(['gcloud', 'storage', 'cp', uri + '/launch.json', str(root / 'launch.json')], timeout=120)
     backup = root / 'continuation-before-recovery.json'
     if not backup.exists():
@@ -61,7 +63,7 @@ def recover(workspace, uri, *, evaluation_seconds=14400):
         try:
             write_json(audit, dict(status='VERIFYING_DISK', state=pointer['state']))
             sync()
-            verify(source, root / 'training', root / 'P32.pkl', root / 'reload-P32-disk.json')
+            verify(source, root / 'training', root / f'{final_label}.pkl', root / f'reload-{final_label}-disk.json')
             # Retry publication without pruning anything yet. Then download the
             # cloud copy into a separate directory and verify SHA256 + full restore.
             run_transfer(['gcloud', 'storage', 'rsync', '--recursive',
@@ -74,27 +76,27 @@ def recover(workspace, uri, *, evaluation_seconds=14400):
             sync()
             run_transfer(['gcloud', 'storage', 'rsync', '--recursive',
                 uri + '/training/' + pointer['state'], str(cloud / pointer['state'])], timeout=1800)
-            verify(source, cloud, root / 'P32.pkl', root / 'reload-P32.json')
+            verify(source, cloud, root / f'{final_label}.pkl', root / f'reload-{final_label}.json')
             # Both disk and cloud copies are verified before policy publication
             # and pruning old continuation recoveries. Original run is untouched.
-            upload_checkpoint(root, uri, 'P32')
+            upload_checkpoint(root, uri, final_label)
             original.update(status='TRAINING_COMPLETE', final_recovery_verified=True,
                             recovered_after_publication_failure=True)
             original.pop('error_type', None)
             original.pop('reason', None)
             write_json(root / 'continuation.json', original)
             write_json(audit, dict(status='EVALUATING', state=pointer['state'],
-                disk_verified=True, cloud_verified=True, policy_sha256=original['checkpoints']['P32']['sha256']))
+                disk_verified=True, cloud_verified=True, policy_sha256=original['checkpoints'][final_label]['sha256']))
             sync(final=True)
             evaluation = run_suite(root, root / 'evaluation', workers=8, max_seconds=evaluation_seconds)
             sync(final=True)
             plan = json.loads((root / 'launch.json').read_text())
-            write_json(root / 'slumbot_ready.json', dict(status='READY', policy='P32',
-                sha256=original['checkpoints']['P32']['sha256'], source_uri=plan['source_uri'],
+            write_json(root / 'slumbot_ready.json', dict(status='READY', policy=final_label,
+                sha256=original['checkpoints'][final_label]['sha256'], source_uri=plan['source_uri'],
                 local_evaluation_status=evaluation['status']))
             write_json(audit, dict(status='COMPLETE', state=pointer['state'], disk_verified=True,
                 cloud_verified=True, local_evaluation_status=evaluation['status'],
-                policy_sha256=original['checkpoints']['P32']['sha256']))
+                policy_sha256=original['checkpoints'][final_label]['sha256']))
         except Exception as exc:
             write_json(audit, dict(status='FAILED', error_type=type(exc).__name__, reason=str(exc)))
             raise

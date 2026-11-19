@@ -51,13 +51,15 @@ def test_recovery_rejects_incomplete_training_before_remote_actions(tmp_path):
         validate_completed_training(tmp_path)
 
 
+@pytest.mark.parametrize('baseline_hours', [8, 32])
 @pytest.mark.parametrize('cloud_fails', [False, True])
-def test_recovery_never_publishes_or_prunes_before_cloud_verification(tmp_path, monkeypatch, cloud_fails):
+def test_recovery_never_publishes_or_prunes_before_cloud_verification(tmp_path, monkeypatch, cloud_fails, baseline_hours):
     from contextlib import contextmanager
     from hunl_escher import recover_continuation as recovery
     root = tmp_path / 'run'
     (root / 'training').mkdir(parents=True)
-    report = {'status': 'FAILED', 'checkpoints': {'P32': {'sha256': 'a'*64}}}
+    final_label = f'P{baseline_hours+24}'
+    report = {'status': 'FAILED', 'baseline_hours': baseline_hours, 'checkpoints': {final_label: {'sha256': 'a'*64}}}
     for name, data in [('continuation.json', report), ('launch.json', {'source_uri': 'gs://b/original'}),
                        ('training/manifest.json', {}), ('training/latest.json', {})]:
         (root / name).write_text(json.dumps(data))
@@ -69,6 +71,7 @@ def test_recovery_never_publishes_or_prunes_before_cloud_verification(tmp_path, 
     monkeypatch.setattr(recovery, 'publisher', publisher)
     monkeypatch.setattr(recovery, 'run_transfer', lambda *a, **k: None)
     def verify(source, training, policy, output):
+        assert policy.name == f'{final_label}.pkl'
         calls.append('cloud' if training.name == 'cloud-verification' else 'disk')
         if cloud_fails and calls[-1] == 'cloud':
             raise ValueError('Cloud checksum mismatch')
@@ -85,4 +88,4 @@ def test_recovery_never_publishes_or_prunes_before_cloud_verification(tmp_path, 
         recovery.recover(tmp_path, 'gs://b/run')
         assert calls == ['disk', 'cloud', 'publish_and_prune']
         assert json.loads((root / 'continuation.json').read_text())['final_recovery_verified']
-        assert (root / 'slumbot_ready.json').exists()
+        assert json.loads((root / 'slumbot_ready.json').read_text())['policy'] == final_label
