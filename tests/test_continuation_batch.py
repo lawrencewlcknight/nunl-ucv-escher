@@ -51,7 +51,8 @@ def equal(a, b):
         assert a == b
 
 
-def test_migration_preserves_all_learning_state_and_continues(tmp_path):
+@pytest.mark.parametrize('baseline_hours', [56, 80])
+def test_migration_preserves_all_learning_state_and_continues(tmp_path, baseline_hours):
     module = launcher()
     module.source_archive(REPO, tmp_path / "source.tar.gz")
     archived = tmp_path / "legacy"
@@ -87,32 +88,36 @@ def test_migration_preserves_all_learning_state_and_continues(tmp_path):
         if key != "repository_commit":
             equal(original[key], state[key])
     assert (migrated / "P56.pkl").read_bytes() == (baseline / "P56.pkl").read_bytes()
-    report = run_continuation(migrated, patched, tmp_path / "continued", baseline_hours=56,
+    labels = [f'P{baseline_hours + 6*i}' for i in range(5)]
+    if baseline_hours == 80:
+        publish_policy(migrated / 'training', migrated, 'P80')
+    report = run_continuation(migrated, patched, tmp_path / "continued", baseline_hours=baseline_hours,
         stage_seconds=.001, wall_seconds=240, allow_smoke=True, verify_each_stage=True)
     assert report["status"] == "TRAINING_COMPLETE" and report["final_recovery_verified"]
-    assert list(report["checkpoints"]) == ["P56", "P62", "P68", "P74", "P80"]
-    for label in ("P62", "P68", "P74", "P80"):
+    assert list(report["checkpoints"]) == labels
+    for label in labels[1:]:
         diag = report["checkpoints"][label]["metrics"]["policy_validation"]
         assert diag["group_sampling"] == "objective_mass"
         assert diag["policy_sampling_seed"] == [123, report["checkpoints"][label]["outer_iteration"]]
-    for label in ("P56", "P62", "P68", "P74", "P80"):
+    for label in labels:
         assert json.loads((tmp_path / "continued" / f"reload-{label}.json").read_text())["status"] == "VERIFIED"
     from hunl_escher.continuation_evaluate import run_suite
     evaluation = run_suite(tmp_path / "continued", tmp_path / "evaluation", workers=1, max_seconds=180,
                            smoke=True, external_benchmarks=False)
     assert evaluation["status"] == "COMPLETE"
-    assert evaluation["primary"] == "P80-vs-P56"
+    assert evaluation["primary"] == f"{labels[-1]}-vs-{labels[0]}"
     assert len(evaluation["head_to_head"]) == 5
     assert "External benchmarks are disabled" in (tmp_path / "evaluation/continuation_report.md").read_text()
     with pytest.raises(ValueError, match="checksum"):
         patch_trainer(patched, 123)
 
 
-def test_batch_contract_and_shell(tmp_path):
+@pytest.mark.parametrize('baseline_hours', [56, 80])
+def test_batch_contract_and_shell(tmp_path, baseline_hours):
     module = launcher()
     bundle = tmp_path / "bundle"
     plan = module.build_bundle(bundle, project="test", region="europe-west1", bucket="gs://test/hunl",
-        service_account="runner@test.iam.gserviceaccount.com", run_name="hunl-batch-test")
+        service_account="runner@test.iam.gserviceaccount.com", run_name="hunl-batch-test", baseline_hours=baseline_hours)
     job = json.loads((bundle / "job.json").read_text())
     spec = job["taskGroups"][0]["taskSpec"]
     assert spec["maxRetryCount"] == 0 and spec["maxRunDuration"] == "129600s"
@@ -120,9 +125,11 @@ def test_batch_contract_and_shell(tmp_path):
     assert job["allocationPolicy"]["instances"][0]["policy"]["bootDisk"]["type"] == "hyperdisk-balanced"
     assert "batch-cos" in plan["vm_image"] and "@sha256:" in plan["python_container"]
     assert plan["policy_group_sampling"] == "objective_mass"
-    assert plan["labels"] == ["P56", "P62", "P68", "P74", "P80"]
+    assert plan["labels"] == [f"P{baseline_hours + 6*i}" for i in range(5)]
+    assert plan["baseline_hours"] == baseline_hours
     script = (bundle / "batch.sh").read_text()
     assert "hunl_escher.continuation_batch" in script and "shutdown" not in script
+    assert f"--baseline-hours {baseline_hours}" in script
     assert "pip==25.3" in script and "--no-deps --only-binary=:all: torch==2.7.0+cpu" in script
     assert "APT::Update::Error-Mode=any" in script
     assert "free -m || true" in script and "python3-venv procps" in script
@@ -133,17 +140,20 @@ def test_batch_contract_and_shell(tmp_path):
 
 
 @pytest.mark.parametrize('failure', [False, True])
-def test_worker_is_self_contained_and_publishes_failure(tmp_path, monkeypatch, failure):
+@pytest.mark.parametrize('baseline_hours', [56, 80])
+def test_worker_is_self_contained_and_publishes_failure(tmp_path, monkeypatch, failure, baseline_hours):
     from contextlib import contextmanager
     from hunl_escher import continuation_batch as worker
     uploads, stages, syncs = [], [], []
+    profile = worker.source_profile(baseline_hours)
+    labels = [f"P{baseline_hours + 6*i}" for i in range(5)]
     @contextmanager
     def publisher(path, uri, **kwargs):
         yield lambda **kw: syncs.append((path, kw))
         syncs.append((path, 'final'))
     monkeypatch.setattr(worker, 'publisher', publisher)
     def download(uri, path, digest, hours):
-        assert uri == worker.SOURCE_URI and digest == worker.P56_SHA256 and hours == 56
+        assert uri == profile['uri'] and digest == profile['policy_sha256'] and hours == baseline_hours
         path.mkdir()
         return path, path
     monkeypatch.setattr(worker, 'download_source', download)
@@ -152,17 +162,20 @@ def test_worker_is_self_contained_and_publishes_failure(tmp_path, monkeypatch, f
             raise ValueError('Rejected source')
         (source / 'training_source.tar.gz').write_bytes(b'archive')
         return source, trainer
-    monkeypatch.setattr(worker, 'prepare_corrected_source', migrate)
+    monkeypatch.setattr(worker, 'prepare_corrected_source' if baseline_hours == 56 else 'prepare_p80_source', migrate)
+    def wrong_preparation(*args):
+        pytest.fail('Wrong baseline preparation: P80 must not be migrated again')
+    monkeypatch.setattr(worker, 'prepare_p80_source' if baseline_hours == 56 else 'prepare_corrected_source', wrong_preparation)
     monkeypatch.setattr(worker, 'storage', lambda *args: uploads.append(args))
     def train(source, trainer, output, **kwargs):
         stages.append('train')
-        assert kwargs == dict(baseline_hours=56, stage_seconds=21600,
+        assert kwargs == dict(baseline_hours=baseline_hours, stage_seconds=21600,
             wall_seconds=108000, upload_uri='gs://test/new', verify_each_stage=True)
         output.mkdir()
-        return dict(labels=['P56', 'P62', 'P68', 'P74', 'P80'], training_source_fingerprint='patched',
+        return dict(labels=labels, training_source_fingerprint='patched',
             checkpoints={label: dict(sha256='hash', outer_iteration=i, metrics=dict(policy_validation=dict(
                 group_sampling='objective_mass', policy_sampling_seed=[20261115, i])))
-                for i, label in enumerate(['P56', 'P62', 'P68', 'P74', 'P80'])})
+                for i, label in enumerate(labels)})
     monkeypatch.setattr(worker, 'run_continuation', train)
     def evaluate(root, output, **kwargs):
         assert stages == ['train']
@@ -173,11 +186,11 @@ def test_worker_is_self_contained_and_publishes_failure(tmp_path, monkeypatch, f
     root = tmp_path / 'work'
     if failure:
         with pytest.raises(ValueError, match='Rejected source'):
-            worker.run_worker(root, 'gs://test/new')
+            worker.run_worker(root, 'gs://test/new', baseline_hours=baseline_hours)
         assert stages == [] and uploads == []
         assert json.loads((root / 'status/batch_status.json').read_text())['status'] == 'FAILED'
     else:
-        assert worker.run_worker(root, 'gs://test/new')['status'] == 'COMPLETE'
+        assert worker.run_worker(root, 'gs://test/new', baseline_hours=baseline_hours)['status'] == 'COMPLETE'
         assert stages == ['train', 'evaluate']
         assert (root / 'run/resume.json').exists()
         assert not (root / 'run/slumbot_ready.json').exists()
