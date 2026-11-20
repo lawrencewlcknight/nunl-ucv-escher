@@ -1,0 +1,7901 @@
+{
+  "schema": "hunl_strategic_positions_v1",
+  "seed": 20261118,
+  "smoke": false,
+  "game": {
+    "name": "HUNL",
+    "open_spiel_game": "universal_poker",
+    "parameters": {
+      "betting": "nolimit",
+      "bettingAbstraction": "fullgame",
+      "blind": "50 100",
+      "stack": "20000 20000",
+      "firstPlayer": "1 2 2 2",
+      "numPlayers": 2,
+      "numRounds": 4,
+      "numSuits": 4,
+      "numRanks": 13,
+      "numHoleCards": 2,
+      "numBoardCards": "0 3 1 1"
+    },
+    "interface_version": 2,
+    "action_menu": [
+      "fold",
+      "check_call",
+      "min_raise",
+      "half_pot",
+      "pot",
+      "double_pot",
+      "all_in"
+    ],
+    "raise_units": "total contribution over hand",
+    "pot_fraction_rule": "raise by fraction of pot after calling; round half up",
+    "duplicate_rule": "first menu index wins; all_in reserves maximum raise",
+    "stack_reset": "every hand",
+    "rake": 0
+  },
+  "positions": [
+    {
+      "id": "dry_ace-621-limped_oop",
+      "family": "dry_ace",
+      "partition": "development",
+      "hero": 1,
+      "hole": "6h8d",
+      "board": "As7h2d9c3s",
+      "history": "ck/kk/kk/",
+      "tags": [
+        "dry_ace",
+        "high_card",
+        "limped_oop",
+        "river"
+      ]
+    },
+    {
+      "id": "dry_ace-621-checked_to_ip",
+      "family": "dry_ace",
+      "partition": "development",
+      "hero": 0,
+      "hole": "6h8d",
+      "board": "As7h2d9c3s",
+      "history": "b300c/kk/kk/k",
+      "tags": [
+        "dry_ace",
+        "high_card",
+        "checked_to_ip",
+        "river"
+      ]
+    },
+    {
+      "id": "dry_ace-621-half_pot",
+      "family": "dry_ace",
+      "partition": "development",
+      "hero": 0,
+      "hole": "6h8d",
+      "board": "As7h2d9c3s",
+      "history": "b300c/kk/kk/b300",
+      "tags": [
+        "dry_ace",
+        "high_card",
+        "half_pot",
+        "river"
+      ]
+    },
+    {
+      "id": "dry_ace-621-pot",
+      "family": "dry_ace",
+      "partition": "development",
+      "hero": 1,
+      "hole": "6h8d",
+      "board": "As7h2d9c3s",
+      "history": "b300c/kk/kk/kb600",
+      "tags": [
+        "dry_ace",
+        "high_card",
+        "pot",
+        "river"
+      ]
+    },
+    {
+      "id": "dry_ace-621-overbet",
+      "family": "dry_ace",
+      "partition": "development",
+      "hero": 0,
+      "hole": "6h8d",
+      "board": "As7h2d9c3s",
+      "history": "b300c/kk/kk/b1200",
+      "tags": [
+        "dry_ace",
+        "high_card",
+        "overbet",
+        "river"
+      ]
+    },
+    {
+      "id": "dry_ace-621-all_in",
+      "family": "dry_ace",
+      "partition": "development",
+      "hero": 1,
+      "hole": "6h8d",
+      "board": "As7h2d9c3s",
+      "history": "b300c/kk/kk/kb19700",
+      "tags": [
+        "dry_ace",
+        "high_card",
+        "all_in",
+        "river"
+      ]
+    },
+    {
+      "id": "dry_ace-621-three_bet_pot",
+      "family": "dry_ace",
+      "partition": "development",
+      "hero": 0,
+      "hole": "6h8d",
+      "board": "As7h2d9c3s",
+      "history": "b300b1000c/kk/kk/b1000",
+      "tags": [
+        "dry_ace",
+        "high_card",
+        "three_bet_pot",
+        "river"
+      ]
+    },
+    {
+      "id": "dry_ace-621-three_barrels",
+      "family": "dry_ace",
+      "partition": "development",
+      "hero": 0,
+      "hole": "6h8d",
+      "board": "As7h2d9c3s",
+      "history": "b300c/b300c/b900c/b2500",
+      "tags": [
+        "dry_ace",
+        "high_card",
+        "three_barrels",
+        "river"
+      ]
+    },
+    {
+      "id": "dry_ace-582-limped_oop",
+      "family": "dry_ace",
+      "partition": "development",
+      "hero": 1,
+      "hole": "6cAc",
+      "board": "As7h2d9c3s",
+      "history": "ck/kk/kk/",
+      "tags": [
+        "dry_ace",
+        "pair",
+        "limped_oop",
+        "river"
+      ]
+    },
+    {
+      "id": "dry_ace-582-checked_to_ip",
+      "family": "dry_ace",
+      "partition": "development",
+      "hero": 0,
+      "hole": "6cAc",
+      "board": "As7h2d9c3s",
+      "history": "b300c/kk/kk/k",
+      "tags": [
+        "dry_ace",
+        "pair",
+        "checked_to_ip",
+        "river"
+      ]
+    },
+    {
+      "id": "dry_ace-582-half_pot",
+      "family": "dry_ace",
+      "partition": "development",
+      "hero": 0,
+      "hole": "6cAc",
+      "board": "As7h2d9c3s",
+      "history": "b300c/kk/kk/b300",
+      "tags": [
+        "dry_ace",
+        "pair",
+        "half_pot",
+        "river"
+      ]
+    },
+    {
+      "id": "dry_ace-582-pot",
+      "family": "dry_ace",
+      "partition": "development",
+      "hero": 1,
+      "hole": "6cAc",
+      "board": "As7h2d9c3s",
+      "history": "b300c/kk/kk/kb600",
+      "tags": [
+        "dry_ace",
+        "pair",
+        "pot",
+        "river"
+      ]
+    },
+    {
+      "id": "dry_ace-582-overbet",
+      "family": "dry_ace",
+      "partition": "development",
+      "hero": 0,
+      "hole": "6cAc",
+      "board": "As7h2d9c3s",
+      "history": "b300c/kk/kk/b1200",
+      "tags": [
+        "dry_ace",
+        "pair",
+        "overbet",
+        "river"
+      ]
+    },
+    {
+      "id": "dry_ace-582-all_in",
+      "family": "dry_ace",
+      "partition": "development",
+      "hero": 1,
+      "hole": "6cAc",
+      "board": "As7h2d9c3s",
+      "history": "b300c/kk/kk/kb19700",
+      "tags": [
+        "dry_ace",
+        "pair",
+        "all_in",
+        "river"
+      ]
+    },
+    {
+      "id": "dry_ace-582-three_bet_pot",
+      "family": "dry_ace",
+      "partition": "development",
+      "hero": 0,
+      "hole": "6cAc",
+      "board": "As7h2d9c3s",
+      "history": "b300b1000c/kk/kk/b1000",
+      "tags": [
+        "dry_ace",
+        "pair",
+        "three_bet_pot",
+        "river"
+      ]
+    },
+    {
+      "id": "dry_ace-582-three_barrels",
+      "family": "dry_ace",
+      "partition": "development",
+      "hero": 0,
+      "hole": "6cAc",
+      "board": "As7h2d9c3s",
+      "history": "b300c/b300c/b900c/b2500",
+      "tags": [
+        "dry_ace",
+        "pair",
+        "three_barrels",
+        "river"
+      ]
+    },
+    {
+      "id": "dry_ace-133-limped_oop",
+      "family": "dry_ace",
+      "partition": "development",
+      "hero": 1,
+      "hole": "2sAd",
+      "board": "As7h2d9c3s",
+      "history": "ck/kk/kk/",
+      "tags": [
+        "dry_ace",
+        "two_pair",
+        "limped_oop",
+        "river"
+      ]
+    },
+    {
+      "id": "dry_ace-133-checked_to_ip",
+      "family": "dry_ace",
+      "partition": "development",
+      "hero": 0,
+      "hole": "2sAd",
+      "board": "As7h2d9c3s",
+      "history": "b300c/kk/kk/k",
+      "tags": [
+        "dry_ace",
+        "two_pair",
+        "checked_to_ip",
+        "river"
+      ]
+    },
+    {
+      "id": "dry_ace-133-half_pot",
+      "family": "dry_ace",
+      "partition": "development",
+      "hero": 0,
+      "hole": "2sAd",
+      "board": "As7h2d9c3s",
+      "history": "b300c/kk/kk/b300",
+      "tags": [
+        "dry_ace",
+        "two_pair",
+        "half_pot",
+        "river"
+      ]
+    },
+    {
+      "id": "dry_ace-133-pot",
+      "family": "dry_ace",
+      "partition": "development",
+      "hero": 1,
+      "hole": "2sAd",
+      "board": "As7h2d9c3s",
+      "history": "b300c/kk/kk/kb600",
+      "tags": [
+        "dry_ace",
+        "two_pair",
+        "pot",
+        "river"
+      ]
+    },
+    {
+      "id": "dry_ace-133-overbet",
+      "family": "dry_ace",
+      "partition": "development",
+      "hero": 0,
+      "hole": "2sAd",
+      "board": "As7h2d9c3s",
+      "history": "b300c/kk/kk/b1200",
+      "tags": [
+        "dry_ace",
+        "two_pair",
+        "overbet",
+        "river"
+      ]
+    },
+    {
+      "id": "dry_ace-133-all_in",
+      "family": "dry_ace",
+      "partition": "development",
+      "hero": 1,
+      "hole": "2sAd",
+      "board": "As7h2d9c3s",
+      "history": "b300c/kk/kk/kb19700",
+      "tags": [
+        "dry_ace",
+        "two_pair",
+        "all_in",
+        "river"
+      ]
+    },
+    {
+      "id": "dry_ace-133-three_bet_pot",
+      "family": "dry_ace",
+      "partition": "development",
+      "hero": 0,
+      "hole": "2sAd",
+      "board": "As7h2d9c3s",
+      "history": "b300b1000c/kk/kk/b1000",
+      "tags": [
+        "dry_ace",
+        "two_pair",
+        "three_bet_pot",
+        "river"
+      ]
+    },
+    {
+      "id": "dry_ace-133-three_barrels",
+      "family": "dry_ace",
+      "partition": "development",
+      "hero": 0,
+      "hole": "2sAd",
+      "board": "As7h2d9c3s",
+      "history": "b300c/b300c/b900c/b2500",
+      "tags": [
+        "dry_ace",
+        "two_pair",
+        "three_barrels",
+        "river"
+      ]
+    },
+    {
+      "id": "dry_ace-871-limped_oop",
+      "family": "dry_ace",
+      "partition": "development",
+      "hero": 1,
+      "hole": "9h9s",
+      "board": "As7h2d9c3s",
+      "history": "ck/kk/kk/",
+      "tags": [
+        "dry_ace",
+        "trips",
+        "limped_oop",
+        "river"
+      ]
+    },
+    {
+      "id": "dry_ace-871-checked_to_ip",
+      "family": "dry_ace",
+      "partition": "development",
+      "hero": 0,
+      "hole": "9h9s",
+      "board": "As7h2d9c3s",
+      "history": "b300c/kk/kk/k",
+      "tags": [
+        "dry_ace",
+        "trips",
+        "checked_to_ip",
+        "river"
+      ]
+    },
+    {
+      "id": "dry_ace-871-half_pot",
+      "family": "dry_ace",
+      "partition": "development",
+      "hero": 0,
+      "hole": "9h9s",
+      "board": "As7h2d9c3s",
+      "history": "b300c/kk/kk/b300",
+      "tags": [
+        "dry_ace",
+        "trips",
+        "half_pot",
+        "river"
+      ]
+    },
+    {
+      "id": "dry_ace-871-pot",
+      "family": "dry_ace",
+      "partition": "development",
+      "hero": 1,
+      "hole": "9h9s",
+      "board": "As7h2d9c3s",
+      "history": "b300c/kk/kk/kb600",
+      "tags": [
+        "dry_ace",
+        "trips",
+        "pot",
+        "river"
+      ]
+    },
+    {
+      "id": "dry_ace-871-overbet",
+      "family": "dry_ace",
+      "partition": "development",
+      "hero": 0,
+      "hole": "9h9s",
+      "board": "As7h2d9c3s",
+      "history": "b300c/kk/kk/b1200",
+      "tags": [
+        "dry_ace",
+        "trips",
+        "overbet",
+        "river"
+      ]
+    },
+    {
+      "id": "dry_ace-871-all_in",
+      "family": "dry_ace",
+      "partition": "development",
+      "hero": 1,
+      "hole": "9h9s",
+      "board": "As7h2d9c3s",
+      "history": "b300c/kk/kk/kb19700",
+      "tags": [
+        "dry_ace",
+        "trips",
+        "all_in",
+        "river"
+      ]
+    },
+    {
+      "id": "dry_ace-871-three_bet_pot",
+      "family": "dry_ace",
+      "partition": "development",
+      "hero": 0,
+      "hole": "9h9s",
+      "board": "As7h2d9c3s",
+      "history": "b300b1000c/kk/kk/b1000",
+      "tags": [
+        "dry_ace",
+        "trips",
+        "three_bet_pot",
+        "river"
+      ]
+    },
+    {
+      "id": "dry_ace-871-three_barrels",
+      "family": "dry_ace",
+      "partition": "development",
+      "hero": 0,
+      "hole": "9h9s",
+      "board": "As7h2d9c3s",
+      "history": "b300c/b300c/b900c/b2500",
+      "tags": [
+        "dry_ace",
+        "trips",
+        "three_barrels",
+        "river"
+      ]
+    },
+    {
+      "id": "dry_ace-264-limped_oop",
+      "family": "dry_ace",
+      "partition": "development",
+      "hero": 1,
+      "hole": "4c5c",
+      "board": "As7h2d9c3s",
+      "history": "ck/kk/kk/",
+      "tags": [
+        "dry_ace",
+        "straight",
+        "limped_oop",
+        "river"
+      ]
+    },
+    {
+      "id": "dry_ace-264-checked_to_ip",
+      "family": "dry_ace",
+      "partition": "development",
+      "hero": 0,
+      "hole": "4c5c",
+      "board": "As7h2d9c3s",
+      "history": "b300c/kk/kk/k",
+      "tags": [
+        "dry_ace",
+        "straight",
+        "checked_to_ip",
+        "river"
+      ]
+    },
+    {
+      "id": "dry_ace-264-half_pot",
+      "family": "dry_ace",
+      "partition": "development",
+      "hero": 0,
+      "hole": "4c5c",
+      "board": "As7h2d9c3s",
+      "history": "b300c/kk/kk/b300",
+      "tags": [
+        "dry_ace",
+        "straight",
+        "half_pot",
+        "river"
+      ]
+    },
+    {
+      "id": "dry_ace-264-pot",
+      "family": "dry_ace",
+      "partition": "development",
+      "hero": 1,
+      "hole": "4c5c",
+      "board": "As7h2d9c3s",
+      "history": "b300c/kk/kk/kb600",
+      "tags": [
+        "dry_ace",
+        "straight",
+        "pot",
+        "river"
+      ]
+    },
+    {
+      "id": "dry_ace-264-overbet",
+      "family": "dry_ace",
+      "partition": "development",
+      "hero": 0,
+      "hole": "4c5c",
+      "board": "As7h2d9c3s",
+      "history": "b300c/kk/kk/b1200",
+      "tags": [
+        "dry_ace",
+        "straight",
+        "overbet",
+        "river"
+      ]
+    },
+    {
+      "id": "dry_ace-264-all_in",
+      "family": "dry_ace",
+      "partition": "development",
+      "hero": 1,
+      "hole": "4c5c",
+      "board": "As7h2d9c3s",
+      "history": "b300c/kk/kk/kb19700",
+      "tags": [
+        "dry_ace",
+        "straight",
+        "all_in",
+        "river"
+      ]
+    },
+    {
+      "id": "dry_ace-264-three_bet_pot",
+      "family": "dry_ace",
+      "partition": "development",
+      "hero": 0,
+      "hole": "4c5c",
+      "board": "As7h2d9c3s",
+      "history": "b300b1000c/kk/kk/b1000",
+      "tags": [
+        "dry_ace",
+        "straight",
+        "three_bet_pot",
+        "river"
+      ]
+    },
+    {
+      "id": "dry_ace-264-three_barrels",
+      "family": "dry_ace",
+      "partition": "development",
+      "hero": 0,
+      "hole": "4c5c",
+      "board": "As7h2d9c3s",
+      "history": "b300c/b300c/b900c/b2500",
+      "tags": [
+        "dry_ace",
+        "straight",
+        "three_barrels",
+        "river"
+      ]
+    },
+    {
+      "id": "connected-624-limped_oop",
+      "family": "connected",
+      "partition": "development",
+      "hero": 1,
+      "hole": "6h8s",
+      "board": "9sThJc2d3s",
+      "history": "ck/kk/kk/",
+      "tags": [
+        "connected",
+        "high_card",
+        "limped_oop",
+        "river"
+      ]
+    },
+    {
+      "id": "connected-624-checked_to_ip",
+      "family": "connected",
+      "partition": "development",
+      "hero": 0,
+      "hole": "6h8s",
+      "board": "9sThJc2d3s",
+      "history": "b300c/kk/kk/k",
+      "tags": [
+        "connected",
+        "high_card",
+        "checked_to_ip",
+        "river"
+      ]
+    },
+    {
+      "id": "connected-624-half_pot",
+      "family": "connected",
+      "partition": "development",
+      "hero": 0,
+      "hole": "6h8s",
+      "board": "9sThJc2d3s",
+      "history": "b300c/kk/kk/b300",
+      "tags": [
+        "connected",
+        "high_card",
+        "half_pot",
+        "river"
+      ]
+    },
+    {
+      "id": "connected-624-pot",
+      "family": "connected",
+      "partition": "development",
+      "hero": 1,
+      "hole": "6h8s",
+      "board": "9sThJc2d3s",
+      "history": "b300c/kk/kk/kb600",
+      "tags": [
+        "connected",
+        "high_card",
+        "pot",
+        "river"
+      ]
+    },
+    {
+      "id": "connected-624-overbet",
+      "family": "connected",
+      "partition": "development",
+      "hero": 0,
+      "hole": "6h8s",
+      "board": "9sThJc2d3s",
+      "history": "b300c/kk/kk/b1200",
+      "tags": [
+        "connected",
+        "high_card",
+        "overbet",
+        "river"
+      ]
+    },
+    {
+      "id": "connected-624-all_in",
+      "family": "connected",
+      "partition": "development",
+      "hero": 1,
+      "hole": "6h8s",
+      "board": "9sThJc2d3s",
+      "history": "b300c/kk/kk/kb19700",
+      "tags": [
+        "connected",
+        "high_card",
+        "all_in",
+        "river"
+      ]
+    },
+    {
+      "id": "connected-624-three_bet_pot",
+      "family": "connected",
+      "partition": "development",
+      "hero": 0,
+      "hole": "6h8s",
+      "board": "9sThJc2d3s",
+      "history": "b300b1000c/kk/kk/b1000",
+      "tags": [
+        "connected",
+        "high_card",
+        "three_bet_pot",
+        "river"
+      ]
+    },
+    {
+      "id": "connected-624-three_barrels",
+      "family": "connected",
+      "partition": "development",
+      "hero": 0,
+      "hole": "6h8s",
+      "board": "9sThJc2d3s",
+      "history": "b300c/b300c/b900c/b2500",
+      "tags": [
+        "connected",
+        "high_card",
+        "three_barrels",
+        "river"
+      ]
+    },
+    {
+      "id": "connected-994-limped_oop",
+      "family": "connected",
+      "partition": "development",
+      "hero": 1,
+      "hole": "JhQs",
+      "board": "9sThJc2d3s",
+      "history": "ck/kk/kk/",
+      "tags": [
+        "connected",
+        "pair",
+        "limped_oop",
+        "river"
+      ]
+    },
+    {
+      "id": "connected-994-checked_to_ip",
+      "family": "connected",
+      "partition": "development",
+      "hero": 0,
+      "hole": "JhQs",
+      "board": "9sThJc2d3s",
+      "history": "b300c/kk/kk/k",
+      "tags": [
+        "connected",
+        "pair",
+        "checked_to_ip",
+        "river"
+      ]
+    },
+    {
+      "id": "connected-994-half_pot",
+      "family": "connected",
+      "partition": "development",
+      "hero": 0,
+      "hole": "JhQs",
+      "board": "9sThJc2d3s",
+      "history": "b300c/kk/kk/b300",
+      "tags": [
+        "connected",
+        "pair",
+        "half_pot",
+        "river"
+      ]
+    },
+    {
+      "id": "connected-994-pot",
+      "family": "connected",
+      "partition": "development",
+      "hero": 1,
+      "hole": "JhQs",
+      "board": "9sThJc2d3s",
+      "history": "b300c/kk/kk/kb600",
+      "tags": [
+        "connected",
+        "pair",
+        "pot",
+        "river"
+      ]
+    },
+    {
+      "id": "connected-994-overbet",
+      "family": "connected",
+      "partition": "development",
+      "hero": 0,
+      "hole": "JhQs",
+      "board": "9sThJc2d3s",
+      "history": "b300c/kk/kk/b1200",
+      "tags": [
+        "connected",
+        "pair",
+        "overbet",
+        "river"
+      ]
+    },
+    {
+      "id": "connected-994-all_in",
+      "family": "connected",
+      "partition": "development",
+      "hero": 1,
+      "hole": "JhQs",
+      "board": "9sThJc2d3s",
+      "history": "b300c/kk/kk/kb19700",
+      "tags": [
+        "connected",
+        "pair",
+        "all_in",
+        "river"
+      ]
+    },
+    {
+      "id": "connected-994-three_bet_pot",
+      "family": "connected",
+      "partition": "development",
+      "hero": 0,
+      "hole": "JhQs",
+      "board": "9sThJc2d3s",
+      "history": "b300b1000c/kk/kk/b1000",
+      "tags": [
+        "connected",
+        "pair",
+        "three_bet_pot",
+        "river"
+      ]
+    },
+    {
+      "id": "connected-994-three_barrels",
+      "family": "connected",
+      "partition": "development",
+      "hero": 0,
+      "hole": "JhQs",
+      "board": "9sThJc2d3s",
+      "history": "b300c/b300c/b900c/b2500",
+      "tags": [
+        "connected",
+        "pair",
+        "three_barrels",
+        "river"
+      ]
+    },
+    {
+      "id": "connected-33-limped_oop",
+      "family": "connected",
+      "partition": "development",
+      "hero": 1,
+      "hole": "2cJs",
+      "board": "9sThJc2d3s",
+      "history": "ck/kk/kk/",
+      "tags": [
+        "connected",
+        "two_pair",
+        "limped_oop",
+        "river"
+      ]
+    },
+    {
+      "id": "connected-33-checked_to_ip",
+      "family": "connected",
+      "partition": "development",
+      "hero": 0,
+      "hole": "2cJs",
+      "board": "9sThJc2d3s",
+      "history": "b300c/kk/kk/k",
+      "tags": [
+        "connected",
+        "two_pair",
+        "checked_to_ip",
+        "river"
+      ]
+    },
+    {
+      "id": "connected-33-half_pot",
+      "family": "connected",
+      "partition": "development",
+      "hero": 0,
+      "hole": "2cJs",
+      "board": "9sThJc2d3s",
+      "history": "b300c/kk/kk/b300",
+      "tags": [
+        "connected",
+        "two_pair",
+        "half_pot",
+        "river"
+      ]
+    },
+    {
+      "id": "connected-33-pot",
+      "family": "connected",
+      "partition": "development",
+      "hero": 1,
+      "hole": "2cJs",
+      "board": "9sThJc2d3s",
+      "history": "b300c/kk/kk/kb600",
+      "tags": [
+        "connected",
+        "two_pair",
+        "pot",
+        "river"
+      ]
+    },
+    {
+      "id": "connected-33-overbet",
+      "family": "connected",
+      "partition": "development",
+      "hero": 0,
+      "hole": "2cJs",
+      "board": "9sThJc2d3s",
+      "history": "b300c/kk/kk/b1200",
+      "tags": [
+        "connected",
+        "two_pair",
+        "overbet",
+        "river"
+      ]
+    },
+    {
+      "id": "connected-33-all_in",
+      "family": "connected",
+      "partition": "development",
+      "hero": 1,
+      "hole": "2cJs",
+      "board": "9sThJc2d3s",
+      "history": "b300c/kk/kk/kb19700",
+      "tags": [
+        "connected",
+        "two_pair",
+        "all_in",
+        "river"
+      ]
+    },
+    {
+      "id": "connected-33-three_bet_pot",
+      "family": "connected",
+      "partition": "development",
+      "hero": 0,
+      "hole": "2cJs",
+      "board": "9sThJc2d3s",
+      "history": "b300b1000c/kk/kk/b1000",
+      "tags": [
+        "connected",
+        "two_pair",
+        "three_bet_pot",
+        "river"
+      ]
+    },
+    {
+      "id": "connected-33-three_barrels",
+      "family": "connected",
+      "partition": "development",
+      "hero": 0,
+      "hole": "2cJs",
+      "board": "9sThJc2d3s",
+      "history": "b300c/b300c/b900c/b2500",
+      "tags": [
+        "connected",
+        "two_pair",
+        "three_barrels",
+        "river"
+      ]
+    },
+    {
+      "id": "connected-990-limped_oop",
+      "family": "connected",
+      "partition": "development",
+      "hero": 1,
+      "hole": "JhJs",
+      "board": "9sThJc2d3s",
+      "history": "ck/kk/kk/",
+      "tags": [
+        "connected",
+        "trips",
+        "limped_oop",
+        "river"
+      ]
+    },
+    {
+      "id": "connected-990-checked_to_ip",
+      "family": "connected",
+      "partition": "development",
+      "hero": 0,
+      "hole": "JhJs",
+      "board": "9sThJc2d3s",
+      "history": "b300c/kk/kk/k",
+      "tags": [
+        "connected",
+        "trips",
+        "checked_to_ip",
+        "river"
+      ]
+    },
+    {
+      "id": "connected-990-half_pot",
+      "family": "connected",
+      "partition": "development",
+      "hero": 0,
+      "hole": "JhJs",
+      "board": "9sThJc2d3s",
+      "history": "b300c/kk/kk/b300",
+      "tags": [
+        "connected",
+        "trips",
+        "half_pot",
+        "river"
+      ]
+    },
+    {
+      "id": "connected-990-pot",
+      "family": "connected",
+      "partition": "development",
+      "hero": 1,
+      "hole": "JhJs",
+      "board": "9sThJc2d3s",
+      "history": "b300c/kk/kk/kb600",
+      "tags": [
+        "connected",
+        "trips",
+        "pot",
+        "river"
+      ]
+    },
+    {
+      "id": "connected-990-overbet",
+      "family": "connected",
+      "partition": "development",
+      "hero": 0,
+      "hole": "JhJs",
+      "board": "9sThJc2d3s",
+      "history": "b300c/kk/kk/b1200",
+      "tags": [
+        "connected",
+        "trips",
+        "overbet",
+        "river"
+      ]
+    },
+    {
+      "id": "connected-990-all_in",
+      "family": "connected",
+      "partition": "development",
+      "hero": 1,
+      "hole": "JhJs",
+      "board": "9sThJc2d3s",
+      "history": "b300c/kk/kk/kb19700",
+      "tags": [
+        "connected",
+        "trips",
+        "all_in",
+        "river"
+      ]
+    },
+    {
+      "id": "connected-990-three_bet_pot",
+      "family": "connected",
+      "partition": "development",
+      "hero": 0,
+      "hole": "JhJs",
+      "board": "9sThJc2d3s",
+      "history": "b300b1000c/kk/kk/b1000",
+      "tags": [
+        "connected",
+        "trips",
+        "three_bet_pot",
+        "river"
+      ]
+    },
+    {
+      "id": "connected-990-three_barrels",
+      "family": "connected",
+      "partition": "development",
+      "hero": 0,
+      "hole": "JhJs",
+      "board": "9sThJc2d3s",
+      "history": "b300c/b300c/b900c/b2500",
+      "tags": [
+        "connected",
+        "trips",
+        "three_barrels",
+        "river"
+      ]
+    },
+    {
+      "id": "connected-680-limped_oop",
+      "family": "connected",
+      "partition": "development",
+      "hero": 1,
+      "hole": "7c8h",
+      "board": "9sThJc2d3s",
+      "history": "ck/kk/kk/",
+      "tags": [
+        "connected",
+        "straight",
+        "limped_oop",
+        "river"
+      ]
+    },
+    {
+      "id": "connected-680-checked_to_ip",
+      "family": "connected",
+      "partition": "development",
+      "hero": 0,
+      "hole": "7c8h",
+      "board": "9sThJc2d3s",
+      "history": "b300c/kk/kk/k",
+      "tags": [
+        "connected",
+        "straight",
+        "checked_to_ip",
+        "river"
+      ]
+    },
+    {
+      "id": "connected-680-half_pot",
+      "family": "connected",
+      "partition": "development",
+      "hero": 0,
+      "hole": "7c8h",
+      "board": "9sThJc2d3s",
+      "history": "b300c/kk/kk/b300",
+      "tags": [
+        "connected",
+        "straight",
+        "half_pot",
+        "river"
+      ]
+    },
+    {
+      "id": "connected-680-pot",
+      "family": "connected",
+      "partition": "development",
+      "hero": 1,
+      "hole": "7c8h",
+      "board": "9sThJc2d3s",
+      "history": "b300c/kk/kk/kb600",
+      "tags": [
+        "connected",
+        "straight",
+        "pot",
+        "river"
+      ]
+    },
+    {
+      "id": "connected-680-overbet",
+      "family": "connected",
+      "partition": "development",
+      "hero": 0,
+      "hole": "7c8h",
+      "board": "9sThJc2d3s",
+      "history": "b300c/kk/kk/b1200",
+      "tags": [
+        "connected",
+        "straight",
+        "overbet",
+        "river"
+      ]
+    },
+    {
+      "id": "connected-680-all_in",
+      "family": "connected",
+      "partition": "development",
+      "hero": 1,
+      "hole": "7c8h",
+      "board": "9sThJc2d3s",
+      "history": "b300c/kk/kk/kb19700",
+      "tags": [
+        "connected",
+        "straight",
+        "all_in",
+        "river"
+      ]
+    },
+    {
+      "id": "connected-680-three_bet_pot",
+      "family": "connected",
+      "partition": "development",
+      "hero": 0,
+      "hole": "7c8h",
+      "board": "9sThJc2d3s",
+      "history": "b300b1000c/kk/kk/b1000",
+      "tags": [
+        "connected",
+        "straight",
+        "three_bet_pot",
+        "river"
+      ]
+    },
+    {
+      "id": "connected-680-three_barrels",
+      "family": "connected",
+      "partition": "development",
+      "hero": 0,
+      "hole": "7c8h",
+      "board": "9sThJc2d3s",
+      "history": "b300c/b300c/b900c/b2500",
+      "tags": [
+        "connected",
+        "straight",
+        "three_barrels",
+        "river"
+      ]
+    },
+    {
+      "id": "connected-1018-limped_oop",
+      "family": "connected",
+      "partition": "development",
+      "hero": 1,
+      "hole": "QcKc",
+      "board": "9sThJc2d3s",
+      "history": "ck/kk/kk/",
+      "tags": [
+        "connected",
+        "straight",
+        "limped_oop",
+        "river"
+      ]
+    },
+    {
+      "id": "connected-1018-checked_to_ip",
+      "family": "connected",
+      "partition": "development",
+      "hero": 0,
+      "hole": "QcKc",
+      "board": "9sThJc2d3s",
+      "history": "b300c/kk/kk/k",
+      "tags": [
+        "connected",
+        "straight",
+        "checked_to_ip",
+        "river"
+      ]
+    },
+    {
+      "id": "connected-1018-half_pot",
+      "family": "connected",
+      "partition": "development",
+      "hero": 0,
+      "hole": "QcKc",
+      "board": "9sThJc2d3s",
+      "history": "b300c/kk/kk/b300",
+      "tags": [
+        "connected",
+        "straight",
+        "half_pot",
+        "river"
+      ]
+    },
+    {
+      "id": "connected-1018-pot",
+      "family": "connected",
+      "partition": "development",
+      "hero": 1,
+      "hole": "QcKc",
+      "board": "9sThJc2d3s",
+      "history": "b300c/kk/kk/kb600",
+      "tags": [
+        "connected",
+        "straight",
+        "pot",
+        "river"
+      ]
+    },
+    {
+      "id": "connected-1018-overbet",
+      "family": "connected",
+      "partition": "development",
+      "hero": 0,
+      "hole": "QcKc",
+      "board": "9sThJc2d3s",
+      "history": "b300c/kk/kk/b1200",
+      "tags": [
+        "connected",
+        "straight",
+        "overbet",
+        "river"
+      ]
+    },
+    {
+      "id": "connected-1018-all_in",
+      "family": "connected",
+      "partition": "development",
+      "hero": 1,
+      "hole": "QcKc",
+      "board": "9sThJc2d3s",
+      "history": "b300c/kk/kk/kb19700",
+      "tags": [
+        "connected",
+        "straight",
+        "all_in",
+        "river"
+      ]
+    },
+    {
+      "id": "connected-1018-three_bet_pot",
+      "family": "connected",
+      "partition": "development",
+      "hero": 0,
+      "hole": "QcKc",
+      "board": "9sThJc2d3s",
+      "history": "b300b1000c/kk/kk/b1000",
+      "tags": [
+        "connected",
+        "straight",
+        "three_bet_pot",
+        "river"
+      ]
+    },
+    {
+      "id": "connected-1018-three_barrels",
+      "family": "connected",
+      "partition": "development",
+      "hero": 0,
+      "hole": "QcKc",
+      "board": "9sThJc2d3s",
+      "history": "b300c/b300c/b900c/b2500",
+      "tags": [
+        "connected",
+        "straight",
+        "three_barrels",
+        "river"
+      ]
+    },
+    {
+      "id": "three_flush-696-limped_oop",
+      "family": "three_flush",
+      "partition": "development",
+      "hero": 1,
+      "hole": "7cKc",
+      "board": "AsTs4s9h2c",
+      "history": "ck/kk/kk/",
+      "tags": [
+        "three_flush",
+        "high_card",
+        "limped_oop",
+        "river"
+      ]
+    },
+    {
+      "id": "three_flush-696-checked_to_ip",
+      "family": "three_flush",
+      "partition": "development",
+      "hero": 0,
+      "hole": "7cKc",
+      "board": "AsTs4s9h2c",
+      "history": "b300c/kk/kk/k",
+      "tags": [
+        "three_flush",
+        "high_card",
+        "checked_to_ip",
+        "river"
+      ]
+    },
+    {
+      "id": "three_flush-696-half_pot",
+      "family": "three_flush",
+      "partition": "development",
+      "hero": 0,
+      "hole": "7cKc",
+      "board": "AsTs4s9h2c",
+      "history": "b300c/kk/kk/b300",
+      "tags": [
+        "three_flush",
+        "high_card",
+        "half_pot",
+        "river"
+      ]
+    },
+    {
+      "id": "three_flush-696-pot",
+      "family": "three_flush",
+      "partition": "development",
+      "hero": 1,
+      "hole": "7cKc",
+      "board": "AsTs4s9h2c",
+      "history": "b300c/kk/kk/kb600",
+      "tags": [
+        "three_flush",
+        "high_card",
+        "pot",
+        "river"
+      ]
+    },
+    {
+      "id": "three_flush-696-overbet",
+      "family": "three_flush",
+      "partition": "development",
+      "hero": 0,
+      "hole": "7cKc",
+      "board": "AsTs4s9h2c",
+      "history": "b300c/kk/kk/b1200",
+      "tags": [
+        "three_flush",
+        "high_card",
+        "overbet",
+        "river"
+      ]
+    },
+    {
+      "id": "three_flush-696-all_in",
+      "family": "three_flush",
+      "partition": "development",
+      "hero": 1,
+      "hole": "7cKc",
+      "board": "AsTs4s9h2c",
+      "history": "b300c/kk/kk/kb19700",
+      "tags": [
+        "three_flush",
+        "high_card",
+        "all_in",
+        "river"
+      ]
+    },
+    {
+      "id": "three_flush-696-three_bet_pot",
+      "family": "three_flush",
+      "partition": "development",
+      "hero": 0,
+      "hole": "7cKc",
+      "board": "AsTs4s9h2c",
+      "history": "b300b1000c/kk/kk/b1000",
+      "tags": [
+        "three_flush",
+        "high_card",
+        "three_bet_pot",
+        "river"
+      ]
+    },
+    {
+      "id": "three_flush-696-three_barrels",
+      "family": "three_flush",
+      "partition": "development",
+      "hero": 0,
+      "hole": "7cKc",
+      "board": "AsTs4s9h2c",
+      "history": "b300c/b300c/b900c/b2500",
+      "tags": [
+        "three_flush",
+        "high_card",
+        "three_barrels",
+        "river"
+      ]
+    },
+    {
+      "id": "three_flush-565-limped_oop",
+      "family": "three_flush",
+      "partition": "development",
+      "hero": 1,
+      "hole": "6c9d",
+      "board": "AsTs4s9h2c",
+      "history": "ck/kk/kk/",
+      "tags": [
+        "three_flush",
+        "pair",
+        "limped_oop",
+        "river"
+      ]
+    },
+    {
+      "id": "three_flush-565-checked_to_ip",
+      "family": "three_flush",
+      "partition": "development",
+      "hero": 0,
+      "hole": "6c9d",
+      "board": "AsTs4s9h2c",
+      "history": "b300c/kk/kk/k",
+      "tags": [
+        "three_flush",
+        "pair",
+        "checked_to_ip",
+        "river"
+      ]
+    },
+    {
+      "id": "three_flush-565-half_pot",
+      "family": "three_flush",
+      "partition": "development",
+      "hero": 0,
+      "hole": "6c9d",
+      "board": "AsTs4s9h2c",
+      "history": "b300c/kk/kk/b300",
+      "tags": [
+        "three_flush",
+        "pair",
+        "half_pot",
+        "river"
+      ]
+    },
+    {
+      "id": "three_flush-565-pot",
+      "family": "three_flush",
+      "partition": "development",
+      "hero": 1,
+      "hole": "6c9d",
+      "board": "AsTs4s9h2c",
+      "history": "b300c/kk/kk/kb600",
+      "tags": [
+        "three_flush",
+        "pair",
+        "pot",
+        "river"
+      ]
+    },
+    {
+      "id": "three_flush-565-overbet",
+      "family": "three_flush",
+      "partition": "development",
+      "hero": 0,
+      "hole": "6c9d",
+      "board": "AsTs4s9h2c",
+      "history": "b300c/kk/kk/b1200",
+      "tags": [
+        "three_flush",
+        "pair",
+        "overbet",
+        "river"
+      ]
+    },
+    {
+      "id": "three_flush-565-all_in",
+      "family": "three_flush",
+      "partition": "development",
+      "hero": 1,
+      "hole": "6c9d",
+      "board": "AsTs4s9h2c",
+      "history": "b300c/kk/kk/kb19700",
+      "tags": [
+        "three_flush",
+        "pair",
+        "all_in",
+        "river"
+      ]
+    },
+    {
+      "id": "three_flush-565-three_bet_pot",
+      "family": "three_flush",
+      "partition": "development",
+      "hero": 0,
+      "hole": "6c9d",
+      "board": "AsTs4s9h2c",
+      "history": "b300b1000c/kk/kk/b1000",
+      "tags": [
+        "three_flush",
+        "pair",
+        "three_bet_pot",
+        "river"
+      ]
+    },
+    {
+      "id": "three_flush-565-three_barrels",
+      "family": "three_flush",
+      "partition": "development",
+      "hero": 0,
+      "hole": "6c9d",
+      "board": "AsTs4s9h2c",
+      "history": "b300c/b300c/b900c/b2500",
+      "tags": [
+        "three_flush",
+        "pair",
+        "three_barrels",
+        "river"
+      ]
+    },
+    {
+      "id": "three_flush-134-limped_oop",
+      "family": "three_flush",
+      "partition": "development",
+      "hero": 1,
+      "hole": "2sAh",
+      "board": "AsTs4s9h2c",
+      "history": "ck/kk/kk/",
+      "tags": [
+        "three_flush",
+        "two_pair",
+        "limped_oop",
+        "river"
+      ]
+    },
+    {
+      "id": "three_flush-134-checked_to_ip",
+      "family": "three_flush",
+      "partition": "development",
+      "hero": 0,
+      "hole": "2sAh",
+      "board": "AsTs4s9h2c",
+      "history": "b300c/kk/kk/k",
+      "tags": [
+        "three_flush",
+        "two_pair",
+        "checked_to_ip",
+        "river"
+      ]
+    },
+    {
+      "id": "three_flush-134-half_pot",
+      "family": "three_flush",
+      "partition": "development",
+      "hero": 0,
+      "hole": "2sAh",
+      "board": "AsTs4s9h2c",
+      "history": "b300c/kk/kk/b300",
+      "tags": [
+        "three_flush",
+        "two_pair",
+        "half_pot",
+        "river"
+      ]
+    },
+    {
+      "id": "three_flush-134-pot",
+      "family": "three_flush",
+      "partition": "development",
+      "hero": 1,
+      "hole": "2sAh",
+      "board": "AsTs4s9h2c",
+      "history": "b300c/kk/kk/kb600",
+      "tags": [
+        "three_flush",
+        "two_pair",
+        "pot",
+        "river"
+      ]
+    },
+    {
+      "id": "three_flush-134-overbet",
+      "family": "three_flush",
+      "partition": "development",
+      "hero": 0,
+      "hole": "2sAh",
+      "board": "AsTs4s9h2c",
+      "history": "b300c/kk/kk/b1200",
+      "tags": [
+        "three_flush",
+        "two_pair",
+        "overbet",
+        "river"
+      ]
+    },
+    {
+      "id": "three_flush-134-all_in",
+      "family": "three_flush",
+      "partition": "development",
+      "hero": 1,
+      "hole": "2sAh",
+      "board": "AsTs4s9h2c",
+      "history": "b300c/kk/kk/kb19700",
+      "tags": [
+        "three_flush",
+        "two_pair",
+        "all_in",
+        "river"
+      ]
+    },
+    {
+      "id": "three_flush-134-three_bet_pot",
+      "family": "three_flush",
+      "partition": "development",
+      "hero": 0,
+      "hole": "2sAh",
+      "board": "AsTs4s9h2c",
+      "history": "b300b1000c/kk/kk/b1000",
+      "tags": [
+        "three_flush",
+        "two_pair",
+        "three_bet_pot",
+        "river"
+      ]
+    },
+    {
+      "id": "three_flush-134-three_barrels",
+      "family": "three_flush",
+      "partition": "development",
+      "hero": 0,
+      "hole": "2sAh",
+      "board": "AsTs4s9h2c",
+      "history": "b300c/b300c/b900c/b2500",
+      "tags": [
+        "three_flush",
+        "two_pair",
+        "three_barrels",
+        "river"
+      ]
+    },
+    {
+      "id": "three_flush-929-limped_oop",
+      "family": "three_flush",
+      "partition": "development",
+      "hero": 1,
+      "hole": "TcTh",
+      "board": "AsTs4s9h2c",
+      "history": "ck/kk/kk/",
+      "tags": [
+        "three_flush",
+        "trips",
+        "limped_oop",
+        "river"
+      ]
+    },
+    {
+      "id": "three_flush-929-checked_to_ip",
+      "family": "three_flush",
+      "partition": "development",
+      "hero": 0,
+      "hole": "TcTh",
+      "board": "AsTs4s9h2c",
+      "history": "b300c/kk/kk/k",
+      "tags": [
+        "three_flush",
+        "trips",
+        "checked_to_ip",
+        "river"
+      ]
+    },
+    {
+      "id": "three_flush-929-half_pot",
+      "family": "three_flush",
+      "partition": "development",
+      "hero": 0,
+      "hole": "TcTh",
+      "board": "AsTs4s9h2c",
+      "history": "b300c/kk/kk/b300",
+      "tags": [
+        "three_flush",
+        "trips",
+        "half_pot",
+        "river"
+      ]
+    },
+    {
+      "id": "three_flush-929-pot",
+      "family": "three_flush",
+      "partition": "development",
+      "hero": 1,
+      "hole": "TcTh",
+      "board": "AsTs4s9h2c",
+      "history": "b300c/kk/kk/kb600",
+      "tags": [
+        "three_flush",
+        "trips",
+        "pot",
+        "river"
+      ]
+    },
+    {
+      "id": "three_flush-929-overbet",
+      "family": "three_flush",
+      "partition": "development",
+      "hero": 0,
+      "hole": "TcTh",
+      "board": "AsTs4s9h2c",
+      "history": "b300c/kk/kk/b1200",
+      "tags": [
+        "three_flush",
+        "trips",
+        "overbet",
+        "river"
+      ]
+    },
+    {
+      "id": "three_flush-929-all_in",
+      "family": "three_flush",
+      "partition": "development",
+      "hero": 1,
+      "hole": "TcTh",
+      "board": "AsTs4s9h2c",
+      "history": "b300c/kk/kk/kb19700",
+      "tags": [
+        "three_flush",
+        "trips",
+        "all_in",
+        "river"
+      ]
+    },
+    {
+      "id": "three_flush-929-three_bet_pot",
+      "family": "three_flush",
+      "partition": "development",
+      "hero": 0,
+      "hole": "TcTh",
+      "board": "AsTs4s9h2c",
+      "history": "b300b1000c/kk/kk/b1000",
+      "tags": [
+        "three_flush",
+        "trips",
+        "three_bet_pot",
+        "river"
+      ]
+    },
+    {
+      "id": "three_flush-929-three_barrels",
+      "family": "three_flush",
+      "partition": "development",
+      "hero": 0,
+      "hole": "TcTh",
+      "board": "AsTs4s9h2c",
+      "history": "b300c/b300c/b900c/b2500",
+      "tags": [
+        "three_flush",
+        "trips",
+        "three_barrels",
+        "river"
+      ]
+    },
+    {
+      "id": "three_flush-142-limped_oop",
+      "family": "three_flush",
+      "partition": "development",
+      "hero": 1,
+      "hole": "3c5d",
+      "board": "AsTs4s9h2c",
+      "history": "ck/kk/kk/",
+      "tags": [
+        "three_flush",
+        "straight",
+        "limped_oop",
+        "river"
+      ]
+    },
+    {
+      "id": "three_flush-142-checked_to_ip",
+      "family": "three_flush",
+      "partition": "development",
+      "hero": 0,
+      "hole": "3c5d",
+      "board": "AsTs4s9h2c",
+      "history": "b300c/kk/kk/k",
+      "tags": [
+        "three_flush",
+        "straight",
+        "checked_to_ip",
+        "river"
+      ]
+    },
+    {
+      "id": "three_flush-142-half_pot",
+      "family": "three_flush",
+      "partition": "development",
+      "hero": 0,
+      "hole": "3c5d",
+      "board": "AsTs4s9h2c",
+      "history": "b300c/kk/kk/b300",
+      "tags": [
+        "three_flush",
+        "straight",
+        "half_pot",
+        "river"
+      ]
+    },
+    {
+      "id": "three_flush-142-pot",
+      "family": "three_flush",
+      "partition": "development",
+      "hero": 1,
+      "hole": "3c5d",
+      "board": "AsTs4s9h2c",
+      "history": "b300c/kk/kk/kb600",
+      "tags": [
+        "three_flush",
+        "straight",
+        "pot",
+        "river"
+      ]
+    },
+    {
+      "id": "three_flush-142-overbet",
+      "family": "three_flush",
+      "partition": "development",
+      "hero": 0,
+      "hole": "3c5d",
+      "board": "AsTs4s9h2c",
+      "history": "b300c/kk/kk/b1200",
+      "tags": [
+        "three_flush",
+        "straight",
+        "overbet",
+        "river"
+      ]
+    },
+    {
+      "id": "three_flush-142-all_in",
+      "family": "three_flush",
+      "partition": "development",
+      "hero": 1,
+      "hole": "3c5d",
+      "board": "AsTs4s9h2c",
+      "history": "b300c/kk/kk/kb19700",
+      "tags": [
+        "three_flush",
+        "straight",
+        "all_in",
+        "river"
+      ]
+    },
+    {
+      "id": "three_flush-142-three_bet_pot",
+      "family": "three_flush",
+      "partition": "development",
+      "hero": 0,
+      "hole": "3c5d",
+      "board": "AsTs4s9h2c",
+      "history": "b300b1000c/kk/kk/b1000",
+      "tags": [
+        "three_flush",
+        "straight",
+        "three_bet_pot",
+        "river"
+      ]
+    },
+    {
+      "id": "three_flush-142-three_barrels",
+      "family": "three_flush",
+      "partition": "development",
+      "hero": 0,
+      "hole": "3c5d",
+      "board": "AsTs4s9h2c",
+      "history": "b300c/b300c/b900c/b2500",
+      "tags": [
+        "three_flush",
+        "straight",
+        "three_barrels",
+        "river"
+      ]
+    },
+    {
+      "id": "three_flush-116-limped_oop",
+      "family": "three_flush",
+      "partition": "development",
+      "hero": 1,
+      "hole": "2s9s",
+      "board": "AsTs4s9h2c",
+      "history": "ck/kk/kk/",
+      "tags": [
+        "three_flush",
+        "flush",
+        "limped_oop",
+        "river"
+      ]
+    },
+    {
+      "id": "three_flush-116-checked_to_ip",
+      "family": "three_flush",
+      "partition": "development",
+      "hero": 0,
+      "hole": "2s9s",
+      "board": "AsTs4s9h2c",
+      "history": "b300c/kk/kk/k",
+      "tags": [
+        "three_flush",
+        "flush",
+        "checked_to_ip",
+        "river"
+      ]
+    },
+    {
+      "id": "three_flush-116-half_pot",
+      "family": "three_flush",
+      "partition": "development",
+      "hero": 0,
+      "hole": "2s9s",
+      "board": "AsTs4s9h2c",
+      "history": "b300c/kk/kk/b300",
+      "tags": [
+        "three_flush",
+        "flush",
+        "half_pot",
+        "river"
+      ]
+    },
+    {
+      "id": "three_flush-116-pot",
+      "family": "three_flush",
+      "partition": "development",
+      "hero": 1,
+      "hole": "2s9s",
+      "board": "AsTs4s9h2c",
+      "history": "b300c/kk/kk/kb600",
+      "tags": [
+        "three_flush",
+        "flush",
+        "pot",
+        "river"
+      ]
+    },
+    {
+      "id": "three_flush-116-overbet",
+      "family": "three_flush",
+      "partition": "development",
+      "hero": 0,
+      "hole": "2s9s",
+      "board": "AsTs4s9h2c",
+      "history": "b300c/kk/kk/b1200",
+      "tags": [
+        "three_flush",
+        "flush",
+        "overbet",
+        "river"
+      ]
+    },
+    {
+      "id": "three_flush-116-all_in",
+      "family": "three_flush",
+      "partition": "development",
+      "hero": 1,
+      "hole": "2s9s",
+      "board": "AsTs4s9h2c",
+      "history": "b300c/kk/kk/kb19700",
+      "tags": [
+        "three_flush",
+        "flush",
+        "all_in",
+        "river"
+      ]
+    },
+    {
+      "id": "three_flush-116-three_bet_pot",
+      "family": "three_flush",
+      "partition": "development",
+      "hero": 0,
+      "hole": "2s9s",
+      "board": "AsTs4s9h2c",
+      "history": "b300b1000c/kk/kk/b1000",
+      "tags": [
+        "three_flush",
+        "flush",
+        "three_bet_pot",
+        "river"
+      ]
+    },
+    {
+      "id": "three_flush-116-three_barrels",
+      "family": "three_flush",
+      "partition": "development",
+      "hero": 0,
+      "hole": "2s9s",
+      "board": "AsTs4s9h2c",
+      "history": "b300c/b300c/b900c/b2500",
+      "tags": [
+        "three_flush",
+        "flush",
+        "three_barrels",
+        "river"
+      ]
+    },
+    {
+      "id": "three_flush-1056-limped_oop",
+      "family": "three_flush",
+      "partition": "development",
+      "hero": 1,
+      "hole": "QsKs",
+      "board": "AsTs4s9h2c",
+      "history": "ck/kk/kk/",
+      "tags": [
+        "three_flush",
+        "flush",
+        "limped_oop",
+        "river"
+      ]
+    },
+    {
+      "id": "three_flush-1056-checked_to_ip",
+      "family": "three_flush",
+      "partition": "development",
+      "hero": 0,
+      "hole": "QsKs",
+      "board": "AsTs4s9h2c",
+      "history": "b300c/kk/kk/k",
+      "tags": [
+        "three_flush",
+        "flush",
+        "checked_to_ip",
+        "river"
+      ]
+    },
+    {
+      "id": "three_flush-1056-half_pot",
+      "family": "three_flush",
+      "partition": "development",
+      "hero": 0,
+      "hole": "QsKs",
+      "board": "AsTs4s9h2c",
+      "history": "b300c/kk/kk/b300",
+      "tags": [
+        "three_flush",
+        "flush",
+        "half_pot",
+        "river"
+      ]
+    },
+    {
+      "id": "three_flush-1056-pot",
+      "family": "three_flush",
+      "partition": "development",
+      "hero": 1,
+      "hole": "QsKs",
+      "board": "AsTs4s9h2c",
+      "history": "b300c/kk/kk/kb600",
+      "tags": [
+        "three_flush",
+        "flush",
+        "pot",
+        "river"
+      ]
+    },
+    {
+      "id": "three_flush-1056-overbet",
+      "family": "three_flush",
+      "partition": "development",
+      "hero": 0,
+      "hole": "QsKs",
+      "board": "AsTs4s9h2c",
+      "history": "b300c/kk/kk/b1200",
+      "tags": [
+        "three_flush",
+        "flush",
+        "overbet",
+        "river"
+      ]
+    },
+    {
+      "id": "three_flush-1056-all_in",
+      "family": "three_flush",
+      "partition": "development",
+      "hero": 1,
+      "hole": "QsKs",
+      "board": "AsTs4s9h2c",
+      "history": "b300c/kk/kk/kb19700",
+      "tags": [
+        "three_flush",
+        "flush",
+        "all_in",
+        "river"
+      ]
+    },
+    {
+      "id": "three_flush-1056-three_bet_pot",
+      "family": "three_flush",
+      "partition": "development",
+      "hero": 0,
+      "hole": "QsKs",
+      "board": "AsTs4s9h2c",
+      "history": "b300b1000c/kk/kk/b1000",
+      "tags": [
+        "three_flush",
+        "flush",
+        "three_bet_pot",
+        "river"
+      ]
+    },
+    {
+      "id": "three_flush-1056-three_barrels",
+      "family": "three_flush",
+      "partition": "development",
+      "hero": 0,
+      "hole": "QsKs",
+      "board": "AsTs4s9h2c",
+      "history": "b300c/b300c/b900c/b2500",
+      "tags": [
+        "three_flush",
+        "flush",
+        "three_barrels",
+        "river"
+      ]
+    },
+    {
+      "id": "four_flush-708-limped_oop",
+      "family": "four_flush",
+      "partition": "development",
+      "hero": 1,
+      "hole": "7d9c",
+      "board": "KhJh8h3h2c",
+      "history": "ck/kk/kk/",
+      "tags": [
+        "four_flush",
+        "high_card",
+        "limped_oop",
+        "river"
+      ]
+    },
+    {
+      "id": "four_flush-708-checked_to_ip",
+      "family": "four_flush",
+      "partition": "development",
+      "hero": 0,
+      "hole": "7d9c",
+      "board": "KhJh8h3h2c",
+      "history": "b300c/kk/kk/k",
+      "tags": [
+        "four_flush",
+        "high_card",
+        "checked_to_ip",
+        "river"
+      ]
+    },
+    {
+      "id": "four_flush-708-half_pot",
+      "family": "four_flush",
+      "partition": "development",
+      "hero": 0,
+      "hole": "7d9c",
+      "board": "KhJh8h3h2c",
+      "history": "b300c/kk/kk/b300",
+      "tags": [
+        "four_flush",
+        "high_card",
+        "half_pot",
+        "river"
+      ]
+    },
+    {
+      "id": "four_flush-708-pot",
+      "family": "four_flush",
+      "partition": "development",
+      "hero": 1,
+      "hole": "7d9c",
+      "board": "KhJh8h3h2c",
+      "history": "b300c/kk/kk/kb600",
+      "tags": [
+        "four_flush",
+        "high_card",
+        "pot",
+        "river"
+      ]
+    },
+    {
+      "id": "four_flush-708-overbet",
+      "family": "four_flush",
+      "partition": "development",
+      "hero": 0,
+      "hole": "7d9c",
+      "board": "KhJh8h3h2c",
+      "history": "b300c/kk/kk/b1200",
+      "tags": [
+        "four_flush",
+        "high_card",
+        "overbet",
+        "river"
+      ]
+    },
+    {
+      "id": "four_flush-708-all_in",
+      "family": "four_flush",
+      "partition": "development",
+      "hero": 1,
+      "hole": "7d9c",
+      "board": "KhJh8h3h2c",
+      "history": "b300c/kk/kk/kb19700",
+      "tags": [
+        "four_flush",
+        "high_card",
+        "all_in",
+        "river"
+      ]
+    },
+    {
+      "id": "four_flush-708-three_bet_pot",
+      "family": "four_flush",
+      "partition": "development",
+      "hero": 0,
+      "hole": "7d9c",
+      "board": "KhJh8h3h2c",
+      "history": "b300b1000c/kk/kk/b1000",
+      "tags": [
+        "four_flush",
+        "high_card",
+        "three_bet_pot",
+        "river"
+      ]
+    },
+    {
+      "id": "four_flush-708-three_barrels",
+      "family": "four_flush",
+      "partition": "development",
+      "hero": 0,
+      "hole": "7d9c",
+      "board": "KhJh8h3h2c",
+      "history": "b300c/b300c/b900c/b2500",
+      "tags": [
+        "four_flush",
+        "high_card",
+        "three_barrels",
+        "river"
+      ]
+    },
+    {
+      "id": "four_flush-833-limped_oop",
+      "family": "four_flush",
+      "partition": "development",
+      "hero": 1,
+      "hole": "8sTd",
+      "board": "KhJh8h3h2c",
+      "history": "ck/kk/kk/",
+      "tags": [
+        "four_flush",
+        "pair",
+        "limped_oop",
+        "river"
+      ]
+    },
+    {
+      "id": "four_flush-833-checked_to_ip",
+      "family": "four_flush",
+      "partition": "development",
+      "hero": 0,
+      "hole": "8sTd",
+      "board": "KhJh8h3h2c",
+      "history": "b300c/kk/kk/k",
+      "tags": [
+        "four_flush",
+        "pair",
+        "checked_to_ip",
+        "river"
+      ]
+    },
+    {
+      "id": "four_flush-833-half_pot",
+      "family": "four_flush",
+      "partition": "development",
+      "hero": 0,
+      "hole": "8sTd",
+      "board": "KhJh8h3h2c",
+      "history": "b300c/kk/kk/b300",
+      "tags": [
+        "four_flush",
+        "pair",
+        "half_pot",
+        "river"
+      ]
+    },
+    {
+      "id": "four_flush-833-pot",
+      "family": "four_flush",
+      "partition": "development",
+      "hero": 1,
+      "hole": "8sTd",
+      "board": "KhJh8h3h2c",
+      "history": "b300c/kk/kk/kb600",
+      "tags": [
+        "four_flush",
+        "pair",
+        "pot",
+        "river"
+      ]
+    },
+    {
+      "id": "four_flush-833-overbet",
+      "family": "four_flush",
+      "partition": "development",
+      "hero": 0,
+      "hole": "8sTd",
+      "board": "KhJh8h3h2c",
+      "history": "b300c/kk/kk/b1200",
+      "tags": [
+        "four_flush",
+        "pair",
+        "overbet",
+        "river"
+      ]
+    },
+    {
+      "id": "four_flush-833-all_in",
+      "family": "four_flush",
+      "partition": "development",
+      "hero": 1,
+      "hole": "8sTd",
+      "board": "KhJh8h3h2c",
+      "history": "b300c/kk/kk/kb19700",
+      "tags": [
+        "four_flush",
+        "pair",
+        "all_in",
+        "river"
+      ]
+    },
+    {
+      "id": "four_flush-833-three_bet_pot",
+      "family": "four_flush",
+      "partition": "development",
+      "hero": 0,
+      "hole": "8sTd",
+      "board": "KhJh8h3h2c",
+      "history": "b300b1000c/kk/kk/b1000",
+      "tags": [
+        "four_flush",
+        "pair",
+        "three_bet_pot",
+        "river"
+      ]
+    },
+    {
+      "id": "four_flush-833-three_barrels",
+      "family": "four_flush",
+      "partition": "development",
+      "hero": 0,
+      "hole": "8sTd",
+      "board": "KhJh8h3h2c",
+      "history": "b300c/b300c/b900c/b2500",
+      "tags": [
+        "four_flush",
+        "pair",
+        "three_barrels",
+        "river"
+      ]
+    },
+    {
+      "id": "four_flush-793-limped_oop",
+      "family": "four_flush",
+      "partition": "development",
+      "hero": 1,
+      "hole": "8cJs",
+      "board": "KhJh8h3h2c",
+      "history": "ck/kk/kk/",
+      "tags": [
+        "four_flush",
+        "two_pair",
+        "limped_oop",
+        "river"
+      ]
+    },
+    {
+      "id": "four_flush-793-checked_to_ip",
+      "family": "four_flush",
+      "partition": "development",
+      "hero": 0,
+      "hole": "8cJs",
+      "board": "KhJh8h3h2c",
+      "history": "b300c/kk/kk/k",
+      "tags": [
+        "four_flush",
+        "two_pair",
+        "checked_to_ip",
+        "river"
+      ]
+    },
+    {
+      "id": "four_flush-793-half_pot",
+      "family": "four_flush",
+      "partition": "development",
+      "hero": 0,
+      "hole": "8cJs",
+      "board": "KhJh8h3h2c",
+      "history": "b300c/kk/kk/b300",
+      "tags": [
+        "four_flush",
+        "two_pair",
+        "half_pot",
+        "river"
+      ]
+    },
+    {
+      "id": "four_flush-793-pot",
+      "family": "four_flush",
+      "partition": "development",
+      "hero": 1,
+      "hole": "8cJs",
+      "board": "KhJh8h3h2c",
+      "history": "b300c/kk/kk/kb600",
+      "tags": [
+        "four_flush",
+        "two_pair",
+        "pot",
+        "river"
+      ]
+    },
+    {
+      "id": "four_flush-793-overbet",
+      "family": "four_flush",
+      "partition": "development",
+      "hero": 0,
+      "hole": "8cJs",
+      "board": "KhJh8h3h2c",
+      "history": "b300c/kk/kk/b1200",
+      "tags": [
+        "four_flush",
+        "two_pair",
+        "overbet",
+        "river"
+      ]
+    },
+    {
+      "id": "four_flush-793-all_in",
+      "family": "four_flush",
+      "partition": "development",
+      "hero": 1,
+      "hole": "8cJs",
+      "board": "KhJh8h3h2c",
+      "history": "b300c/kk/kk/kb19700",
+      "tags": [
+        "four_flush",
+        "two_pair",
+        "all_in",
+        "river"
+      ]
+    },
+    {
+      "id": "four_flush-793-three_bet_pot",
+      "family": "four_flush",
+      "partition": "development",
+      "hero": 0,
+      "hole": "8cJs",
+      "board": "KhJh8h3h2c",
+      "history": "b300b1000c/kk/kk/b1000",
+      "tags": [
+        "four_flush",
+        "two_pair",
+        "three_bet_pot",
+        "river"
+      ]
+    },
+    {
+      "id": "four_flush-793-three_barrels",
+      "family": "four_flush",
+      "partition": "development",
+      "hero": 0,
+      "hole": "8cJs",
+      "board": "KhJh8h3h2c",
+      "history": "b300c/b300c/b900c/b2500",
+      "tags": [
+        "four_flush",
+        "two_pair",
+        "three_barrels",
+        "river"
+      ]
+    },
+    {
+      "id": "four_flush-178-limped_oop",
+      "family": "four_flush",
+      "partition": "development",
+      "hero": 1,
+      "hole": "3d3s",
+      "board": "KhJh8h3h2c",
+      "history": "ck/kk/kk/",
+      "tags": [
+        "four_flush",
+        "trips",
+        "limped_oop",
+        "river"
+      ]
+    },
+    {
+      "id": "four_flush-178-checked_to_ip",
+      "family": "four_flush",
+      "partition": "development",
+      "hero": 0,
+      "hole": "3d3s",
+      "board": "KhJh8h3h2c",
+      "history": "b300c/kk/kk/k",
+      "tags": [
+        "four_flush",
+        "trips",
+        "checked_to_ip",
+        "river"
+      ]
+    },
+    {
+      "id": "four_flush-178-half_pot",
+      "family": "four_flush",
+      "partition": "development",
+      "hero": 0,
+      "hole": "3d3s",
+      "board": "KhJh8h3h2c",
+      "history": "b300c/kk/kk/b300",
+      "tags": [
+        "four_flush",
+        "trips",
+        "half_pot",
+        "river"
+      ]
+    },
+    {
+      "id": "four_flush-178-pot",
+      "family": "four_flush",
+      "partition": "development",
+      "hero": 1,
+      "hole": "3d3s",
+      "board": "KhJh8h3h2c",
+      "history": "b300c/kk/kk/kb600",
+      "tags": [
+        "four_flush",
+        "trips",
+        "pot",
+        "river"
+      ]
+    },
+    {
+      "id": "four_flush-178-overbet",
+      "family": "four_flush",
+      "partition": "development",
+      "hero": 0,
+      "hole": "3d3s",
+      "board": "KhJh8h3h2c",
+      "history": "b300c/kk/kk/b1200",
+      "tags": [
+        "four_flush",
+        "trips",
+        "overbet",
+        "river"
+      ]
+    },
+    {
+      "id": "four_flush-178-all_in",
+      "family": "four_flush",
+      "partition": "development",
+      "hero": 1,
+      "hole": "3d3s",
+      "board": "KhJh8h3h2c",
+      "history": "b300c/kk/kk/kb19700",
+      "tags": [
+        "four_flush",
+        "trips",
+        "all_in",
+        "river"
+      ]
+    },
+    {
+      "id": "four_flush-178-three_bet_pot",
+      "family": "four_flush",
+      "partition": "development",
+      "hero": 0,
+      "hole": "3d3s",
+      "board": "KhJh8h3h2c",
+      "history": "b300b1000c/kk/kk/b1000",
+      "tags": [
+        "four_flush",
+        "trips",
+        "three_bet_pot",
+        "river"
+      ]
+    },
+    {
+      "id": "four_flush-178-three_barrels",
+      "family": "four_flush",
+      "partition": "development",
+      "hero": 0,
+      "hole": "3d3s",
+      "board": "KhJh8h3h2c",
+      "history": "b300c/b300c/b900c/b2500",
+      "tags": [
+        "four_flush",
+        "trips",
+        "three_barrels",
+        "river"
+      ]
+    },
+    {
+      "id": "four_flush-69-limped_oop",
+      "family": "four_flush",
+      "partition": "development",
+      "hero": 1,
+      "hole": "2h9c",
+      "board": "KhJh8h3h2c",
+      "history": "ck/kk/kk/",
+      "tags": [
+        "four_flush",
+        "flush",
+        "limped_oop",
+        "river"
+      ]
+    },
+    {
+      "id": "four_flush-69-checked_to_ip",
+      "family": "four_flush",
+      "partition": "development",
+      "hero": 0,
+      "hole": "2h9c",
+      "board": "KhJh8h3h2c",
+      "history": "b300c/kk/kk/k",
+      "tags": [
+        "four_flush",
+        "flush",
+        "checked_to_ip",
+        "river"
+      ]
+    },
+    {
+      "id": "four_flush-69-half_pot",
+      "family": "four_flush",
+      "partition": "development",
+      "hero": 0,
+      "hole": "2h9c",
+      "board": "KhJh8h3h2c",
+      "history": "b300c/kk/kk/b300",
+      "tags": [
+        "four_flush",
+        "flush",
+        "half_pot",
+        "river"
+      ]
+    },
+    {
+      "id": "four_flush-69-pot",
+      "family": "four_flush",
+      "partition": "development",
+      "hero": 1,
+      "hole": "2h9c",
+      "board": "KhJh8h3h2c",
+      "history": "b300c/kk/kk/kb600",
+      "tags": [
+        "four_flush",
+        "flush",
+        "pot",
+        "river"
+      ]
+    },
+    {
+      "id": "four_flush-69-overbet",
+      "family": "four_flush",
+      "partition": "development",
+      "hero": 0,
+      "hole": "2h9c",
+      "board": "KhJh8h3h2c",
+      "history": "b300c/kk/kk/b1200",
+      "tags": [
+        "four_flush",
+        "flush",
+        "overbet",
+        "river"
+      ]
+    },
+    {
+      "id": "four_flush-69-all_in",
+      "family": "four_flush",
+      "partition": "development",
+      "hero": 1,
+      "hole": "2h9c",
+      "board": "KhJh8h3h2c",
+      "history": "b300c/kk/kk/kb19700",
+      "tags": [
+        "four_flush",
+        "flush",
+        "all_in",
+        "river"
+      ]
+    },
+    {
+      "id": "four_flush-69-three_bet_pot",
+      "family": "four_flush",
+      "partition": "development",
+      "hero": 0,
+      "hole": "2h9c",
+      "board": "KhJh8h3h2c",
+      "history": "b300b1000c/kk/kk/b1000",
+      "tags": [
+        "four_flush",
+        "flush",
+        "three_bet_pot",
+        "river"
+      ]
+    },
+    {
+      "id": "four_flush-69-three_barrels",
+      "family": "four_flush",
+      "partition": "development",
+      "hero": 0,
+      "hole": "2h9c",
+      "board": "KhJh8h3h2c",
+      "history": "b300c/b300c/b900c/b2500",
+      "tags": [
+        "four_flush",
+        "flush",
+        "three_barrels",
+        "river"
+      ]
+    },
+    {
+      "id": "four_flush-1051-limped_oop",
+      "family": "four_flush",
+      "partition": "development",
+      "hero": 1,
+      "hole": "QhAh",
+      "board": "KhJh8h3h2c",
+      "history": "ck/kk/kk/",
+      "tags": [
+        "four_flush",
+        "flush",
+        "limped_oop",
+        "river"
+      ]
+    },
+    {
+      "id": "four_flush-1051-checked_to_ip",
+      "family": "four_flush",
+      "partition": "development",
+      "hero": 0,
+      "hole": "QhAh",
+      "board": "KhJh8h3h2c",
+      "history": "b300c/kk/kk/k",
+      "tags": [
+        "four_flush",
+        "flush",
+        "checked_to_ip",
+        "river"
+      ]
+    },
+    {
+      "id": "four_flush-1051-half_pot",
+      "family": "four_flush",
+      "partition": "development",
+      "hero": 0,
+      "hole": "QhAh",
+      "board": "KhJh8h3h2c",
+      "history": "b300c/kk/kk/b300",
+      "tags": [
+        "four_flush",
+        "flush",
+        "half_pot",
+        "river"
+      ]
+    },
+    {
+      "id": "four_flush-1051-pot",
+      "family": "four_flush",
+      "partition": "development",
+      "hero": 1,
+      "hole": "QhAh",
+      "board": "KhJh8h3h2c",
+      "history": "b300c/kk/kk/kb600",
+      "tags": [
+        "four_flush",
+        "flush",
+        "pot",
+        "river"
+      ]
+    },
+    {
+      "id": "four_flush-1051-overbet",
+      "family": "four_flush",
+      "partition": "development",
+      "hero": 0,
+      "hole": "QhAh",
+      "board": "KhJh8h3h2c",
+      "history": "b300c/kk/kk/b1200",
+      "tags": [
+        "four_flush",
+        "flush",
+        "overbet",
+        "river"
+      ]
+    },
+    {
+      "id": "four_flush-1051-all_in",
+      "family": "four_flush",
+      "partition": "development",
+      "hero": 1,
+      "hole": "QhAh",
+      "board": "KhJh8h3h2c",
+      "history": "b300c/kk/kk/kb19700",
+      "tags": [
+        "four_flush",
+        "flush",
+        "all_in",
+        "river"
+      ]
+    },
+    {
+      "id": "four_flush-1051-three_bet_pot",
+      "family": "four_flush",
+      "partition": "development",
+      "hero": 0,
+      "hole": "QhAh",
+      "board": "KhJh8h3h2c",
+      "history": "b300b1000c/kk/kk/b1000",
+      "tags": [
+        "four_flush",
+        "flush",
+        "three_bet_pot",
+        "river"
+      ]
+    },
+    {
+      "id": "four_flush-1051-three_barrels",
+      "family": "four_flush",
+      "partition": "development",
+      "hero": 0,
+      "hole": "QhAh",
+      "board": "KhJh8h3h2c",
+      "history": "b300c/b300c/b900c/b2500",
+      "tags": [
+        "four_flush",
+        "flush",
+        "three_barrels",
+        "river"
+      ]
+    },
+    {
+      "id": "paired-465-limped_oop",
+      "family": "paired",
+      "partition": "development",
+      "hero": 1,
+      "hole": "5d9d",
+      "board": "KhKs7c3d2h",
+      "history": "ck/kk/kk/",
+      "tags": [
+        "paired",
+        "pair",
+        "limped_oop",
+        "river"
+      ]
+    },
+    {
+      "id": "paired-465-checked_to_ip",
+      "family": "paired",
+      "partition": "development",
+      "hero": 0,
+      "hole": "5d9d",
+      "board": "KhKs7c3d2h",
+      "history": "b300c/kk/kk/k",
+      "tags": [
+        "paired",
+        "pair",
+        "checked_to_ip",
+        "river"
+      ]
+    },
+    {
+      "id": "paired-465-half_pot",
+      "family": "paired",
+      "partition": "development",
+      "hero": 0,
+      "hole": "5d9d",
+      "board": "KhKs7c3d2h",
+      "history": "b300c/kk/kk/b300",
+      "tags": [
+        "paired",
+        "pair",
+        "half_pot",
+        "river"
+      ]
+    },
+    {
+      "id": "paired-465-pot",
+      "family": "paired",
+      "partition": "development",
+      "hero": 1,
+      "hole": "5d9d",
+      "board": "KhKs7c3d2h",
+      "history": "b300c/kk/kk/kb600",
+      "tags": [
+        "paired",
+        "pair",
+        "pot",
+        "river"
+      ]
+    },
+    {
+      "id": "paired-465-overbet",
+      "family": "paired",
+      "partition": "development",
+      "hero": 0,
+      "hole": "5d9d",
+      "board": "KhKs7c3d2h",
+      "history": "b300c/kk/kk/b1200",
+      "tags": [
+        "paired",
+        "pair",
+        "overbet",
+        "river"
+      ]
+    },
+    {
+      "id": "paired-465-all_in",
+      "family": "paired",
+      "partition": "development",
+      "hero": 1,
+      "hole": "5d9d",
+      "board": "KhKs7c3d2h",
+      "history": "b300c/kk/kk/kb19700",
+      "tags": [
+        "paired",
+        "pair",
+        "all_in",
+        "river"
+      ]
+    },
+    {
+      "id": "paired-465-three_bet_pot",
+      "family": "paired",
+      "partition": "development",
+      "hero": 0,
+      "hole": "5d9d",
+      "board": "KhKs7c3d2h",
+      "history": "b300b1000c/kk/kk/b1000",
+      "tags": [
+        "paired",
+        "pair",
+        "three_bet_pot",
+        "river"
+      ]
+    },
+    {
+      "id": "paired-465-three_barrels",
+      "family": "paired",
+      "partition": "development",
+      "hero": 0,
+      "hole": "5d9d",
+      "board": "KhKs7c3d2h",
+      "history": "b300c/b300c/b900c/b2500",
+      "tags": [
+        "paired",
+        "pair",
+        "three_barrels",
+        "river"
+      ]
+    },
+    {
+      "id": "paired-220-limped_oop",
+      "family": "paired",
+      "partition": "development",
+      "hero": 1,
+      "hole": "3s4c",
+      "board": "KhKs7c3d2h",
+      "history": "ck/kk/kk/",
+      "tags": [
+        "paired",
+        "two_pair",
+        "limped_oop",
+        "river"
+      ]
+    },
+    {
+      "id": "paired-220-checked_to_ip",
+      "family": "paired",
+      "partition": "development",
+      "hero": 0,
+      "hole": "3s4c",
+      "board": "KhKs7c3d2h",
+      "history": "b300c/kk/kk/k",
+      "tags": [
+        "paired",
+        "two_pair",
+        "checked_to_ip",
+        "river"
+      ]
+    },
+    {
+      "id": "paired-220-half_pot",
+      "family": "paired",
+      "partition": "development",
+      "hero": 0,
+      "hole": "3s4c",
+      "board": "KhKs7c3d2h",
+      "history": "b300c/kk/kk/b300",
+      "tags": [
+        "paired",
+        "two_pair",
+        "half_pot",
+        "river"
+      ]
+    },
+    {
+      "id": "paired-220-pot",
+      "family": "paired",
+      "partition": "development",
+      "hero": 1,
+      "hole": "3s4c",
+      "board": "KhKs7c3d2h",
+      "history": "b300c/kk/kk/kb600",
+      "tags": [
+        "paired",
+        "two_pair",
+        "pot",
+        "river"
+      ]
+    },
+    {
+      "id": "paired-220-overbet",
+      "family": "paired",
+      "partition": "development",
+      "hero": 0,
+      "hole": "3s4c",
+      "board": "KhKs7c3d2h",
+      "history": "b300c/kk/kk/b1200",
+      "tags": [
+        "paired",
+        "two_pair",
+        "overbet",
+        "river"
+      ]
+    },
+    {
+      "id": "paired-220-all_in",
+      "family": "paired",
+      "partition": "development",
+      "hero": 1,
+      "hole": "3s4c",
+      "board": "KhKs7c3d2h",
+      "history": "b300c/kk/kk/kb19700",
+      "tags": [
+        "paired",
+        "two_pair",
+        "all_in",
+        "river"
+      ]
+    },
+    {
+      "id": "paired-220-three_bet_pot",
+      "family": "paired",
+      "partition": "development",
+      "hero": 0,
+      "hole": "3s4c",
+      "board": "KhKs7c3d2h",
+      "history": "b300b1000c/kk/kk/b1000",
+      "tags": [
+        "paired",
+        "two_pair",
+        "three_bet_pot",
+        "river"
+      ]
+    },
+    {
+      "id": "paired-220-three_barrels",
+      "family": "paired",
+      "partition": "development",
+      "hero": 0,
+      "hole": "3s4c",
+      "board": "KhKs7c3d2h",
+      "history": "b300c/b300c/b900c/b2500",
+      "tags": [
+        "paired",
+        "two_pair",
+        "three_barrels",
+        "river"
+      ]
+    },
+    {
+      "id": "paired-372-limped_oop",
+      "family": "paired",
+      "partition": "development",
+      "hero": 1,
+      "hole": "4hKc",
+      "board": "KhKs7c3d2h",
+      "history": "ck/kk/kk/",
+      "tags": [
+        "paired",
+        "trips",
+        "limped_oop",
+        "river"
+      ]
+    },
+    {
+      "id": "paired-372-checked_to_ip",
+      "family": "paired",
+      "partition": "development",
+      "hero": 0,
+      "hole": "4hKc",
+      "board": "KhKs7c3d2h",
+      "history": "b300c/kk/kk/k",
+      "tags": [
+        "paired",
+        "trips",
+        "checked_to_ip",
+        "river"
+      ]
+    },
+    {
+      "id": "paired-372-half_pot",
+      "family": "paired",
+      "partition": "development",
+      "hero": 0,
+      "hole": "4hKc",
+      "board": "KhKs7c3d2h",
+      "history": "b300c/kk/kk/b300",
+      "tags": [
+        "paired",
+        "trips",
+        "half_pot",
+        "river"
+      ]
+    },
+    {
+      "id": "paired-372-pot",
+      "family": "paired",
+      "partition": "development",
+      "hero": 1,
+      "hole": "4hKc",
+      "board": "KhKs7c3d2h",
+      "history": "b300c/kk/kk/kb600",
+      "tags": [
+        "paired",
+        "trips",
+        "pot",
+        "river"
+      ]
+    },
+    {
+      "id": "paired-372-overbet",
+      "family": "paired",
+      "partition": "development",
+      "hero": 0,
+      "hole": "4hKc",
+      "board": "KhKs7c3d2h",
+      "history": "b300c/kk/kk/b1200",
+      "tags": [
+        "paired",
+        "trips",
+        "overbet",
+        "river"
+      ]
+    },
+    {
+      "id": "paired-372-all_in",
+      "family": "paired",
+      "partition": "development",
+      "hero": 1,
+      "hole": "4hKc",
+      "board": "KhKs7c3d2h",
+      "history": "b300c/kk/kk/kb19700",
+      "tags": [
+        "paired",
+        "trips",
+        "all_in",
+        "river"
+      ]
+    },
+    {
+      "id": "paired-372-three_bet_pot",
+      "family": "paired",
+      "partition": "development",
+      "hero": 0,
+      "hole": "4hKc",
+      "board": "KhKs7c3d2h",
+      "history": "b300b1000c/kk/kk/b1000",
+      "tags": [
+        "paired",
+        "trips",
+        "three_bet_pot",
+        "river"
+      ]
+    },
+    {
+      "id": "paired-372-three_barrels",
+      "family": "paired",
+      "partition": "development",
+      "hero": 0,
+      "hole": "4hKc",
+      "board": "KhKs7c3d2h",
+      "history": "b300c/b300c/b900c/b2500",
+      "tags": [
+        "paired",
+        "trips",
+        "three_barrels",
+        "river"
+      ]
+    },
+    {
+      "id": "paired-172-limped_oop",
+      "family": "paired",
+      "partition": "development",
+      "hero": 1,
+      "hole": "3cKc",
+      "board": "KhKs7c3d2h",
+      "history": "ck/kk/kk/",
+      "tags": [
+        "paired",
+        "full_house",
+        "limped_oop",
+        "river"
+      ]
+    },
+    {
+      "id": "paired-172-checked_to_ip",
+      "family": "paired",
+      "partition": "development",
+      "hero": 0,
+      "hole": "3cKc",
+      "board": "KhKs7c3d2h",
+      "history": "b300c/kk/kk/k",
+      "tags": [
+        "paired",
+        "full_house",
+        "checked_to_ip",
+        "river"
+      ]
+    },
+    {
+      "id": "paired-172-half_pot",
+      "family": "paired",
+      "partition": "development",
+      "hero": 0,
+      "hole": "3cKc",
+      "board": "KhKs7c3d2h",
+      "history": "b300c/kk/kk/b300",
+      "tags": [
+        "paired",
+        "full_house",
+        "half_pot",
+        "river"
+      ]
+    },
+    {
+      "id": "paired-172-pot",
+      "family": "paired",
+      "partition": "development",
+      "hero": 1,
+      "hole": "3cKc",
+      "board": "KhKs7c3d2h",
+      "history": "b300c/kk/kk/kb600",
+      "tags": [
+        "paired",
+        "full_house",
+        "pot",
+        "river"
+      ]
+    },
+    {
+      "id": "paired-172-overbet",
+      "family": "paired",
+      "partition": "development",
+      "hero": 0,
+      "hole": "3cKc",
+      "board": "KhKs7c3d2h",
+      "history": "b300c/kk/kk/b1200",
+      "tags": [
+        "paired",
+        "full_house",
+        "overbet",
+        "river"
+      ]
+    },
+    {
+      "id": "paired-172-all_in",
+      "family": "paired",
+      "partition": "development",
+      "hero": 1,
+      "hole": "3cKc",
+      "board": "KhKs7c3d2h",
+      "history": "b300c/kk/kk/kb19700",
+      "tags": [
+        "paired",
+        "full_house",
+        "all_in",
+        "river"
+      ]
+    },
+    {
+      "id": "paired-172-three_bet_pot",
+      "family": "paired",
+      "partition": "development",
+      "hero": 0,
+      "hole": "3cKc",
+      "board": "KhKs7c3d2h",
+      "history": "b300b1000c/kk/kk/b1000",
+      "tags": [
+        "paired",
+        "full_house",
+        "three_bet_pot",
+        "river"
+      ]
+    },
+    {
+      "id": "paired-172-three_barrels",
+      "family": "paired",
+      "partition": "development",
+      "hero": 0,
+      "hole": "3cKc",
+      "board": "KhKs7c3d2h",
+      "history": "b300c/b300c/b900c/b2500",
+      "tags": [
+        "paired",
+        "full_house",
+        "three_barrels",
+        "river"
+      ]
+    },
+    {
+      "id": "paired-1066-limped_oop",
+      "family": "paired",
+      "partition": "development",
+      "hero": 1,
+      "hole": "KcKd",
+      "board": "KhKs7c3d2h",
+      "history": "ck/kk/kk/",
+      "tags": [
+        "paired",
+        "quads",
+        "limped_oop",
+        "river"
+      ]
+    },
+    {
+      "id": "paired-1066-checked_to_ip",
+      "family": "paired",
+      "partition": "development",
+      "hero": 0,
+      "hole": "KcKd",
+      "board": "KhKs7c3d2h",
+      "history": "b300c/kk/kk/k",
+      "tags": [
+        "paired",
+        "quads",
+        "checked_to_ip",
+        "river"
+      ]
+    },
+    {
+      "id": "paired-1066-half_pot",
+      "family": "paired",
+      "partition": "development",
+      "hero": 0,
+      "hole": "KcKd",
+      "board": "KhKs7c3d2h",
+      "history": "b300c/kk/kk/b300",
+      "tags": [
+        "paired",
+        "quads",
+        "half_pot",
+        "river"
+      ]
+    },
+    {
+      "id": "paired-1066-pot",
+      "family": "paired",
+      "partition": "development",
+      "hero": 1,
+      "hole": "KcKd",
+      "board": "KhKs7c3d2h",
+      "history": "b300c/kk/kk/kb600",
+      "tags": [
+        "paired",
+        "quads",
+        "pot",
+        "river"
+      ]
+    },
+    {
+      "id": "paired-1066-overbet",
+      "family": "paired",
+      "partition": "development",
+      "hero": 0,
+      "hole": "KcKd",
+      "board": "KhKs7c3d2h",
+      "history": "b300c/kk/kk/b1200",
+      "tags": [
+        "paired",
+        "quads",
+        "overbet",
+        "river"
+      ]
+    },
+    {
+      "id": "paired-1066-all_in",
+      "family": "paired",
+      "partition": "development",
+      "hero": 1,
+      "hole": "KcKd",
+      "board": "KhKs7c3d2h",
+      "history": "b300c/kk/kk/kb19700",
+      "tags": [
+        "paired",
+        "quads",
+        "all_in",
+        "river"
+      ]
+    },
+    {
+      "id": "paired-1066-three_bet_pot",
+      "family": "paired",
+      "partition": "development",
+      "hero": 0,
+      "hole": "KcKd",
+      "board": "KhKs7c3d2h",
+      "history": "b300b1000c/kk/kk/b1000",
+      "tags": [
+        "paired",
+        "quads",
+        "three_bet_pot",
+        "river"
+      ]
+    },
+    {
+      "id": "paired-1066-three_barrels",
+      "family": "paired",
+      "partition": "development",
+      "hero": 0,
+      "hole": "KcKd",
+      "board": "KhKs7c3d2h",
+      "history": "b300c/b300c/b900c/b2500",
+      "tags": [
+        "paired",
+        "quads",
+        "three_barrels",
+        "river"
+      ]
+    },
+    {
+      "id": "double_paired-880-limped_oop",
+      "family": "double_paired",
+      "partition": "development",
+      "hero": 1,
+      "hole": "9dJs",
+      "board": "QcQd7s7h2c",
+      "history": "ck/kk/kk/",
+      "tags": [
+        "double_paired",
+        "two_pair",
+        "limped_oop",
+        "river"
+      ]
+    },
+    {
+      "id": "double_paired-880-checked_to_ip",
+      "family": "double_paired",
+      "partition": "development",
+      "hero": 0,
+      "hole": "9dJs",
+      "board": "QcQd7s7h2c",
+      "history": "b300c/kk/kk/k",
+      "tags": [
+        "double_paired",
+        "two_pair",
+        "checked_to_ip",
+        "river"
+      ]
+    },
+    {
+      "id": "double_paired-880-half_pot",
+      "family": "double_paired",
+      "partition": "development",
+      "hero": 0,
+      "hole": "9dJs",
+      "board": "QcQd7s7h2c",
+      "history": "b300c/kk/kk/b300",
+      "tags": [
+        "double_paired",
+        "two_pair",
+        "half_pot",
+        "river"
+      ]
+    },
+    {
+      "id": "double_paired-880-pot",
+      "family": "double_paired",
+      "partition": "development",
+      "hero": 1,
+      "hole": "9dJs",
+      "board": "QcQd7s7h2c",
+      "history": "b300c/kk/kk/kb600",
+      "tags": [
+        "double_paired",
+        "two_pair",
+        "pot",
+        "river"
+      ]
+    },
+    {
+      "id": "double_paired-880-overbet",
+      "family": "double_paired",
+      "partition": "development",
+      "hero": 0,
+      "hole": "9dJs",
+      "board": "QcQd7s7h2c",
+      "history": "b300c/kk/kk/b1200",
+      "tags": [
+        "double_paired",
+        "two_pair",
+        "overbet",
+        "river"
+      ]
+    },
+    {
+      "id": "double_paired-880-all_in",
+      "family": "double_paired",
+      "partition": "development",
+      "hero": 1,
+      "hole": "9dJs",
+      "board": "QcQd7s7h2c",
+      "history": "b300c/kk/kk/kb19700",
+      "tags": [
+        "double_paired",
+        "two_pair",
+        "all_in",
+        "river"
+      ]
+    },
+    {
+      "id": "double_paired-880-three_bet_pot",
+      "family": "double_paired",
+      "partition": "development",
+      "hero": 0,
+      "hole": "9dJs",
+      "board": "QcQd7s7h2c",
+      "history": "b300b1000c/kk/kk/b1000",
+      "tags": [
+        "double_paired",
+        "two_pair",
+        "three_bet_pot",
+        "river"
+      ]
+    },
+    {
+      "id": "double_paired-880-three_barrels",
+      "family": "double_paired",
+      "partition": "development",
+      "hero": 0,
+      "hole": "9dJs",
+      "board": "QcQd7s7h2c",
+      "history": "b300c/b300c/b900c/b2500",
+      "tags": [
+        "double_paired",
+        "two_pair",
+        "three_barrels",
+        "river"
+      ]
+    },
+    {
+      "id": "double_paired-82-limped_oop",
+      "family": "double_paired",
+      "partition": "development",
+      "hero": 1,
+      "hole": "2hQs",
+      "board": "QcQd7s7h2c",
+      "history": "ck/kk/kk/",
+      "tags": [
+        "double_paired",
+        "full_house",
+        "limped_oop",
+        "river"
+      ]
+    },
+    {
+      "id": "double_paired-82-checked_to_ip",
+      "family": "double_paired",
+      "partition": "development",
+      "hero": 0,
+      "hole": "2hQs",
+      "board": "QcQd7s7h2c",
+      "history": "b300c/kk/kk/k",
+      "tags": [
+        "double_paired",
+        "full_house",
+        "checked_to_ip",
+        "river"
+      ]
+    },
+    {
+      "id": "double_paired-82-half_pot",
+      "family": "double_paired",
+      "partition": "development",
+      "hero": 0,
+      "hole": "2hQs",
+      "board": "QcQd7s7h2c",
+      "history": "b300c/kk/kk/b300",
+      "tags": [
+        "double_paired",
+        "full_house",
+        "half_pot",
+        "river"
+      ]
+    },
+    {
+      "id": "double_paired-82-pot",
+      "family": "double_paired",
+      "partition": "development",
+      "hero": 1,
+      "hole": "2hQs",
+      "board": "QcQd7s7h2c",
+      "history": "b300c/kk/kk/kb600",
+      "tags": [
+        "double_paired",
+        "full_house",
+        "pot",
+        "river"
+      ]
+    },
+    {
+      "id": "double_paired-82-overbet",
+      "family": "double_paired",
+      "partition": "development",
+      "hero": 0,
+      "hole": "2hQs",
+      "board": "QcQd7s7h2c",
+      "history": "b300c/kk/kk/b1200",
+      "tags": [
+        "double_paired",
+        "full_house",
+        "overbet",
+        "river"
+      ]
+    },
+    {
+      "id": "double_paired-82-all_in",
+      "family": "double_paired",
+      "partition": "development",
+      "hero": 1,
+      "hole": "2hQs",
+      "board": "QcQd7s7h2c",
+      "history": "b300c/kk/kk/kb19700",
+      "tags": [
+        "double_paired",
+        "full_house",
+        "all_in",
+        "river"
+      ]
+    },
+    {
+      "id": "double_paired-82-three_bet_pot",
+      "family": "double_paired",
+      "partition": "development",
+      "hero": 0,
+      "hole": "2hQs",
+      "board": "QcQd7s7h2c",
+      "history": "b300b1000c/kk/kk/b1000",
+      "tags": [
+        "double_paired",
+        "full_house",
+        "three_bet_pot",
+        "river"
+      ]
+    },
+    {
+      "id": "double_paired-82-three_barrels",
+      "family": "double_paired",
+      "partition": "development",
+      "hero": 0,
+      "hole": "2hQs",
+      "board": "QcQd7s7h2c",
+      "history": "b300c/b300c/b900c/b2500",
+      "tags": [
+        "double_paired",
+        "full_house",
+        "three_barrels",
+        "river"
+      ]
+    },
+    {
+      "id": "double_paired-1036-limped_oop",
+      "family": "double_paired",
+      "partition": "development",
+      "hero": 1,
+      "hole": "QhQs",
+      "board": "QcQd7s7h2c",
+      "history": "ck/kk/kk/",
+      "tags": [
+        "double_paired",
+        "quads",
+        "limped_oop",
+        "river"
+      ]
+    },
+    {
+      "id": "double_paired-1036-checked_to_ip",
+      "family": "double_paired",
+      "partition": "development",
+      "hero": 0,
+      "hole": "QhQs",
+      "board": "QcQd7s7h2c",
+      "history": "b300c/kk/kk/k",
+      "tags": [
+        "double_paired",
+        "quads",
+        "checked_to_ip",
+        "river"
+      ]
+    },
+    {
+      "id": "double_paired-1036-half_pot",
+      "family": "double_paired",
+      "partition": "development",
+      "hero": 0,
+      "hole": "QhQs",
+      "board": "QcQd7s7h2c",
+      "history": "b300c/kk/kk/b300",
+      "tags": [
+        "double_paired",
+        "quads",
+        "half_pot",
+        "river"
+      ]
+    },
+    {
+      "id": "double_paired-1036-pot",
+      "family": "double_paired",
+      "partition": "development",
+      "hero": 1,
+      "hole": "QhQs",
+      "board": "QcQd7s7h2c",
+      "history": "b300c/kk/kk/kb600",
+      "tags": [
+        "double_paired",
+        "quads",
+        "pot",
+        "river"
+      ]
+    },
+    {
+      "id": "double_paired-1036-overbet",
+      "family": "double_paired",
+      "partition": "development",
+      "hero": 0,
+      "hole": "QhQs",
+      "board": "QcQd7s7h2c",
+      "history": "b300c/kk/kk/b1200",
+      "tags": [
+        "double_paired",
+        "quads",
+        "overbet",
+        "river"
+      ]
+    },
+    {
+      "id": "double_paired-1036-all_in",
+      "family": "double_paired",
+      "partition": "development",
+      "hero": 1,
+      "hole": "QhQs",
+      "board": "QcQd7s7h2c",
+      "history": "b300c/kk/kk/kb19700",
+      "tags": [
+        "double_paired",
+        "quads",
+        "all_in",
+        "river"
+      ]
+    },
+    {
+      "id": "double_paired-1036-three_bet_pot",
+      "family": "double_paired",
+      "partition": "development",
+      "hero": 0,
+      "hole": "QhQs",
+      "board": "QcQd7s7h2c",
+      "history": "b300b1000c/kk/kk/b1000",
+      "tags": [
+        "double_paired",
+        "quads",
+        "three_bet_pot",
+        "river"
+      ]
+    },
+    {
+      "id": "double_paired-1036-three_barrels",
+      "family": "double_paired",
+      "partition": "development",
+      "hero": 0,
+      "hole": "QhQs",
+      "board": "QcQd7s7h2c",
+      "history": "b300c/b300c/b900c/b2500",
+      "tags": [
+        "double_paired",
+        "quads",
+        "three_barrels",
+        "river"
+      ]
+    },
+    {
+      "id": "trips-559-limped_oop",
+      "family": "trips",
+      "partition": "development",
+      "hero": 1,
+      "hole": "5s7h",
+      "board": "8s8d8cKh2s",
+      "history": "ck/kk/kk/",
+      "tags": [
+        "trips",
+        "trips",
+        "limped_oop",
+        "river"
+      ]
+    },
+    {
+      "id": "trips-559-checked_to_ip",
+      "family": "trips",
+      "partition": "development",
+      "hero": 0,
+      "hole": "5s7h",
+      "board": "8s8d8cKh2s",
+      "history": "b300c/kk/kk/k",
+      "tags": [
+        "trips",
+        "trips",
+        "checked_to_ip",
+        "river"
+      ]
+    },
+    {
+      "id": "trips-559-half_pot",
+      "family": "trips",
+      "partition": "development",
+      "hero": 0,
+      "hole": "5s7h",
+      "board": "8s8d8cKh2s",
+      "history": "b300c/kk/kk/b300",
+      "tags": [
+        "trips",
+        "trips",
+        "half_pot",
+        "river"
+      ]
+    },
+    {
+      "id": "trips-559-pot",
+      "family": "trips",
+      "partition": "development",
+      "hero": 1,
+      "hole": "5s7h",
+      "board": "8s8d8cKh2s",
+      "history": "b300c/kk/kk/kb600",
+      "tags": [
+        "trips",
+        "trips",
+        "pot",
+        "river"
+      ]
+    },
+    {
+      "id": "trips-559-overbet",
+      "family": "trips",
+      "partition": "development",
+      "hero": 0,
+      "hole": "5s7h",
+      "board": "8s8d8cKh2s",
+      "history": "b300c/kk/kk/b1200",
+      "tags": [
+        "trips",
+        "trips",
+        "overbet",
+        "river"
+      ]
+    },
+    {
+      "id": "trips-559-all_in",
+      "family": "trips",
+      "partition": "development",
+      "hero": 1,
+      "hole": "5s7h",
+      "board": "8s8d8cKh2s",
+      "history": "b300c/kk/kk/kb19700",
+      "tags": [
+        "trips",
+        "trips",
+        "all_in",
+        "river"
+      ]
+    },
+    {
+      "id": "trips-559-three_bet_pot",
+      "family": "trips",
+      "partition": "development",
+      "hero": 0,
+      "hole": "5s7h",
+      "board": "8s8d8cKh2s",
+      "history": "b300b1000c/kk/kk/b1000",
+      "tags": [
+        "trips",
+        "trips",
+        "three_bet_pot",
+        "river"
+      ]
+    },
+    {
+      "id": "trips-559-three_barrels",
+      "family": "trips",
+      "partition": "development",
+      "hero": 0,
+      "hole": "5s7h",
+      "board": "8s8d8cKh2s",
+      "history": "b300c/b300c/b900c/b2500",
+      "tags": [
+        "trips",
+        "trips",
+        "three_barrels",
+        "river"
+      ]
+    },
+    {
+      "id": "trips-1070-limped_oop",
+      "family": "trips",
+      "partition": "development",
+      "hero": 1,
+      "hole": "KdAs",
+      "board": "8s8d8cKh2s",
+      "history": "ck/kk/kk/",
+      "tags": [
+        "trips",
+        "full_house",
+        "limped_oop",
+        "river"
+      ]
+    },
+    {
+      "id": "trips-1070-checked_to_ip",
+      "family": "trips",
+      "partition": "development",
+      "hero": 0,
+      "hole": "KdAs",
+      "board": "8s8d8cKh2s",
+      "history": "b300c/kk/kk/k",
+      "tags": [
+        "trips",
+        "full_house",
+        "checked_to_ip",
+        "river"
+      ]
+    },
+    {
+      "id": "trips-1070-half_pot",
+      "family": "trips",
+      "partition": "development",
+      "hero": 0,
+      "hole": "KdAs",
+      "board": "8s8d8cKh2s",
+      "history": "b300c/kk/kk/b300",
+      "tags": [
+        "trips",
+        "full_house",
+        "half_pot",
+        "river"
+      ]
+    },
+    {
+      "id": "trips-1070-pot",
+      "family": "trips",
+      "partition": "development",
+      "hero": 1,
+      "hole": "KdAs",
+      "board": "8s8d8cKh2s",
+      "history": "b300c/kk/kk/kb600",
+      "tags": [
+        "trips",
+        "full_house",
+        "pot",
+        "river"
+      ]
+    },
+    {
+      "id": "trips-1070-overbet",
+      "family": "trips",
+      "partition": "development",
+      "hero": 0,
+      "hole": "KdAs",
+      "board": "8s8d8cKh2s",
+      "history": "b300c/kk/kk/b1200",
+      "tags": [
+        "trips",
+        "full_house",
+        "overbet",
+        "river"
+      ]
+    },
+    {
+      "id": "trips-1070-all_in",
+      "family": "trips",
+      "partition": "development",
+      "hero": 1,
+      "hole": "KdAs",
+      "board": "8s8d8cKh2s",
+      "history": "b300c/kk/kk/kb19700",
+      "tags": [
+        "trips",
+        "full_house",
+        "all_in",
+        "river"
+      ]
+    },
+    {
+      "id": "trips-1070-three_bet_pot",
+      "family": "trips",
+      "partition": "development",
+      "hero": 0,
+      "hole": "KdAs",
+      "board": "8s8d8cKh2s",
+      "history": "b300b1000c/kk/kk/b1000",
+      "tags": [
+        "trips",
+        "full_house",
+        "three_bet_pot",
+        "river"
+      ]
+    },
+    {
+      "id": "trips-1070-three_barrels",
+      "family": "trips",
+      "partition": "development",
+      "hero": 0,
+      "hole": "KdAs",
+      "board": "8s8d8cKh2s",
+      "history": "b300c/b300c/b900c/b2500",
+      "tags": [
+        "trips",
+        "full_house",
+        "three_barrels",
+        "river"
+      ]
+    },
+    {
+      "id": "trips-807-limped_oop",
+      "family": "trips",
+      "partition": "development",
+      "hero": 1,
+      "hole": "8h9h",
+      "board": "8s8d8cKh2s",
+      "history": "ck/kk/kk/",
+      "tags": [
+        "trips",
+        "quads",
+        "limped_oop",
+        "river"
+      ]
+    },
+    {
+      "id": "trips-807-checked_to_ip",
+      "family": "trips",
+      "partition": "development",
+      "hero": 0,
+      "hole": "8h9h",
+      "board": "8s8d8cKh2s",
+      "history": "b300c/kk/kk/k",
+      "tags": [
+        "trips",
+        "quads",
+        "checked_to_ip",
+        "river"
+      ]
+    },
+    {
+      "id": "trips-807-half_pot",
+      "family": "trips",
+      "partition": "development",
+      "hero": 0,
+      "hole": "8h9h",
+      "board": "8s8d8cKh2s",
+      "history": "b300c/kk/kk/b300",
+      "tags": [
+        "trips",
+        "quads",
+        "half_pot",
+        "river"
+      ]
+    },
+    {
+      "id": "trips-807-pot",
+      "family": "trips",
+      "partition": "development",
+      "hero": 1,
+      "hole": "8h9h",
+      "board": "8s8d8cKh2s",
+      "history": "b300c/kk/kk/kb600",
+      "tags": [
+        "trips",
+        "quads",
+        "pot",
+        "river"
+      ]
+    },
+    {
+      "id": "trips-807-overbet",
+      "family": "trips",
+      "partition": "development",
+      "hero": 0,
+      "hole": "8h9h",
+      "board": "8s8d8cKh2s",
+      "history": "b300c/kk/kk/b1200",
+      "tags": [
+        "trips",
+        "quads",
+        "overbet",
+        "river"
+      ]
+    },
+    {
+      "id": "trips-807-all_in",
+      "family": "trips",
+      "partition": "development",
+      "hero": 1,
+      "hole": "8h9h",
+      "board": "8s8d8cKh2s",
+      "history": "b300c/kk/kk/kb19700",
+      "tags": [
+        "trips",
+        "quads",
+        "all_in",
+        "river"
+      ]
+    },
+    {
+      "id": "trips-807-three_bet_pot",
+      "family": "trips",
+      "partition": "development",
+      "hero": 0,
+      "hole": "8h9h",
+      "board": "8s8d8cKh2s",
+      "history": "b300b1000c/kk/kk/b1000",
+      "tags": [
+        "trips",
+        "quads",
+        "three_bet_pot",
+        "river"
+      ]
+    },
+    {
+      "id": "trips-807-three_barrels",
+      "family": "trips",
+      "partition": "development",
+      "hero": 0,
+      "hole": "8h9h",
+      "board": "8s8d8cKh2s",
+      "history": "b300c/b300c/b900c/b2500",
+      "tags": [
+        "trips",
+        "quads",
+        "three_barrels",
+        "river"
+      ]
+    },
+    {
+      "id": "trips-824-limped_oop",
+      "family": "trips",
+      "partition": "development",
+      "hero": 1,
+      "hole": "8hAc",
+      "board": "8s8d8cKh2s",
+      "history": "ck/kk/kk/",
+      "tags": [
+        "trips",
+        "quads",
+        "limped_oop",
+        "river"
+      ]
+    },
+    {
+      "id": "trips-824-checked_to_ip",
+      "family": "trips",
+      "partition": "development",
+      "hero": 0,
+      "hole": "8hAc",
+      "board": "8s8d8cKh2s",
+      "history": "b300c/kk/kk/k",
+      "tags": [
+        "trips",
+        "quads",
+        "checked_to_ip",
+        "river"
+      ]
+    },
+    {
+      "id": "trips-824-half_pot",
+      "family": "trips",
+      "partition": "development",
+      "hero": 0,
+      "hole": "8hAc",
+      "board": "8s8d8cKh2s",
+      "history": "b300c/kk/kk/b300",
+      "tags": [
+        "trips",
+        "quads",
+        "half_pot",
+        "river"
+      ]
+    },
+    {
+      "id": "trips-824-pot",
+      "family": "trips",
+      "partition": "development",
+      "hero": 1,
+      "hole": "8hAc",
+      "board": "8s8d8cKh2s",
+      "history": "b300c/kk/kk/kb600",
+      "tags": [
+        "trips",
+        "quads",
+        "pot",
+        "river"
+      ]
+    },
+    {
+      "id": "trips-824-overbet",
+      "family": "trips",
+      "partition": "development",
+      "hero": 0,
+      "hole": "8hAc",
+      "board": "8s8d8cKh2s",
+      "history": "b300c/kk/kk/b1200",
+      "tags": [
+        "trips",
+        "quads",
+        "overbet",
+        "river"
+      ]
+    },
+    {
+      "id": "trips-824-all_in",
+      "family": "trips",
+      "partition": "development",
+      "hero": 1,
+      "hole": "8hAc",
+      "board": "8s8d8cKh2s",
+      "history": "b300c/kk/kk/kb19700",
+      "tags": [
+        "trips",
+        "quads",
+        "all_in",
+        "river"
+      ]
+    },
+    {
+      "id": "trips-824-three_bet_pot",
+      "family": "trips",
+      "partition": "development",
+      "hero": 0,
+      "hole": "8hAc",
+      "board": "8s8d8cKh2s",
+      "history": "b300b1000c/kk/kk/b1000",
+      "tags": [
+        "trips",
+        "quads",
+        "three_bet_pot",
+        "river"
+      ]
+    },
+    {
+      "id": "trips-824-three_barrels",
+      "family": "trips",
+      "partition": "development",
+      "hero": 0,
+      "hole": "8hAc",
+      "board": "8s8d8cKh2s",
+      "history": "b300c/b300c/b900c/b2500",
+      "tags": [
+        "trips",
+        "quads",
+        "three_barrels",
+        "river"
+      ]
+    },
+    {
+      "id": "board_royal-217-limped_oop",
+      "family": "board_royal",
+      "partition": "development",
+      "hero": 1,
+      "hole": "3cAc",
+      "board": "AhKhQhJhTh",
+      "history": "ck/kk/kk/",
+      "tags": [
+        "board_royal",
+        "straight_flush",
+        "limped_oop",
+        "river"
+      ]
+    },
+    {
+      "id": "board_royal-217-checked_to_ip",
+      "family": "board_royal",
+      "partition": "development",
+      "hero": 0,
+      "hole": "3cAc",
+      "board": "AhKhQhJhTh",
+      "history": "b300c/kk/kk/k",
+      "tags": [
+        "board_royal",
+        "straight_flush",
+        "checked_to_ip",
+        "river"
+      ]
+    },
+    {
+      "id": "board_royal-217-half_pot",
+      "family": "board_royal",
+      "partition": "development",
+      "hero": 0,
+      "hole": "3cAc",
+      "board": "AhKhQhJhTh",
+      "history": "b300c/kk/kk/b300",
+      "tags": [
+        "board_royal",
+        "straight_flush",
+        "half_pot",
+        "river"
+      ]
+    },
+    {
+      "id": "board_royal-217-pot",
+      "family": "board_royal",
+      "partition": "development",
+      "hero": 1,
+      "hole": "3cAc",
+      "board": "AhKhQhJhTh",
+      "history": "b300c/kk/kk/kb600",
+      "tags": [
+        "board_royal",
+        "straight_flush",
+        "pot",
+        "river"
+      ]
+    },
+    {
+      "id": "board_royal-217-overbet",
+      "family": "board_royal",
+      "partition": "development",
+      "hero": 0,
+      "hole": "3cAc",
+      "board": "AhKhQhJhTh",
+      "history": "b300c/kk/kk/b1200",
+      "tags": [
+        "board_royal",
+        "straight_flush",
+        "overbet",
+        "river"
+      ]
+    },
+    {
+      "id": "board_royal-217-all_in",
+      "family": "board_royal",
+      "partition": "development",
+      "hero": 1,
+      "hole": "3cAc",
+      "board": "AhKhQhJhTh",
+      "history": "b300c/kk/kk/kb19700",
+      "tags": [
+        "board_royal",
+        "straight_flush",
+        "all_in",
+        "river"
+      ]
+    },
+    {
+      "id": "board_royal-217-three_bet_pot",
+      "family": "board_royal",
+      "partition": "development",
+      "hero": 0,
+      "hole": "3cAc",
+      "board": "AhKhQhJhTh",
+      "history": "b300b1000c/kk/kk/b1000",
+      "tags": [
+        "board_royal",
+        "straight_flush",
+        "three_bet_pot",
+        "river"
+      ]
+    },
+    {
+      "id": "board_royal-217-three_barrels",
+      "family": "board_royal",
+      "partition": "development",
+      "hero": 0,
+      "hole": "3cAc",
+      "board": "AhKhQhJhTh",
+      "history": "b300c/b300c/b900c/b2500",
+      "tags": [
+        "board_royal",
+        "straight_flush",
+        "three_barrels",
+        "river"
+      ]
+    },
+    {
+      "id": "board_royal-0-limped_oop",
+      "family": "board_royal",
+      "partition": "development",
+      "hero": 1,
+      "hole": "2c2d",
+      "board": "AhKhQhJhTh",
+      "history": "ck/kk/kk/",
+      "tags": [
+        "board_royal",
+        "straight_flush",
+        "limped_oop",
+        "river"
+      ]
+    },
+    {
+      "id": "board_royal-0-checked_to_ip",
+      "family": "board_royal",
+      "partition": "development",
+      "hero": 0,
+      "hole": "2c2d",
+      "board": "AhKhQhJhTh",
+      "history": "b300c/kk/kk/k",
+      "tags": [
+        "board_royal",
+        "straight_flush",
+        "checked_to_ip",
+        "river"
+      ]
+    },
+    {
+      "id": "board_royal-0-half_pot",
+      "family": "board_royal",
+      "partition": "development",
+      "hero": 0,
+      "hole": "2c2d",
+      "board": "AhKhQhJhTh",
+      "history": "b300c/kk/kk/b300",
+      "tags": [
+        "board_royal",
+        "straight_flush",
+        "half_pot",
+        "river"
+      ]
+    },
+    {
+      "id": "board_royal-0-pot",
+      "family": "board_royal",
+      "partition": "development",
+      "hero": 1,
+      "hole": "2c2d",
+      "board": "AhKhQhJhTh",
+      "history": "b300c/kk/kk/kb600",
+      "tags": [
+        "board_royal",
+        "straight_flush",
+        "pot",
+        "river"
+      ]
+    },
+    {
+      "id": "board_royal-0-overbet",
+      "family": "board_royal",
+      "partition": "development",
+      "hero": 0,
+      "hole": "2c2d",
+      "board": "AhKhQhJhTh",
+      "history": "b300c/kk/kk/b1200",
+      "tags": [
+        "board_royal",
+        "straight_flush",
+        "overbet",
+        "river"
+      ]
+    },
+    {
+      "id": "board_royal-0-all_in",
+      "family": "board_royal",
+      "partition": "development",
+      "hero": 1,
+      "hole": "2c2d",
+      "board": "AhKhQhJhTh",
+      "history": "b300c/kk/kk/kb19700",
+      "tags": [
+        "board_royal",
+        "straight_flush",
+        "all_in",
+        "river"
+      ]
+    },
+    {
+      "id": "board_royal-0-three_bet_pot",
+      "family": "board_royal",
+      "partition": "development",
+      "hero": 0,
+      "hole": "2c2d",
+      "board": "AhKhQhJhTh",
+      "history": "b300b1000c/kk/kk/b1000",
+      "tags": [
+        "board_royal",
+        "straight_flush",
+        "three_bet_pot",
+        "river"
+      ]
+    },
+    {
+      "id": "board_royal-0-three_barrels",
+      "family": "board_royal",
+      "partition": "development",
+      "hero": 0,
+      "hole": "2c2d",
+      "board": "AhKhQhJhTh",
+      "history": "b300c/b300c/b900c/b2500",
+      "tags": [
+        "board_royal",
+        "straight_flush",
+        "three_barrels",
+        "river"
+      ]
+    },
+    {
+      "id": "assessment_dry-425-limped_oop",
+      "family": "assessment_dry",
+      "partition": "assessment",
+      "hero": 1,
+      "hole": "5c7s",
+      "board": "Kc8d2sTh4c",
+      "history": "ck/kk/kk/",
+      "tags": [
+        "assessment_dry",
+        "high_card",
+        "limped_oop",
+        "river"
+      ]
+    },
+    {
+      "id": "assessment_dry-425-checked_to_ip",
+      "family": "assessment_dry",
+      "partition": "assessment",
+      "hero": 0,
+      "hole": "5c7s",
+      "board": "Kc8d2sTh4c",
+      "history": "b300c/kk/kk/k",
+      "tags": [
+        "assessment_dry",
+        "high_card",
+        "checked_to_ip",
+        "river"
+      ]
+    },
+    {
+      "id": "assessment_dry-425-half_pot",
+      "family": "assessment_dry",
+      "partition": "assessment",
+      "hero": 0,
+      "hole": "5c7s",
+      "board": "Kc8d2sTh4c",
+      "history": "b300c/kk/kk/b300",
+      "tags": [
+        "assessment_dry",
+        "high_card",
+        "half_pot",
+        "river"
+      ]
+    },
+    {
+      "id": "assessment_dry-425-pot",
+      "family": "assessment_dry",
+      "partition": "assessment",
+      "hero": 1,
+      "hole": "5c7s",
+      "board": "Kc8d2sTh4c",
+      "history": "b300c/kk/kk/kb600",
+      "tags": [
+        "assessment_dry",
+        "high_card",
+        "pot",
+        "river"
+      ]
+    },
+    {
+      "id": "assessment_dry-425-overbet",
+      "family": "assessment_dry",
+      "partition": "assessment",
+      "hero": 0,
+      "hole": "5c7s",
+      "board": "Kc8d2sTh4c",
+      "history": "b300c/kk/kk/b1200",
+      "tags": [
+        "assessment_dry",
+        "high_card",
+        "overbet",
+        "river"
+      ]
+    },
+    {
+      "id": "assessment_dry-425-all_in",
+      "family": "assessment_dry",
+      "partition": "assessment",
+      "hero": 1,
+      "hole": "5c7s",
+      "board": "Kc8d2sTh4c",
+      "history": "b300c/kk/kk/kb19700",
+      "tags": [
+        "assessment_dry",
+        "high_card",
+        "all_in",
+        "river"
+      ]
+    },
+    {
+      "id": "assessment_dry-425-three_bet_pot",
+      "family": "assessment_dry",
+      "partition": "assessment",
+      "hero": 0,
+      "hole": "5c7s",
+      "board": "Kc8d2sTh4c",
+      "history": "b300b1000c/kk/kk/b1000",
+      "tags": [
+        "assessment_dry",
+        "high_card",
+        "three_bet_pot",
+        "river"
+      ]
+    },
+    {
+      "id": "assessment_dry-425-three_barrels",
+      "family": "assessment_dry",
+      "partition": "assessment",
+      "hero": 0,
+      "hole": "5c7s",
+      "board": "Kc8d2sTh4c",
+      "history": "b300c/b300c/b900c/b2500",
+      "tags": [
+        "assessment_dry",
+        "high_card",
+        "three_barrels",
+        "river"
+      ]
+    },
+    {
+      "id": "assessment_dry-37-limped_oop",
+      "family": "assessment_dry",
+      "partition": "assessment",
+      "hero": 1,
+      "hole": "2cQh",
+      "board": "Kc8d2sTh4c",
+      "history": "ck/kk/kk/",
+      "tags": [
+        "assessment_dry",
+        "pair",
+        "limped_oop",
+        "river"
+      ]
+    },
+    {
+      "id": "assessment_dry-37-checked_to_ip",
+      "family": "assessment_dry",
+      "partition": "assessment",
+      "hero": 0,
+      "hole": "2cQh",
+      "board": "Kc8d2sTh4c",
+      "history": "b300c/kk/kk/k",
+      "tags": [
+        "assessment_dry",
+        "pair",
+        "checked_to_ip",
+        "river"
+      ]
+    },
+    {
+      "id": "assessment_dry-37-half_pot",
+      "family": "assessment_dry",
+      "partition": "assessment",
+      "hero": 0,
+      "hole": "2cQh",
+      "board": "Kc8d2sTh4c",
+      "history": "b300c/kk/kk/b300",
+      "tags": [
+        "assessment_dry",
+        "pair",
+        "half_pot",
+        "river"
+      ]
+    },
+    {
+      "id": "assessment_dry-37-pot",
+      "family": "assessment_dry",
+      "partition": "assessment",
+      "hero": 1,
+      "hole": "2cQh",
+      "board": "Kc8d2sTh4c",
+      "history": "b300c/kk/kk/kb600",
+      "tags": [
+        "assessment_dry",
+        "pair",
+        "pot",
+        "river"
+      ]
+    },
+    {
+      "id": "assessment_dry-37-overbet",
+      "family": "assessment_dry",
+      "partition": "assessment",
+      "hero": 0,
+      "hole": "2cQh",
+      "board": "Kc8d2sTh4c",
+      "history": "b300c/kk/kk/b1200",
+      "tags": [
+        "assessment_dry",
+        "pair",
+        "overbet",
+        "river"
+      ]
+    },
+    {
+      "id": "assessment_dry-37-all_in",
+      "family": "assessment_dry",
+      "partition": "assessment",
+      "hero": 1,
+      "hole": "2cQh",
+      "board": "Kc8d2sTh4c",
+      "history": "b300c/kk/kk/kb19700",
+      "tags": [
+        "assessment_dry",
+        "pair",
+        "all_in",
+        "river"
+      ]
+    },
+    {
+      "id": "assessment_dry-37-three_bet_pot",
+      "family": "assessment_dry",
+      "partition": "assessment",
+      "hero": 0,
+      "hole": "2cQh",
+      "board": "Kc8d2sTh4c",
+      "history": "b300b1000c/kk/kk/b1000",
+      "tags": [
+        "assessment_dry",
+        "pair",
+        "three_bet_pot",
+        "river"
+      ]
+    },
+    {
+      "id": "assessment_dry-37-three_barrels",
+      "family": "assessment_dry",
+      "partition": "assessment",
+      "hero": 0,
+      "hole": "2cQh",
+      "board": "Kc8d2sTh4c",
+      "history": "b300c/b300c/b900c/b2500",
+      "tags": [
+        "assessment_dry",
+        "pair",
+        "three_barrels",
+        "river"
+      ]
+    },
+    {
+      "id": "assessment_dry-844-limped_oop",
+      "family": "assessment_dry",
+      "partition": "assessment",
+      "hero": 1,
+      "hole": "8sKh",
+      "board": "Kc8d2sTh4c",
+      "history": "ck/kk/kk/",
+      "tags": [
+        "assessment_dry",
+        "two_pair",
+        "limped_oop",
+        "river"
+      ]
+    },
+    {
+      "id": "assessment_dry-844-checked_to_ip",
+      "family": "assessment_dry",
+      "partition": "assessment",
+      "hero": 0,
+      "hole": "8sKh",
+      "board": "Kc8d2sTh4c",
+      "history": "b300c/kk/kk/k",
+      "tags": [
+        "assessment_dry",
+        "two_pair",
+        "checked_to_ip",
+        "river"
+      ]
+    },
+    {
+      "id": "assessment_dry-844-half_pot",
+      "family": "assessment_dry",
+      "partition": "assessment",
+      "hero": 0,
+      "hole": "8sKh",
+      "board": "Kc8d2sTh4c",
+      "history": "b300c/kk/kk/b300",
+      "tags": [
+        "assessment_dry",
+        "two_pair",
+        "half_pot",
+        "river"
+      ]
+    },
+    {
+      "id": "assessment_dry-844-pot",
+      "family": "assessment_dry",
+      "partition": "assessment",
+      "hero": 1,
+      "hole": "8sKh",
+      "board": "Kc8d2sTh4c",
+      "history": "b300c/kk/kk/kb600",
+      "tags": [
+        "assessment_dry",
+        "two_pair",
+        "pot",
+        "river"
+      ]
+    },
+    {
+      "id": "assessment_dry-844-overbet",
+      "family": "assessment_dry",
+      "partition": "assessment",
+      "hero": 0,
+      "hole": "8sKh",
+      "board": "Kc8d2sTh4c",
+      "history": "b300c/kk/kk/b1200",
+      "tags": [
+        "assessment_dry",
+        "two_pair",
+        "overbet",
+        "river"
+      ]
+    },
+    {
+      "id": "assessment_dry-844-all_in",
+      "family": "assessment_dry",
+      "partition": "assessment",
+      "hero": 1,
+      "hole": "8sKh",
+      "board": "Kc8d2sTh4c",
+      "history": "b300c/kk/kk/kb19700",
+      "tags": [
+        "assessment_dry",
+        "two_pair",
+        "all_in",
+        "river"
+      ]
+    },
+    {
+      "id": "assessment_dry-844-three_bet_pot",
+      "family": "assessment_dry",
+      "partition": "assessment",
+      "hero": 0,
+      "hole": "8sKh",
+      "board": "Kc8d2sTh4c",
+      "history": "b300b1000c/kk/kk/b1000",
+      "tags": [
+        "assessment_dry",
+        "two_pair",
+        "three_bet_pot",
+        "river"
+      ]
+    },
+    {
+      "id": "assessment_dry-844-three_barrels",
+      "family": "assessment_dry",
+      "partition": "assessment",
+      "hero": 0,
+      "hole": "8sKh",
+      "board": "Kc8d2sTh4c",
+      "history": "b300c/b300c/b900c/b2500",
+      "tags": [
+        "assessment_dry",
+        "two_pair",
+        "three_barrels",
+        "river"
+      ]
+    },
+    {
+      "id": "assessment_dry-782-limped_oop",
+      "family": "assessment_dry",
+      "partition": "assessment",
+      "hero": 1,
+      "hole": "8c8s",
+      "board": "Kc8d2sTh4c",
+      "history": "ck/kk/kk/",
+      "tags": [
+        "assessment_dry",
+        "trips",
+        "limped_oop",
+        "river"
+      ]
+    },
+    {
+      "id": "assessment_dry-782-checked_to_ip",
+      "family": "assessment_dry",
+      "partition": "assessment",
+      "hero": 0,
+      "hole": "8c8s",
+      "board": "Kc8d2sTh4c",
+      "history": "b300c/kk/kk/k",
+      "tags": [
+        "assessment_dry",
+        "trips",
+        "checked_to_ip",
+        "river"
+      ]
+    },
+    {
+      "id": "assessment_dry-782-half_pot",
+      "family": "assessment_dry",
+      "partition": "assessment",
+      "hero": 0,
+      "hole": "8c8s",
+      "board": "Kc8d2sTh4c",
+      "history": "b300c/kk/kk/b300",
+      "tags": [
+        "assessment_dry",
+        "trips",
+        "half_pot",
+        "river"
+      ]
+    },
+    {
+      "id": "assessment_dry-782-pot",
+      "family": "assessment_dry",
+      "partition": "assessment",
+      "hero": 1,
+      "hole": "8c8s",
+      "board": "Kc8d2sTh4c",
+      "history": "b300c/kk/kk/kb600",
+      "tags": [
+        "assessment_dry",
+        "trips",
+        "pot",
+        "river"
+      ]
+    },
+    {
+      "id": "assessment_dry-782-overbet",
+      "family": "assessment_dry",
+      "partition": "assessment",
+      "hero": 0,
+      "hole": "8c8s",
+      "board": "Kc8d2sTh4c",
+      "history": "b300c/kk/kk/b1200",
+      "tags": [
+        "assessment_dry",
+        "trips",
+        "overbet",
+        "river"
+      ]
+    },
+    {
+      "id": "assessment_dry-782-all_in",
+      "family": "assessment_dry",
+      "partition": "assessment",
+      "hero": 1,
+      "hole": "8c8s",
+      "board": "Kc8d2sTh4c",
+      "history": "b300c/kk/kk/kb19700",
+      "tags": [
+        "assessment_dry",
+        "trips",
+        "all_in",
+        "river"
+      ]
+    },
+    {
+      "id": "assessment_dry-782-three_bet_pot",
+      "family": "assessment_dry",
+      "partition": "assessment",
+      "hero": 0,
+      "hole": "8c8s",
+      "board": "Kc8d2sTh4c",
+      "history": "b300b1000c/kk/kk/b1000",
+      "tags": [
+        "assessment_dry",
+        "trips",
+        "three_bet_pot",
+        "river"
+      ]
+    },
+    {
+      "id": "assessment_dry-782-three_barrels",
+      "family": "assessment_dry",
+      "partition": "assessment",
+      "hero": 0,
+      "hole": "8c8s",
+      "board": "Kc8d2sTh4c",
+      "history": "b300c/b300c/b900c/b2500",
+      "tags": [
+        "assessment_dry",
+        "trips",
+        "three_barrels",
+        "river"
+      ]
+    },
+    {
+      "id": "assessment_dry-1060-limped_oop",
+      "family": "assessment_dry",
+      "partition": "assessment",
+      "hero": 1,
+      "hole": "KdKh",
+      "board": "Kc8d2sTh4c",
+      "history": "ck/kk/kk/",
+      "tags": [
+        "assessment_dry",
+        "trips",
+        "limped_oop",
+        "river"
+      ]
+    },
+    {
+      "id": "assessment_dry-1060-checked_to_ip",
+      "family": "assessment_dry",
+      "partition": "assessment",
+      "hero": 0,
+      "hole": "KdKh",
+      "board": "Kc8d2sTh4c",
+      "history": "b300c/kk/kk/k",
+      "tags": [
+        "assessment_dry",
+        "trips",
+        "checked_to_ip",
+        "river"
+      ]
+    },
+    {
+      "id": "assessment_dry-1060-half_pot",
+      "family": "assessment_dry",
+      "partition": "assessment",
+      "hero": 0,
+      "hole": "KdKh",
+      "board": "Kc8d2sTh4c",
+      "history": "b300c/kk/kk/b300",
+      "tags": [
+        "assessment_dry",
+        "trips",
+        "half_pot",
+        "river"
+      ]
+    },
+    {
+      "id": "assessment_dry-1060-pot",
+      "family": "assessment_dry",
+      "partition": "assessment",
+      "hero": 1,
+      "hole": "KdKh",
+      "board": "Kc8d2sTh4c",
+      "history": "b300c/kk/kk/kb600",
+      "tags": [
+        "assessment_dry",
+        "trips",
+        "pot",
+        "river"
+      ]
+    },
+    {
+      "id": "assessment_dry-1060-overbet",
+      "family": "assessment_dry",
+      "partition": "assessment",
+      "hero": 0,
+      "hole": "KdKh",
+      "board": "Kc8d2sTh4c",
+      "history": "b300c/kk/kk/b1200",
+      "tags": [
+        "assessment_dry",
+        "trips",
+        "overbet",
+        "river"
+      ]
+    },
+    {
+      "id": "assessment_dry-1060-all_in",
+      "family": "assessment_dry",
+      "partition": "assessment",
+      "hero": 1,
+      "hole": "KdKh",
+      "board": "Kc8d2sTh4c",
+      "history": "b300c/kk/kk/kb19700",
+      "tags": [
+        "assessment_dry",
+        "trips",
+        "all_in",
+        "river"
+      ]
+    },
+    {
+      "id": "assessment_dry-1060-three_bet_pot",
+      "family": "assessment_dry",
+      "partition": "assessment",
+      "hero": 0,
+      "hole": "KdKh",
+      "board": "Kc8d2sTh4c",
+      "history": "b300b1000c/kk/kk/b1000",
+      "tags": [
+        "assessment_dry",
+        "trips",
+        "three_bet_pot",
+        "river"
+      ]
+    },
+    {
+      "id": "assessment_dry-1060-three_barrels",
+      "family": "assessment_dry",
+      "partition": "assessment",
+      "hero": 0,
+      "hole": "KdKh",
+      "board": "Kc8d2sTh4c",
+      "history": "b300c/b300c/b900c/b2500",
+      "tags": [
+        "assessment_dry",
+        "trips",
+        "three_barrels",
+        "river"
+      ]
+    },
+    {
+      "id": "assessment_flush-494-limped_oop",
+      "family": "assessment_flush",
+      "partition": "assessment",
+      "hero": 1,
+      "hole": "5h8c",
+      "board": "Qd9d3d6d2s",
+      "history": "ck/kk/kk/",
+      "tags": [
+        "assessment_flush",
+        "high_card",
+        "limped_oop",
+        "river"
+      ]
+    },
+    {
+      "id": "assessment_flush-494-checked_to_ip",
+      "family": "assessment_flush",
+      "partition": "assessment",
+      "hero": 0,
+      "hole": "5h8c",
+      "board": "Qd9d3d6d2s",
+      "history": "b300c/kk/kk/k",
+      "tags": [
+        "assessment_flush",
+        "high_card",
+        "checked_to_ip",
+        "river"
+      ]
+    },
+    {
+      "id": "assessment_flush-494-half_pot",
+      "family": "assessment_flush",
+      "partition": "assessment",
+      "hero": 0,
+      "hole": "5h8c",
+      "board": "Qd9d3d6d2s",
+      "history": "b300c/kk/kk/b300",
+      "tags": [
+        "assessment_flush",
+        "high_card",
+        "half_pot",
+        "river"
+      ]
+    },
+    {
+      "id": "assessment_flush-494-pot",
+      "family": "assessment_flush",
+      "partition": "assessment",
+      "hero": 1,
+      "hole": "5h8c",
+      "board": "Qd9d3d6d2s",
+      "history": "b300c/kk/kk/kb600",
+      "tags": [
+        "assessment_flush",
+        "high_card",
+        "pot",
+        "river"
+      ]
+    },
+    {
+      "id": "assessment_flush-494-overbet",
+      "family": "assessment_flush",
+      "partition": "assessment",
+      "hero": 0,
+      "hole": "5h8c",
+      "board": "Qd9d3d6d2s",
+      "history": "b300c/kk/kk/b1200",
+      "tags": [
+        "assessment_flush",
+        "high_card",
+        "overbet",
+        "river"
+      ]
+    },
+    {
+      "id": "assessment_flush-494-all_in",
+      "family": "assessment_flush",
+      "partition": "assessment",
+      "hero": 1,
+      "hole": "5h8c",
+      "board": "Qd9d3d6d2s",
+      "history": "b300c/kk/kk/kb19700",
+      "tags": [
+        "assessment_flush",
+        "high_card",
+        "all_in",
+        "river"
+      ]
+    },
+    {
+      "id": "assessment_flush-494-three_bet_pot",
+      "family": "assessment_flush",
+      "partition": "assessment",
+      "hero": 0,
+      "hole": "5h8c",
+      "board": "Qd9d3d6d2s",
+      "history": "b300b1000c/kk/kk/b1000",
+      "tags": [
+        "assessment_flush",
+        "high_card",
+        "three_bet_pot",
+        "river"
+      ]
+    },
+    {
+      "id": "assessment_flush-494-three_barrels",
+      "family": "assessment_flush",
+      "partition": "assessment",
+      "hero": 0,
+      "hole": "5h8c",
+      "board": "Qd9d3d6d2s",
+      "history": "b300c/b300c/b900c/b2500",
+      "tags": [
+        "assessment_flush",
+        "high_card",
+        "three_barrels",
+        "river"
+      ]
+    },
+    {
+      "id": "assessment_flush-384-limped_oop",
+      "family": "assessment_flush",
+      "partition": "assessment",
+      "hero": 1,
+      "hole": "4s6s",
+      "board": "Qd9d3d6d2s",
+      "history": "ck/kk/kk/",
+      "tags": [
+        "assessment_flush",
+        "pair",
+        "limped_oop",
+        "river"
+      ]
+    },
+    {
+      "id": "assessment_flush-384-checked_to_ip",
+      "family": "assessment_flush",
+      "partition": "assessment",
+      "hero": 0,
+      "hole": "4s6s",
+      "board": "Qd9d3d6d2s",
+      "history": "b300c/kk/kk/k",
+      "tags": [
+        "assessment_flush",
+        "pair",
+        "checked_to_ip",
+        "river"
+      ]
+    },
+    {
+      "id": "assessment_flush-384-half_pot",
+      "family": "assessment_flush",
+      "partition": "assessment",
+      "hero": 0,
+      "hole": "4s6s",
+      "board": "Qd9d3d6d2s",
+      "history": "b300c/kk/kk/b300",
+      "tags": [
+        "assessment_flush",
+        "pair",
+        "half_pot",
+        "river"
+      ]
+    },
+    {
+      "id": "assessment_flush-384-pot",
+      "family": "assessment_flush",
+      "partition": "assessment",
+      "hero": 1,
+      "hole": "4s6s",
+      "board": "Qd9d3d6d2s",
+      "history": "b300c/kk/kk/kb600",
+      "tags": [
+        "assessment_flush",
+        "pair",
+        "pot",
+        "river"
+      ]
+    },
+    {
+      "id": "assessment_flush-384-overbet",
+      "family": "assessment_flush",
+      "partition": "assessment",
+      "hero": 0,
+      "hole": "4s6s",
+      "board": "Qd9d3d6d2s",
+      "history": "b300c/kk/kk/b1200",
+      "tags": [
+        "assessment_flush",
+        "pair",
+        "overbet",
+        "river"
+      ]
+    },
+    {
+      "id": "assessment_flush-384-all_in",
+      "family": "assessment_flush",
+      "partition": "assessment",
+      "hero": 1,
+      "hole": "4s6s",
+      "board": "Qd9d3d6d2s",
+      "history": "b300c/kk/kk/kb19700",
+      "tags": [
+        "assessment_flush",
+        "pair",
+        "all_in",
+        "river"
+      ]
+    },
+    {
+      "id": "assessment_flush-384-three_bet_pot",
+      "family": "assessment_flush",
+      "partition": "assessment",
+      "hero": 0,
+      "hole": "4s6s",
+      "board": "Qd9d3d6d2s",
+      "history": "b300b1000c/kk/kk/b1000",
+      "tags": [
+        "assessment_flush",
+        "pair",
+        "three_bet_pot",
+        "river"
+      ]
+    },
+    {
+      "id": "assessment_flush-384-three_barrels",
+      "family": "assessment_flush",
+      "partition": "assessment",
+      "hero": 0,
+      "hole": "4s6s",
+      "board": "Qd9d3d6d2s",
+      "history": "b300c/b300c/b900c/b2500",
+      "tags": [
+        "assessment_flush",
+        "pair",
+        "three_barrels",
+        "river"
+      ]
+    },
+    {
+      "id": "assessment_flush-91-limped_oop",
+      "family": "assessment_flush",
+      "partition": "assessment",
+      "hero": 1,
+      "hole": "2h3c",
+      "board": "Qd9d3d6d2s",
+      "history": "ck/kk/kk/",
+      "tags": [
+        "assessment_flush",
+        "two_pair",
+        "limped_oop",
+        "river"
+      ]
+    },
+    {
+      "id": "assessment_flush-91-checked_to_ip",
+      "family": "assessment_flush",
+      "partition": "assessment",
+      "hero": 0,
+      "hole": "2h3c",
+      "board": "Qd9d3d6d2s",
+      "history": "b300c/kk/kk/k",
+      "tags": [
+        "assessment_flush",
+        "two_pair",
+        "checked_to_ip",
+        "river"
+      ]
+    },
+    {
+      "id": "assessment_flush-91-half_pot",
+      "family": "assessment_flush",
+      "partition": "assessment",
+      "hero": 0,
+      "hole": "2h3c",
+      "board": "Qd9d3d6d2s",
+      "history": "b300c/kk/kk/b300",
+      "tags": [
+        "assessment_flush",
+        "two_pair",
+        "half_pot",
+        "river"
+      ]
+    },
+    {
+      "id": "assessment_flush-91-pot",
+      "family": "assessment_flush",
+      "partition": "assessment",
+      "hero": 1,
+      "hole": "2h3c",
+      "board": "Qd9d3d6d2s",
+      "history": "b300c/kk/kk/kb600",
+      "tags": [
+        "assessment_flush",
+        "two_pair",
+        "pot",
+        "river"
+      ]
+    },
+    {
+      "id": "assessment_flush-91-overbet",
+      "family": "assessment_flush",
+      "partition": "assessment",
+      "hero": 0,
+      "hole": "2h3c",
+      "board": "Qd9d3d6d2s",
+      "history": "b300c/kk/kk/b1200",
+      "tags": [
+        "assessment_flush",
+        "two_pair",
+        "overbet",
+        "river"
+      ]
+    },
+    {
+      "id": "assessment_flush-91-all_in",
+      "family": "assessment_flush",
+      "partition": "assessment",
+      "hero": 1,
+      "hole": "2h3c",
+      "board": "Qd9d3d6d2s",
+      "history": "b300c/kk/kk/kb19700",
+      "tags": [
+        "assessment_flush",
+        "two_pair",
+        "all_in",
+        "river"
+      ]
+    },
+    {
+      "id": "assessment_flush-91-three_bet_pot",
+      "family": "assessment_flush",
+      "partition": "assessment",
+      "hero": 0,
+      "hole": "2h3c",
+      "board": "Qd9d3d6d2s",
+      "history": "b300b1000c/kk/kk/b1000",
+      "tags": [
+        "assessment_flush",
+        "two_pair",
+        "three_bet_pot",
+        "river"
+      ]
+    },
+    {
+      "id": "assessment_flush-91-three_barrels",
+      "family": "assessment_flush",
+      "partition": "assessment",
+      "hero": 0,
+      "hole": "2h3c",
+      "board": "Qd9d3d6d2s",
+      "history": "b300c/b300c/b900c/b2500",
+      "tags": [
+        "assessment_flush",
+        "two_pair",
+        "three_barrels",
+        "river"
+      ]
+    },
+    {
+      "id": "assessment_flush-1-limped_oop",
+      "family": "assessment_flush",
+      "partition": "assessment",
+      "hero": 1,
+      "hole": "2c2h",
+      "board": "Qd9d3d6d2s",
+      "history": "ck/kk/kk/",
+      "tags": [
+        "assessment_flush",
+        "trips",
+        "limped_oop",
+        "river"
+      ]
+    },
+    {
+      "id": "assessment_flush-1-checked_to_ip",
+      "family": "assessment_flush",
+      "partition": "assessment",
+      "hero": 0,
+      "hole": "2c2h",
+      "board": "Qd9d3d6d2s",
+      "history": "b300c/kk/kk/k",
+      "tags": [
+        "assessment_flush",
+        "trips",
+        "checked_to_ip",
+        "river"
+      ]
+    },
+    {
+      "id": "assessment_flush-1-half_pot",
+      "family": "assessment_flush",
+      "partition": "assessment",
+      "hero": 0,
+      "hole": "2c2h",
+      "board": "Qd9d3d6d2s",
+      "history": "b300c/kk/kk/b300",
+      "tags": [
+        "assessment_flush",
+        "trips",
+        "half_pot",
+        "river"
+      ]
+    },
+    {
+      "id": "assessment_flush-1-pot",
+      "family": "assessment_flush",
+      "partition": "assessment",
+      "hero": 1,
+      "hole": "2c2h",
+      "board": "Qd9d3d6d2s",
+      "history": "b300c/kk/kk/kb600",
+      "tags": [
+        "assessment_flush",
+        "trips",
+        "pot",
+        "river"
+      ]
+    },
+    {
+      "id": "assessment_flush-1-overbet",
+      "family": "assessment_flush",
+      "partition": "assessment",
+      "hero": 0,
+      "hole": "2c2h",
+      "board": "Qd9d3d6d2s",
+      "history": "b300c/kk/kk/b1200",
+      "tags": [
+        "assessment_flush",
+        "trips",
+        "overbet",
+        "river"
+      ]
+    },
+    {
+      "id": "assessment_flush-1-all_in",
+      "family": "assessment_flush",
+      "partition": "assessment",
+      "hero": 1,
+      "hole": "2c2h",
+      "board": "Qd9d3d6d2s",
+      "history": "b300c/kk/kk/kb19700",
+      "tags": [
+        "assessment_flush",
+        "trips",
+        "all_in",
+        "river"
+      ]
+    },
+    {
+      "id": "assessment_flush-1-three_bet_pot",
+      "family": "assessment_flush",
+      "partition": "assessment",
+      "hero": 0,
+      "hole": "2c2h",
+      "board": "Qd9d3d6d2s",
+      "history": "b300b1000c/kk/kk/b1000",
+      "tags": [
+        "assessment_flush",
+        "trips",
+        "three_bet_pot",
+        "river"
+      ]
+    },
+    {
+      "id": "assessment_flush-1-three_barrels",
+      "family": "assessment_flush",
+      "partition": "assessment",
+      "hero": 0,
+      "hole": "2c2h",
+      "board": "Qd9d3d6d2s",
+      "history": "b300c/b300c/b900c/b2500",
+      "tags": [
+        "assessment_flush",
+        "trips",
+        "three_barrels",
+        "river"
+      ]
+    },
+    {
+      "id": "assessment_flush-381-limped_oop",
+      "family": "assessment_flush",
+      "partition": "assessment",
+      "hero": 1,
+      "hole": "4s5s",
+      "board": "Qd9d3d6d2s",
+      "history": "ck/kk/kk/",
+      "tags": [
+        "assessment_flush",
+        "straight",
+        "limped_oop",
+        "river"
+      ]
+    },
+    {
+      "id": "assessment_flush-381-checked_to_ip",
+      "family": "assessment_flush",
+      "partition": "assessment",
+      "hero": 0,
+      "hole": "4s5s",
+      "board": "Qd9d3d6d2s",
+      "history": "b300c/kk/kk/k",
+      "tags": [
+        "assessment_flush",
+        "straight",
+        "checked_to_ip",
+        "river"
+      ]
+    },
+    {
+      "id": "assessment_flush-381-half_pot",
+      "family": "assessment_flush",
+      "partition": "assessment",
+      "hero": 0,
+      "hole": "4s5s",
+      "board": "Qd9d3d6d2s",
+      "history": "b300c/kk/kk/b300",
+      "tags": [
+        "assessment_flush",
+        "straight",
+        "half_pot",
+        "river"
+      ]
+    },
+    {
+      "id": "assessment_flush-381-pot",
+      "family": "assessment_flush",
+      "partition": "assessment",
+      "hero": 1,
+      "hole": "4s5s",
+      "board": "Qd9d3d6d2s",
+      "history": "b300c/kk/kk/kb600",
+      "tags": [
+        "assessment_flush",
+        "straight",
+        "pot",
+        "river"
+      ]
+    },
+    {
+      "id": "assessment_flush-381-overbet",
+      "family": "assessment_flush",
+      "partition": "assessment",
+      "hero": 0,
+      "hole": "4s5s",
+      "board": "Qd9d3d6d2s",
+      "history": "b300c/kk/kk/b1200",
+      "tags": [
+        "assessment_flush",
+        "straight",
+        "overbet",
+        "river"
+      ]
+    },
+    {
+      "id": "assessment_flush-381-all_in",
+      "family": "assessment_flush",
+      "partition": "assessment",
+      "hero": 1,
+      "hole": "4s5s",
+      "board": "Qd9d3d6d2s",
+      "history": "b300c/kk/kk/kb19700",
+      "tags": [
+        "assessment_flush",
+        "straight",
+        "all_in",
+        "river"
+      ]
+    },
+    {
+      "id": "assessment_flush-381-three_bet_pot",
+      "family": "assessment_flush",
+      "partition": "assessment",
+      "hero": 0,
+      "hole": "4s5s",
+      "board": "Qd9d3d6d2s",
+      "history": "b300b1000c/kk/kk/b1000",
+      "tags": [
+        "assessment_flush",
+        "straight",
+        "three_bet_pot",
+        "river"
+      ]
+    },
+    {
+      "id": "assessment_flush-381-three_barrels",
+      "family": "assessment_flush",
+      "partition": "assessment",
+      "hero": 0,
+      "hole": "4s5s",
+      "board": "Qd9d3d6d2s",
+      "history": "b300c/b300c/b900c/b2500",
+      "tags": [
+        "assessment_flush",
+        "straight",
+        "three_barrels",
+        "river"
+      ]
+    },
+    {
+      "id": "assessment_flush-82-limped_oop",
+      "family": "assessment_flush",
+      "partition": "assessment",
+      "hero": 1,
+      "hole": "2dQs",
+      "board": "Qd9d3d6d2s",
+      "history": "ck/kk/kk/",
+      "tags": [
+        "assessment_flush",
+        "flush",
+        "limped_oop",
+        "river"
+      ]
+    },
+    {
+      "id": "assessment_flush-82-checked_to_ip",
+      "family": "assessment_flush",
+      "partition": "assessment",
+      "hero": 0,
+      "hole": "2dQs",
+      "board": "Qd9d3d6d2s",
+      "history": "b300c/kk/kk/k",
+      "tags": [
+        "assessment_flush",
+        "flush",
+        "checked_to_ip",
+        "river"
+      ]
+    },
+    {
+      "id": "assessment_flush-82-half_pot",
+      "family": "assessment_flush",
+      "partition": "assessment",
+      "hero": 0,
+      "hole": "2dQs",
+      "board": "Qd9d3d6d2s",
+      "history": "b300c/kk/kk/b300",
+      "tags": [
+        "assessment_flush",
+        "flush",
+        "half_pot",
+        "river"
+      ]
+    },
+    {
+      "id": "assessment_flush-82-pot",
+      "family": "assessment_flush",
+      "partition": "assessment",
+      "hero": 1,
+      "hole": "2dQs",
+      "board": "Qd9d3d6d2s",
+      "history": "b300c/kk/kk/kb600",
+      "tags": [
+        "assessment_flush",
+        "flush",
+        "pot",
+        "river"
+      ]
+    },
+    {
+      "id": "assessment_flush-82-overbet",
+      "family": "assessment_flush",
+      "partition": "assessment",
+      "hero": 0,
+      "hole": "2dQs",
+      "board": "Qd9d3d6d2s",
+      "history": "b300c/kk/kk/b1200",
+      "tags": [
+        "assessment_flush",
+        "flush",
+        "overbet",
+        "river"
+      ]
+    },
+    {
+      "id": "assessment_flush-82-all_in",
+      "family": "assessment_flush",
+      "partition": "assessment",
+      "hero": 1,
+      "hole": "2dQs",
+      "board": "Qd9d3d6d2s",
+      "history": "b300c/kk/kk/kb19700",
+      "tags": [
+        "assessment_flush",
+        "flush",
+        "all_in",
+        "river"
+      ]
+    },
+    {
+      "id": "assessment_flush-82-three_bet_pot",
+      "family": "assessment_flush",
+      "partition": "assessment",
+      "hero": 0,
+      "hole": "2dQs",
+      "board": "Qd9d3d6d2s",
+      "history": "b300b1000c/kk/kk/b1000",
+      "tags": [
+        "assessment_flush",
+        "flush",
+        "three_bet_pot",
+        "river"
+      ]
+    },
+    {
+      "id": "assessment_flush-82-three_barrels",
+      "family": "assessment_flush",
+      "partition": "assessment",
+      "hero": 0,
+      "hole": "2dQs",
+      "board": "Qd9d3d6d2s",
+      "history": "b300c/b300c/b900c/b2500",
+      "tags": [
+        "assessment_flush",
+        "flush",
+        "three_barrels",
+        "river"
+      ]
+    },
+    {
+      "id": "assessment_flush-1063-limped_oop",
+      "family": "assessment_flush",
+      "partition": "assessment",
+      "hero": 1,
+      "hole": "KdAd",
+      "board": "Qd9d3d6d2s",
+      "history": "ck/kk/kk/",
+      "tags": [
+        "assessment_flush",
+        "flush",
+        "limped_oop",
+        "river"
+      ]
+    },
+    {
+      "id": "assessment_flush-1063-checked_to_ip",
+      "family": "assessment_flush",
+      "partition": "assessment",
+      "hero": 0,
+      "hole": "KdAd",
+      "board": "Qd9d3d6d2s",
+      "history": "b300c/kk/kk/k",
+      "tags": [
+        "assessment_flush",
+        "flush",
+        "checked_to_ip",
+        "river"
+      ]
+    },
+    {
+      "id": "assessment_flush-1063-half_pot",
+      "family": "assessment_flush",
+      "partition": "assessment",
+      "hero": 0,
+      "hole": "KdAd",
+      "board": "Qd9d3d6d2s",
+      "history": "b300c/kk/kk/b300",
+      "tags": [
+        "assessment_flush",
+        "flush",
+        "half_pot",
+        "river"
+      ]
+    },
+    {
+      "id": "assessment_flush-1063-pot",
+      "family": "assessment_flush",
+      "partition": "assessment",
+      "hero": 1,
+      "hole": "KdAd",
+      "board": "Qd9d3d6d2s",
+      "history": "b300c/kk/kk/kb600",
+      "tags": [
+        "assessment_flush",
+        "flush",
+        "pot",
+        "river"
+      ]
+    },
+    {
+      "id": "assessment_flush-1063-overbet",
+      "family": "assessment_flush",
+      "partition": "assessment",
+      "hero": 0,
+      "hole": "KdAd",
+      "board": "Qd9d3d6d2s",
+      "history": "b300c/kk/kk/b1200",
+      "tags": [
+        "assessment_flush",
+        "flush",
+        "overbet",
+        "river"
+      ]
+    },
+    {
+      "id": "assessment_flush-1063-all_in",
+      "family": "assessment_flush",
+      "partition": "assessment",
+      "hero": 1,
+      "hole": "KdAd",
+      "board": "Qd9d3d6d2s",
+      "history": "b300c/kk/kk/kb19700",
+      "tags": [
+        "assessment_flush",
+        "flush",
+        "all_in",
+        "river"
+      ]
+    },
+    {
+      "id": "assessment_flush-1063-three_bet_pot",
+      "family": "assessment_flush",
+      "partition": "assessment",
+      "hero": 0,
+      "hole": "KdAd",
+      "board": "Qd9d3d6d2s",
+      "history": "b300b1000c/kk/kk/b1000",
+      "tags": [
+        "assessment_flush",
+        "flush",
+        "three_bet_pot",
+        "river"
+      ]
+    },
+    {
+      "id": "assessment_flush-1063-three_barrels",
+      "family": "assessment_flush",
+      "partition": "assessment",
+      "hero": 0,
+      "hole": "KdAd",
+      "board": "Qd9d3d6d2s",
+      "history": "b300c/b300c/b900c/b2500",
+      "tags": [
+        "assessment_flush",
+        "flush",
+        "three_barrels",
+        "river"
+      ]
+    },
+    {
+      "id": "assessment_paired-693-limped_oop",
+      "family": "assessment_paired",
+      "partition": "assessment",
+      "hero": 1,
+      "hole": "7cQh",
+      "board": "JdJc9s5h2d",
+      "history": "ck/kk/kk/",
+      "tags": [
+        "assessment_paired",
+        "pair",
+        "limped_oop",
+        "river"
+      ]
+    },
+    {
+      "id": "assessment_paired-693-checked_to_ip",
+      "family": "assessment_paired",
+      "partition": "assessment",
+      "hero": 0,
+      "hole": "7cQh",
+      "board": "JdJc9s5h2d",
+      "history": "b300c/kk/kk/k",
+      "tags": [
+        "assessment_paired",
+        "pair",
+        "checked_to_ip",
+        "river"
+      ]
+    },
+    {
+      "id": "assessment_paired-693-half_pot",
+      "family": "assessment_paired",
+      "partition": "assessment",
+      "hero": 0,
+      "hole": "7cQh",
+      "board": "JdJc9s5h2d",
+      "history": "b300c/kk/kk/b300",
+      "tags": [
+        "assessment_paired",
+        "pair",
+        "half_pot",
+        "river"
+      ]
+    },
+    {
+      "id": "assessment_paired-693-pot",
+      "family": "assessment_paired",
+      "partition": "assessment",
+      "hero": 1,
+      "hole": "7cQh",
+      "board": "JdJc9s5h2d",
+      "history": "b300c/kk/kk/kb600",
+      "tags": [
+        "assessment_paired",
+        "pair",
+        "pot",
+        "river"
+      ]
+    },
+    {
+      "id": "assessment_paired-693-overbet",
+      "family": "assessment_paired",
+      "partition": "assessment",
+      "hero": 0,
+      "hole": "7cQh",
+      "board": "JdJc9s5h2d",
+      "history": "b300c/kk/kk/b1200",
+      "tags": [
+        "assessment_paired",
+        "pair",
+        "overbet",
+        "river"
+      ]
+    },
+    {
+      "id": "assessment_paired-693-all_in",
+      "family": "assessment_paired",
+      "partition": "assessment",
+      "hero": 1,
+      "hole": "7cQh",
+      "board": "JdJc9s5h2d",
+      "history": "b300c/kk/kk/kb19700",
+      "tags": [
+        "assessment_paired",
+        "pair",
+        "all_in",
+        "river"
+      ]
+    },
+    {
+      "id": "assessment_paired-693-three_bet_pot",
+      "family": "assessment_paired",
+      "partition": "assessment",
+      "hero": 0,
+      "hole": "7cQh",
+      "board": "JdJc9s5h2d",
+      "history": "b300b1000c/kk/kk/b1000",
+      "tags": [
+        "assessment_paired",
+        "pair",
+        "three_bet_pot",
+        "river"
+      ]
+    },
+    {
+      "id": "assessment_paired-693-three_barrels",
+      "family": "assessment_paired",
+      "partition": "assessment",
+      "hero": 0,
+      "hole": "7cQh",
+      "board": "JdJc9s5h2d",
+      "history": "b300c/b300c/b900c/b2500",
+      "tags": [
+        "assessment_paired",
+        "pair",
+        "three_barrels",
+        "river"
+      ]
+    },
+    {
+      "id": "assessment_paired-912-limped_oop",
+      "family": "assessment_paired",
+      "partition": "assessment",
+      "hero": 1,
+      "hole": "9hTh",
+      "board": "JdJc9s5h2d",
+      "history": "ck/kk/kk/",
+      "tags": [
+        "assessment_paired",
+        "two_pair",
+        "limped_oop",
+        "river"
+      ]
+    },
+    {
+      "id": "assessment_paired-912-checked_to_ip",
+      "family": "assessment_paired",
+      "partition": "assessment",
+      "hero": 0,
+      "hole": "9hTh",
+      "board": "JdJc9s5h2d",
+      "history": "b300c/kk/kk/k",
+      "tags": [
+        "assessment_paired",
+        "two_pair",
+        "checked_to_ip",
+        "river"
+      ]
+    },
+    {
+      "id": "assessment_paired-912-half_pot",
+      "family": "assessment_paired",
+      "partition": "assessment",
+      "hero": 0,
+      "hole": "9hTh",
+      "board": "JdJc9s5h2d",
+      "history": "b300c/kk/kk/b300",
+      "tags": [
+        "assessment_paired",
+        "two_pair",
+        "half_pot",
+        "river"
+      ]
+    },
+    {
+      "id": "assessment_paired-912-pot",
+      "family": "assessment_paired",
+      "partition": "assessment",
+      "hero": 1,
+      "hole": "9hTh",
+      "board": "JdJc9s5h2d",
+      "history": "b300c/kk/kk/kb600",
+      "tags": [
+        "assessment_paired",
+        "two_pair",
+        "pot",
+        "river"
+      ]
+    },
+    {
+      "id": "assessment_paired-912-overbet",
+      "family": "assessment_paired",
+      "partition": "assessment",
+      "hero": 0,
+      "hole": "9hTh",
+      "board": "JdJc9s5h2d",
+      "history": "b300c/kk/kk/b1200",
+      "tags": [
+        "assessment_paired",
+        "two_pair",
+        "overbet",
+        "river"
+      ]
+    },
+    {
+      "id": "assessment_paired-912-all_in",
+      "family": "assessment_paired",
+      "partition": "assessment",
+      "hero": 1,
+      "hole": "9hTh",
+      "board": "JdJc9s5h2d",
+      "history": "b300c/kk/kk/kb19700",
+      "tags": [
+        "assessment_paired",
+        "two_pair",
+        "all_in",
+        "river"
+      ]
+    },
+    {
+      "id": "assessment_paired-912-three_bet_pot",
+      "family": "assessment_paired",
+      "partition": "assessment",
+      "hero": 0,
+      "hole": "9hTh",
+      "board": "JdJc9s5h2d",
+      "history": "b300b1000c/kk/kk/b1000",
+      "tags": [
+        "assessment_paired",
+        "two_pair",
+        "three_bet_pot",
+        "river"
+      ]
+    },
+    {
+      "id": "assessment_paired-912-three_barrels",
+      "family": "assessment_paired",
+      "partition": "assessment",
+      "hero": 0,
+      "hole": "9hTh",
+      "board": "JdJc9s5h2d",
+      "history": "b300c/b300c/b900c/b2500",
+      "tags": [
+        "assessment_paired",
+        "two_pair",
+        "three_barrels",
+        "river"
+      ]
+    },
+    {
+      "id": "assessment_paired-858-limped_oop",
+      "family": "assessment_paired",
+      "partition": "assessment",
+      "hero": 1,
+      "hole": "8sJs",
+      "board": "JdJc9s5h2d",
+      "history": "ck/kk/kk/",
+      "tags": [
+        "assessment_paired",
+        "trips",
+        "limped_oop",
+        "river"
+      ]
+    },
+    {
+      "id": "assessment_paired-858-checked_to_ip",
+      "family": "assessment_paired",
+      "partition": "assessment",
+      "hero": 0,
+      "hole": "8sJs",
+      "board": "JdJc9s5h2d",
+      "history": "b300c/kk/kk/k",
+      "tags": [
+        "assessment_paired",
+        "trips",
+        "checked_to_ip",
+        "river"
+      ]
+    },
+    {
+      "id": "assessment_paired-858-half_pot",
+      "family": "assessment_paired",
+      "partition": "assessment",
+      "hero": 0,
+      "hole": "8sJs",
+      "board": "JdJc9s5h2d",
+      "history": "b300c/kk/kk/b300",
+      "tags": [
+        "assessment_paired",
+        "trips",
+        "half_pot",
+        "river"
+      ]
+    },
+    {
+      "id": "assessment_paired-858-pot",
+      "family": "assessment_paired",
+      "partition": "assessment",
+      "hero": 1,
+      "hole": "8sJs",
+      "board": "JdJc9s5h2d",
+      "history": "b300c/kk/kk/kb600",
+      "tags": [
+        "assessment_paired",
+        "trips",
+        "pot",
+        "river"
+      ]
+    },
+    {
+      "id": "assessment_paired-858-overbet",
+      "family": "assessment_paired",
+      "partition": "assessment",
+      "hero": 0,
+      "hole": "8sJs",
+      "board": "JdJc9s5h2d",
+      "history": "b300c/kk/kk/b1200",
+      "tags": [
+        "assessment_paired",
+        "trips",
+        "overbet",
+        "river"
+      ]
+    },
+    {
+      "id": "assessment_paired-858-all_in",
+      "family": "assessment_paired",
+      "partition": "assessment",
+      "hero": 1,
+      "hole": "8sJs",
+      "board": "JdJc9s5h2d",
+      "history": "b300c/kk/kk/kb19700",
+      "tags": [
+        "assessment_paired",
+        "trips",
+        "all_in",
+        "river"
+      ]
+    },
+    {
+      "id": "assessment_paired-858-three_bet_pot",
+      "family": "assessment_paired",
+      "partition": "assessment",
+      "hero": 0,
+      "hole": "8sJs",
+      "board": "JdJc9s5h2d",
+      "history": "b300b1000c/kk/kk/b1000",
+      "tags": [
+        "assessment_paired",
+        "trips",
+        "three_bet_pot",
+        "river"
+      ]
+    },
+    {
+      "id": "assessment_paired-858-three_barrels",
+      "family": "assessment_paired",
+      "partition": "assessment",
+      "hero": 0,
+      "hole": "8sJs",
+      "board": "JdJc9s5h2d",
+      "history": "b300c/b300c/b900c/b2500",
+      "tags": [
+        "assessment_paired",
+        "trips",
+        "three_barrels",
+        "river"
+      ]
+    },
+    {
+      "id": "assessment_paired-46-limped_oop",
+      "family": "assessment_paired",
+      "partition": "assessment",
+      "hero": 1,
+      "hole": "2h2s",
+      "board": "JdJc9s5h2d",
+      "history": "ck/kk/kk/",
+      "tags": [
+        "assessment_paired",
+        "full_house",
+        "limped_oop",
+        "river"
+      ]
+    },
+    {
+      "id": "assessment_paired-46-checked_to_ip",
+      "family": "assessment_paired",
+      "partition": "assessment",
+      "hero": 0,
+      "hole": "2h2s",
+      "board": "JdJc9s5h2d",
+      "history": "b300c/kk/kk/k",
+      "tags": [
+        "assessment_paired",
+        "full_house",
+        "checked_to_ip",
+        "river"
+      ]
+    },
+    {
+      "id": "assessment_paired-46-half_pot",
+      "family": "assessment_paired",
+      "partition": "assessment",
+      "hero": 0,
+      "hole": "2h2s",
+      "board": "JdJc9s5h2d",
+      "history": "b300c/kk/kk/b300",
+      "tags": [
+        "assessment_paired",
+        "full_house",
+        "half_pot",
+        "river"
+      ]
+    },
+    {
+      "id": "assessment_paired-46-pot",
+      "family": "assessment_paired",
+      "partition": "assessment",
+      "hero": 1,
+      "hole": "2h2s",
+      "board": "JdJc9s5h2d",
+      "history": "b300c/kk/kk/kb600",
+      "tags": [
+        "assessment_paired",
+        "full_house",
+        "pot",
+        "river"
+      ]
+    },
+    {
+      "id": "assessment_paired-46-overbet",
+      "family": "assessment_paired",
+      "partition": "assessment",
+      "hero": 0,
+      "hole": "2h2s",
+      "board": "JdJc9s5h2d",
+      "history": "b300c/kk/kk/b1200",
+      "tags": [
+        "assessment_paired",
+        "full_house",
+        "overbet",
+        "river"
+      ]
+    },
+    {
+      "id": "assessment_paired-46-all_in",
+      "family": "assessment_paired",
+      "partition": "assessment",
+      "hero": 1,
+      "hole": "2h2s",
+      "board": "JdJc9s5h2d",
+      "history": "b300c/kk/kk/kb19700",
+      "tags": [
+        "assessment_paired",
+        "full_house",
+        "all_in",
+        "river"
+      ]
+    },
+    {
+      "id": "assessment_paired-46-three_bet_pot",
+      "family": "assessment_paired",
+      "partition": "assessment",
+      "hero": 0,
+      "hole": "2h2s",
+      "board": "JdJc9s5h2d",
+      "history": "b300b1000c/kk/kk/b1000",
+      "tags": [
+        "assessment_paired",
+        "full_house",
+        "three_bet_pot",
+        "river"
+      ]
+    },
+    {
+      "id": "assessment_paired-46-three_barrels",
+      "family": "assessment_paired",
+      "partition": "assessment",
+      "hero": 0,
+      "hole": "2h2s",
+      "board": "JdJc9s5h2d",
+      "history": "b300c/b300c/b900c/b2500",
+      "tags": [
+        "assessment_paired",
+        "full_house",
+        "three_barrels",
+        "river"
+      ]
+    },
+    {
+      "id": "assessment_paired-990-limped_oop",
+      "family": "assessment_paired",
+      "partition": "assessment",
+      "hero": 1,
+      "hole": "JhJs",
+      "board": "JdJc9s5h2d",
+      "history": "ck/kk/kk/",
+      "tags": [
+        "assessment_paired",
+        "quads",
+        "limped_oop",
+        "river"
+      ]
+    },
+    {
+      "id": "assessment_paired-990-checked_to_ip",
+      "family": "assessment_paired",
+      "partition": "assessment",
+      "hero": 0,
+      "hole": "JhJs",
+      "board": "JdJc9s5h2d",
+      "history": "b300c/kk/kk/k",
+      "tags": [
+        "assessment_paired",
+        "quads",
+        "checked_to_ip",
+        "river"
+      ]
+    },
+    {
+      "id": "assessment_paired-990-half_pot",
+      "family": "assessment_paired",
+      "partition": "assessment",
+      "hero": 0,
+      "hole": "JhJs",
+      "board": "JdJc9s5h2d",
+      "history": "b300c/kk/kk/b300",
+      "tags": [
+        "assessment_paired",
+        "quads",
+        "half_pot",
+        "river"
+      ]
+    },
+    {
+      "id": "assessment_paired-990-pot",
+      "family": "assessment_paired",
+      "partition": "assessment",
+      "hero": 1,
+      "hole": "JhJs",
+      "board": "JdJc9s5h2d",
+      "history": "b300c/kk/kk/kb600",
+      "tags": [
+        "assessment_paired",
+        "quads",
+        "pot",
+        "river"
+      ]
+    },
+    {
+      "id": "assessment_paired-990-overbet",
+      "family": "assessment_paired",
+      "partition": "assessment",
+      "hero": 0,
+      "hole": "JhJs",
+      "board": "JdJc9s5h2d",
+      "history": "b300c/kk/kk/b1200",
+      "tags": [
+        "assessment_paired",
+        "quads",
+        "overbet",
+        "river"
+      ]
+    },
+    {
+      "id": "assessment_paired-990-all_in",
+      "family": "assessment_paired",
+      "partition": "assessment",
+      "hero": 1,
+      "hole": "JhJs",
+      "board": "JdJc9s5h2d",
+      "history": "b300c/kk/kk/kb19700",
+      "tags": [
+        "assessment_paired",
+        "quads",
+        "all_in",
+        "river"
+      ]
+    },
+    {
+      "id": "assessment_paired-990-three_bet_pot",
+      "family": "assessment_paired",
+      "partition": "assessment",
+      "hero": 0,
+      "hole": "JhJs",
+      "board": "JdJc9s5h2d",
+      "history": "b300b1000c/kk/kk/b1000",
+      "tags": [
+        "assessment_paired",
+        "quads",
+        "three_bet_pot",
+        "river"
+      ]
+    },
+    {
+      "id": "assessment_paired-990-three_barrels",
+      "family": "assessment_paired",
+      "partition": "assessment",
+      "hero": 0,
+      "hole": "JhJs",
+      "board": "JdJc9s5h2d",
+      "history": "b300c/b300c/b900c/b2500",
+      "tags": [
+        "assessment_paired",
+        "quads",
+        "three_barrels",
+        "river"
+      ]
+    },
+    {
+      "id": "assessment_straight-613-limped_oop",
+      "family": "assessment_straight",
+      "partition": "assessment",
+      "hero": 1,
+      "hole": "6cAd",
+      "board": "5s6h7d8c9s",
+      "history": "ck/kk/kk/",
+      "tags": [
+        "assessment_straight",
+        "straight",
+        "limped_oop",
+        "river"
+      ]
+    },
+    {
+      "id": "assessment_straight-613-checked_to_ip",
+      "family": "assessment_straight",
+      "partition": "assessment",
+      "hero": 0,
+      "hole": "6cAd",
+      "board": "5s6h7d8c9s",
+      "history": "b300c/kk/kk/k",
+      "tags": [
+        "assessment_straight",
+        "straight",
+        "checked_to_ip",
+        "river"
+      ]
+    },
+    {
+      "id": "assessment_straight-613-half_pot",
+      "family": "assessment_straight",
+      "partition": "assessment",
+      "hero": 0,
+      "hole": "6cAd",
+      "board": "5s6h7d8c9s",
+      "history": "b300c/kk/kk/b300",
+      "tags": [
+        "assessment_straight",
+        "straight",
+        "half_pot",
+        "river"
+      ]
+    },
+    {
+      "id": "assessment_straight-613-pot",
+      "family": "assessment_straight",
+      "partition": "assessment",
+      "hero": 1,
+      "hole": "6cAd",
+      "board": "5s6h7d8c9s",
+      "history": "b300c/kk/kk/kb600",
+      "tags": [
+        "assessment_straight",
+        "straight",
+        "pot",
+        "river"
+      ]
+    },
+    {
+      "id": "assessment_straight-613-overbet",
+      "family": "assessment_straight",
+      "partition": "assessment",
+      "hero": 0,
+      "hole": "6cAd",
+      "board": "5s6h7d8c9s",
+      "history": "b300c/kk/kk/b1200",
+      "tags": [
+        "assessment_straight",
+        "straight",
+        "overbet",
+        "river"
+      ]
+    },
+    {
+      "id": "assessment_straight-613-all_in",
+      "family": "assessment_straight",
+      "partition": "assessment",
+      "hero": 1,
+      "hole": "6cAd",
+      "board": "5s6h7d8c9s",
+      "history": "b300c/kk/kk/kb19700",
+      "tags": [
+        "assessment_straight",
+        "straight",
+        "all_in",
+        "river"
+      ]
+    },
+    {
+      "id": "assessment_straight-613-three_bet_pot",
+      "family": "assessment_straight",
+      "partition": "assessment",
+      "hero": 0,
+      "hole": "6cAd",
+      "board": "5s6h7d8c9s",
+      "history": "b300b1000c/kk/kk/b1000",
+      "tags": [
+        "assessment_straight",
+        "straight",
+        "three_bet_pot",
+        "river"
+      ]
+    },
+    {
+      "id": "assessment_straight-613-three_barrels",
+      "family": "assessment_straight",
+      "partition": "assessment",
+      "hero": 0,
+      "hole": "6cAd",
+      "board": "5s6h7d8c9s",
+      "history": "b300c/b300c/b900c/b2500",
+      "tags": [
+        "assessment_straight",
+        "straight",
+        "three_barrels",
+        "river"
+      ]
+    },
+    {
+      "id": "assessment_straight-894-limped_oop",
+      "family": "assessment_straight",
+      "partition": "assessment",
+      "hero": 1,
+      "hole": "TcJc",
+      "board": "5s6h7d8c9s",
+      "history": "ck/kk/kk/",
+      "tags": [
+        "assessment_straight",
+        "straight",
+        "limped_oop",
+        "river"
+      ]
+    },
+    {
+      "id": "assessment_straight-894-checked_to_ip",
+      "family": "assessment_straight",
+      "partition": "assessment",
+      "hero": 0,
+      "hole": "TcJc",
+      "board": "5s6h7d8c9s",
+      "history": "b300c/kk/kk/k",
+      "tags": [
+        "assessment_straight",
+        "straight",
+        "checked_to_ip",
+        "river"
+      ]
+    },
+    {
+      "id": "assessment_straight-894-half_pot",
+      "family": "assessment_straight",
+      "partition": "assessment",
+      "hero": 0,
+      "hole": "TcJc",
+      "board": "5s6h7d8c9s",
+      "history": "b300c/kk/kk/b300",
+      "tags": [
+        "assessment_straight",
+        "straight",
+        "half_pot",
+        "river"
+      ]
+    },
+    {
+      "id": "assessment_straight-894-pot",
+      "family": "assessment_straight",
+      "partition": "assessment",
+      "hero": 1,
+      "hole": "TcJc",
+      "board": "5s6h7d8c9s",
+      "history": "b300c/kk/kk/kb600",
+      "tags": [
+        "assessment_straight",
+        "straight",
+        "pot",
+        "river"
+      ]
+    },
+    {
+      "id": "assessment_straight-894-overbet",
+      "family": "assessment_straight",
+      "partition": "assessment",
+      "hero": 0,
+      "hole": "TcJc",
+      "board": "5s6h7d8c9s",
+      "history": "b300c/kk/kk/b1200",
+      "tags": [
+        "assessment_straight",
+        "straight",
+        "overbet",
+        "river"
+      ]
+    },
+    {
+      "id": "assessment_straight-894-all_in",
+      "family": "assessment_straight",
+      "partition": "assessment",
+      "hero": 1,
+      "hole": "TcJc",
+      "board": "5s6h7d8c9s",
+      "history": "b300c/kk/kk/kb19700",
+      "tags": [
+        "assessment_straight",
+        "straight",
+        "all_in",
+        "river"
+      ]
+    },
+    {
+      "id": "assessment_straight-894-three_bet_pot",
+      "family": "assessment_straight",
+      "partition": "assessment",
+      "hero": 0,
+      "hole": "TcJc",
+      "board": "5s6h7d8c9s",
+      "history": "b300b1000c/kk/kk/b1000",
+      "tags": [
+        "assessment_straight",
+        "straight",
+        "three_bet_pot",
+        "river"
+      ]
+    },
+    {
+      "id": "assessment_straight-894-three_barrels",
+      "family": "assessment_straight",
+      "partition": "assessment",
+      "hero": 0,
+      "hole": "TcJc",
+      "board": "5s6h7d8c9s",
+      "history": "b300c/b300c/b900c/b2500",
+      "tags": [
+        "assessment_straight",
+        "straight",
+        "three_barrels",
+        "river"
+      ]
+    },
+    {
+      "id": "preflop_premium",
+      "family": "preflop_premium",
+      "partition": "development",
+      "hero": 0,
+      "hole": "AsAh",
+      "board": "",
+      "history": "",
+      "tags": [
+        "preflop_premium",
+        "behaviour_only"
+      ]
+    },
+    {
+      "id": "preflop_suited",
+      "family": "preflop_suited",
+      "partition": "development",
+      "hero": 1,
+      "hole": "KsQs",
+      "board": "",
+      "history": "b300",
+      "tags": [
+        "preflop_suited",
+        "behaviour_only"
+      ]
+    },
+    {
+      "id": "preflop_low_pair",
+      "family": "preflop_low_pair",
+      "partition": "development",
+      "hero": 0,
+      "hole": "3c3d",
+      "board": "",
+      "history": "b300b1000",
+      "tags": [
+        "preflop_low_pair",
+        "behaviour_only"
+      ]
+    },
+    {
+      "id": "preflop_weak",
+      "family": "preflop_weak",
+      "partition": "development",
+      "hero": 0,
+      "hole": "7c2d",
+      "board": "",
+      "history": "",
+      "tags": [
+        "preflop_weak",
+        "behaviour_only"
+      ]
+    },
+    {
+      "id": "flop_nut_draw",
+      "family": "flop_nut_draw",
+      "partition": "development",
+      "hero": 0,
+      "hole": "AsQs",
+      "board": "Js7s2d",
+      "history": "b300c/b300",
+      "tags": [
+        "flop_nut_draw",
+        "behaviour_only"
+      ]
+    },
+    {
+      "id": "flop_combo_draw",
+      "family": "flop_combo_draw",
+      "partition": "development",
+      "hero": 0,
+      "hole": "9sTs",
+      "board": "8sJd2s",
+      "history": "b300c/b300",
+      "tags": [
+        "flop_combo_draw",
+        "behaviour_only"
+      ]
+    },
+    {
+      "id": "flop_overpair",
+      "family": "flop_overpair",
+      "partition": "development",
+      "hero": 1,
+      "hole": "AcAd",
+      "board": "9s6d2c",
+      "history": "b300c/",
+      "tags": [
+        "flop_overpair",
+        "behaviour_only"
+      ]
+    },
+    {
+      "id": "flop_air",
+      "family": "flop_air",
+      "partition": "development",
+      "hero": 0,
+      "hole": "5h4h",
+      "board": "AsKd9c",
+      "history": "b300c/b600",
+      "tags": [
+        "flop_air",
+        "behaviour_only"
+      ]
+    },
+    {
+      "id": "turn_nut_draw",
+      "family": "turn_nut_draw",
+      "partition": "development",
+      "hero": 0,
+      "hole": "AsQs",
+      "board": "Js7s2d4c",
+      "history": "b300c/kk/b600",
+      "tags": [
+        "turn_nut_draw",
+        "behaviour_only"
+      ]
+    },
+    {
+      "id": "turn_made_flush",
+      "family": "turn_made_flush",
+      "partition": "development",
+      "hero": 0,
+      "hole": "AsQs",
+      "board": "Js7s2d4s",
+      "history": "b300c/kk/b600",
+      "tags": [
+        "turn_made_flush",
+        "behaviour_only"
+      ]
+    },
+    {
+      "id": "turn_straight",
+      "family": "turn_straight",
+      "partition": "development",
+      "hero": 1,
+      "hole": "9sTs",
+      "board": "8cJd2sQh",
+      "history": "b300c/kk/",
+      "tags": [
+        "turn_straight",
+        "behaviour_only"
+      ]
+    },
+    {
+      "id": "turn_all_in_nut_draw",
+      "family": "turn_all_in_nut_draw",
+      "partition": "development",
+      "hero": 0,
+      "hole": "AsQs",
+      "board": "Js7s2d4c",
+      "history": "b300c/kk/b19700",
+      "tags": [
+        "turn_all_in_nut_draw",
+        "exact_all_in"
+      ]
+    },
+    {
+      "id": "turn_all_in_made_flush",
+      "family": "turn_all_in_made_flush",
+      "partition": "development",
+      "hero": 0,
+      "hole": "AsQs",
+      "board": "Js7s2d4s",
+      "history": "b300c/kk/b19700",
+      "tags": [
+        "turn_all_in_made_flush",
+        "exact_all_in"
+      ]
+    },
+    {
+      "id": "turn_bluff_catcher",
+      "family": "turn_bluff_catcher",
+      "partition": "development",
+      "hero": 0,
+      "hole": "AcTd",
+      "board": "AsKd9c8s",
+      "history": "b300c/b300c/b1200",
+      "tags": [
+        "turn_bluff_catcher",
+        "behaviour_only"
+      ]
+    },
+    {
+      "id": "flush_blocker-KsQh-limped_oop",
+      "family": "three_flush",
+      "partition": "development",
+      "hero": 1,
+      "hole": "KsQh",
+      "board": "AsTs4s9d2c",
+      "history": "ck/kk/kk/",
+      "tags": [
+        "flush_blocker",
+        "limped_oop",
+        "river",
+        "contrast"
+      ]
+    },
+    {
+      "id": "flush_blocker-KsQh-checked_to_ip",
+      "family": "three_flush",
+      "partition": "development",
+      "hero": 0,
+      "hole": "KsQh",
+      "board": "AsTs4s9d2c",
+      "history": "b300c/kk/kk/k",
+      "tags": [
+        "flush_blocker",
+        "checked_to_ip",
+        "river",
+        "contrast"
+      ]
+    },
+    {
+      "id": "flush_blocker-KsQh-half_pot",
+      "family": "three_flush",
+      "partition": "development",
+      "hero": 0,
+      "hole": "KsQh",
+      "board": "AsTs4s9d2c",
+      "history": "b300c/kk/kk/b300",
+      "tags": [
+        "flush_blocker",
+        "half_pot",
+        "river",
+        "contrast"
+      ]
+    },
+    {
+      "id": "flush_blocker-KsQh-pot",
+      "family": "three_flush",
+      "partition": "development",
+      "hero": 1,
+      "hole": "KsQh",
+      "board": "AsTs4s9d2c",
+      "history": "b300c/kk/kk/kb600",
+      "tags": [
+        "flush_blocker",
+        "pot",
+        "river",
+        "contrast"
+      ]
+    },
+    {
+      "id": "flush_blocker-KsQh-overbet",
+      "family": "three_flush",
+      "partition": "development",
+      "hero": 0,
+      "hole": "KsQh",
+      "board": "AsTs4s9d2c",
+      "history": "b300c/kk/kk/b1200",
+      "tags": [
+        "flush_blocker",
+        "overbet",
+        "river",
+        "contrast"
+      ]
+    },
+    {
+      "id": "flush_blocker-KsQh-all_in",
+      "family": "three_flush",
+      "partition": "development",
+      "hero": 1,
+      "hole": "KsQh",
+      "board": "AsTs4s9d2c",
+      "history": "b300c/kk/kk/kb19700",
+      "tags": [
+        "flush_blocker",
+        "all_in",
+        "river",
+        "contrast"
+      ]
+    },
+    {
+      "id": "flush_blocker-KsQh-three_bet_pot",
+      "family": "three_flush",
+      "partition": "development",
+      "hero": 0,
+      "hole": "KsQh",
+      "board": "AsTs4s9d2c",
+      "history": "b300b1000c/kk/kk/b1000",
+      "tags": [
+        "flush_blocker",
+        "three_bet_pot",
+        "river",
+        "contrast"
+      ]
+    },
+    {
+      "id": "flush_blocker-KsQh-three_barrels",
+      "family": "three_flush",
+      "partition": "development",
+      "hero": 0,
+      "hole": "KsQh",
+      "board": "AsTs4s9d2c",
+      "history": "b300c/b300c/b900c/b2500",
+      "tags": [
+        "flush_blocker",
+        "three_barrels",
+        "river",
+        "contrast"
+      ]
+    },
+    {
+      "id": "flush_blocker-KcQh-limped_oop",
+      "family": "three_flush",
+      "partition": "development",
+      "hero": 1,
+      "hole": "KcQh",
+      "board": "AsTs4s9d2c",
+      "history": "ck/kk/kk/",
+      "tags": [
+        "flush_blocker",
+        "limped_oop",
+        "river",
+        "contrast"
+      ]
+    },
+    {
+      "id": "flush_blocker-KcQh-checked_to_ip",
+      "family": "three_flush",
+      "partition": "development",
+      "hero": 0,
+      "hole": "KcQh",
+      "board": "AsTs4s9d2c",
+      "history": "b300c/kk/kk/k",
+      "tags": [
+        "flush_blocker",
+        "checked_to_ip",
+        "river",
+        "contrast"
+      ]
+    },
+    {
+      "id": "flush_blocker-KcQh-half_pot",
+      "family": "three_flush",
+      "partition": "development",
+      "hero": 0,
+      "hole": "KcQh",
+      "board": "AsTs4s9d2c",
+      "history": "b300c/kk/kk/b300",
+      "tags": [
+        "flush_blocker",
+        "half_pot",
+        "river",
+        "contrast"
+      ]
+    },
+    {
+      "id": "flush_blocker-KcQh-pot",
+      "family": "three_flush",
+      "partition": "development",
+      "hero": 1,
+      "hole": "KcQh",
+      "board": "AsTs4s9d2c",
+      "history": "b300c/kk/kk/kb600",
+      "tags": [
+        "flush_blocker",
+        "pot",
+        "river",
+        "contrast"
+      ]
+    },
+    {
+      "id": "flush_blocker-KcQh-overbet",
+      "family": "three_flush",
+      "partition": "development",
+      "hero": 0,
+      "hole": "KcQh",
+      "board": "AsTs4s9d2c",
+      "history": "b300c/kk/kk/b1200",
+      "tags": [
+        "flush_blocker",
+        "overbet",
+        "river",
+        "contrast"
+      ]
+    },
+    {
+      "id": "flush_blocker-KcQh-all_in",
+      "family": "three_flush",
+      "partition": "development",
+      "hero": 1,
+      "hole": "KcQh",
+      "board": "AsTs4s9d2c",
+      "history": "b300c/kk/kk/kb19700",
+      "tags": [
+        "flush_blocker",
+        "all_in",
+        "river",
+        "contrast"
+      ]
+    },
+    {
+      "id": "flush_blocker-KcQh-three_bet_pot",
+      "family": "three_flush",
+      "partition": "development",
+      "hero": 0,
+      "hole": "KcQh",
+      "board": "AsTs4s9d2c",
+      "history": "b300b1000c/kk/kk/b1000",
+      "tags": [
+        "flush_blocker",
+        "three_bet_pot",
+        "river",
+        "contrast"
+      ]
+    },
+    {
+      "id": "flush_blocker-KcQh-three_barrels",
+      "family": "three_flush",
+      "partition": "development",
+      "hero": 0,
+      "hole": "KcQh",
+      "board": "AsTs4s9d2c",
+      "history": "b300c/b300c/b900c/b2500",
+      "tags": [
+        "flush_blocker",
+        "three_barrels",
+        "river",
+        "contrast"
+      ]
+    },
+    {
+      "id": "pair_kicker-AcQd-limped_oop",
+      "family": "pair_kicker",
+      "partition": "development",
+      "hero": 1,
+      "hole": "AcQd",
+      "board": "Ah7c6s4d3h",
+      "history": "ck/kk/kk/",
+      "tags": [
+        "pair_kicker",
+        "limped_oop",
+        "river",
+        "contrast"
+      ]
+    },
+    {
+      "id": "pair_kicker-AcQd-checked_to_ip",
+      "family": "pair_kicker",
+      "partition": "development",
+      "hero": 0,
+      "hole": "AcQd",
+      "board": "Ah7c6s4d3h",
+      "history": "b300c/kk/kk/k",
+      "tags": [
+        "pair_kicker",
+        "checked_to_ip",
+        "river",
+        "contrast"
+      ]
+    },
+    {
+      "id": "pair_kicker-AcQd-half_pot",
+      "family": "pair_kicker",
+      "partition": "development",
+      "hero": 0,
+      "hole": "AcQd",
+      "board": "Ah7c6s4d3h",
+      "history": "b300c/kk/kk/b300",
+      "tags": [
+        "pair_kicker",
+        "half_pot",
+        "river",
+        "contrast"
+      ]
+    },
+    {
+      "id": "pair_kicker-AcQd-pot",
+      "family": "pair_kicker",
+      "partition": "development",
+      "hero": 1,
+      "hole": "AcQd",
+      "board": "Ah7c6s4d3h",
+      "history": "b300c/kk/kk/kb600",
+      "tags": [
+        "pair_kicker",
+        "pot",
+        "river",
+        "contrast"
+      ]
+    },
+    {
+      "id": "pair_kicker-AcQd-overbet",
+      "family": "pair_kicker",
+      "partition": "development",
+      "hero": 0,
+      "hole": "AcQd",
+      "board": "Ah7c6s4d3h",
+      "history": "b300c/kk/kk/b1200",
+      "tags": [
+        "pair_kicker",
+        "overbet",
+        "river",
+        "contrast"
+      ]
+    },
+    {
+      "id": "pair_kicker-AcQd-all_in",
+      "family": "pair_kicker",
+      "partition": "development",
+      "hero": 1,
+      "hole": "AcQd",
+      "board": "Ah7c6s4d3h",
+      "history": "b300c/kk/kk/kb19700",
+      "tags": [
+        "pair_kicker",
+        "all_in",
+        "river",
+        "contrast"
+      ]
+    },
+    {
+      "id": "pair_kicker-AcQd-three_bet_pot",
+      "family": "pair_kicker",
+      "partition": "development",
+      "hero": 0,
+      "hole": "AcQd",
+      "board": "Ah7c6s4d3h",
+      "history": "b300b1000c/kk/kk/b1000",
+      "tags": [
+        "pair_kicker",
+        "three_bet_pot",
+        "river",
+        "contrast"
+      ]
+    },
+    {
+      "id": "pair_kicker-AcQd-three_barrels",
+      "family": "pair_kicker",
+      "partition": "development",
+      "hero": 0,
+      "hole": "AcQd",
+      "board": "Ah7c6s4d3h",
+      "history": "b300c/b300c/b900c/b2500",
+      "tags": [
+        "pair_kicker",
+        "three_barrels",
+        "river",
+        "contrast"
+      ]
+    },
+    {
+      "id": "pair_kicker-AcJd-limped_oop",
+      "family": "pair_kicker",
+      "partition": "development",
+      "hero": 1,
+      "hole": "AcJd",
+      "board": "Ah7c6s4d3h",
+      "history": "ck/kk/kk/",
+      "tags": [
+        "pair_kicker",
+        "limped_oop",
+        "river",
+        "contrast"
+      ]
+    },
+    {
+      "id": "pair_kicker-AcJd-checked_to_ip",
+      "family": "pair_kicker",
+      "partition": "development",
+      "hero": 0,
+      "hole": "AcJd",
+      "board": "Ah7c6s4d3h",
+      "history": "b300c/kk/kk/k",
+      "tags": [
+        "pair_kicker",
+        "checked_to_ip",
+        "river",
+        "contrast"
+      ]
+    },
+    {
+      "id": "pair_kicker-AcJd-half_pot",
+      "family": "pair_kicker",
+      "partition": "development",
+      "hero": 0,
+      "hole": "AcJd",
+      "board": "Ah7c6s4d3h",
+      "history": "b300c/kk/kk/b300",
+      "tags": [
+        "pair_kicker",
+        "half_pot",
+        "river",
+        "contrast"
+      ]
+    },
+    {
+      "id": "pair_kicker-AcJd-pot",
+      "family": "pair_kicker",
+      "partition": "development",
+      "hero": 1,
+      "hole": "AcJd",
+      "board": "Ah7c6s4d3h",
+      "history": "b300c/kk/kk/kb600",
+      "tags": [
+        "pair_kicker",
+        "pot",
+        "river",
+        "contrast"
+      ]
+    },
+    {
+      "id": "pair_kicker-AcJd-overbet",
+      "family": "pair_kicker",
+      "partition": "development",
+      "hero": 0,
+      "hole": "AcJd",
+      "board": "Ah7c6s4d3h",
+      "history": "b300c/kk/kk/b1200",
+      "tags": [
+        "pair_kicker",
+        "overbet",
+        "river",
+        "contrast"
+      ]
+    },
+    {
+      "id": "pair_kicker-AcJd-all_in",
+      "family": "pair_kicker",
+      "partition": "development",
+      "hero": 1,
+      "hole": "AcJd",
+      "board": "Ah7c6s4d3h",
+      "history": "b300c/kk/kk/kb19700",
+      "tags": [
+        "pair_kicker",
+        "all_in",
+        "river",
+        "contrast"
+      ]
+    },
+    {
+      "id": "pair_kicker-AcJd-three_bet_pot",
+      "family": "pair_kicker",
+      "partition": "development",
+      "hero": 0,
+      "hole": "AcJd",
+      "board": "Ah7c6s4d3h",
+      "history": "b300b1000c/kk/kk/b1000",
+      "tags": [
+        "pair_kicker",
+        "three_bet_pot",
+        "river",
+        "contrast"
+      ]
+    },
+    {
+      "id": "pair_kicker-AcJd-three_barrels",
+      "family": "pair_kicker",
+      "partition": "development",
+      "hero": 0,
+      "hole": "AcJd",
+      "board": "Ah7c6s4d3h",
+      "history": "b300c/b300c/b900c/b2500",
+      "tags": [
+        "pair_kicker",
+        "three_barrels",
+        "river",
+        "contrast"
+      ]
+    },
+    {
+      "id": "pair_kicker-Ac2d-limped_oop",
+      "family": "pair_kicker",
+      "partition": "development",
+      "hero": 1,
+      "hole": "Ac2d",
+      "board": "Ah7c6s4d3h",
+      "history": "ck/kk/kk/",
+      "tags": [
+        "pair_kicker",
+        "limped_oop",
+        "river",
+        "contrast"
+      ]
+    },
+    {
+      "id": "pair_kicker-Ac2d-checked_to_ip",
+      "family": "pair_kicker",
+      "partition": "development",
+      "hero": 0,
+      "hole": "Ac2d",
+      "board": "Ah7c6s4d3h",
+      "history": "b300c/kk/kk/k",
+      "tags": [
+        "pair_kicker",
+        "checked_to_ip",
+        "river",
+        "contrast"
+      ]
+    },
+    {
+      "id": "pair_kicker-Ac2d-half_pot",
+      "family": "pair_kicker",
+      "partition": "development",
+      "hero": 0,
+      "hole": "Ac2d",
+      "board": "Ah7c6s4d3h",
+      "history": "b300c/kk/kk/b300",
+      "tags": [
+        "pair_kicker",
+        "half_pot",
+        "river",
+        "contrast"
+      ]
+    },
+    {
+      "id": "pair_kicker-Ac2d-pot",
+      "family": "pair_kicker",
+      "partition": "development",
+      "hero": 1,
+      "hole": "Ac2d",
+      "board": "Ah7c6s4d3h",
+      "history": "b300c/kk/kk/kb600",
+      "tags": [
+        "pair_kicker",
+        "pot",
+        "river",
+        "contrast"
+      ]
+    },
+    {
+      "id": "pair_kicker-Ac2d-overbet",
+      "family": "pair_kicker",
+      "partition": "development",
+      "hero": 0,
+      "hole": "Ac2d",
+      "board": "Ah7c6s4d3h",
+      "history": "b300c/kk/kk/b1200",
+      "tags": [
+        "pair_kicker",
+        "overbet",
+        "river",
+        "contrast"
+      ]
+    },
+    {
+      "id": "pair_kicker-Ac2d-all_in",
+      "family": "pair_kicker",
+      "partition": "development",
+      "hero": 1,
+      "hole": "Ac2d",
+      "board": "Ah7c6s4d3h",
+      "history": "b300c/kk/kk/kb19700",
+      "tags": [
+        "pair_kicker",
+        "all_in",
+        "river",
+        "contrast"
+      ]
+    },
+    {
+      "id": "pair_kicker-Ac2d-three_bet_pot",
+      "family": "pair_kicker",
+      "partition": "development",
+      "hero": 0,
+      "hole": "Ac2d",
+      "board": "Ah7c6s4d3h",
+      "history": "b300b1000c/kk/kk/b1000",
+      "tags": [
+        "pair_kicker",
+        "three_bet_pot",
+        "river",
+        "contrast"
+      ]
+    },
+    {
+      "id": "pair_kicker-Ac2d-three_barrels",
+      "family": "pair_kicker",
+      "partition": "development",
+      "hero": 0,
+      "hole": "Ac2d",
+      "board": "Ah7c6s4d3h",
+      "history": "b300c/b300c/b900c/b2500",
+      "tags": [
+        "pair_kicker",
+        "three_barrels",
+        "river",
+        "contrast"
+      ]
+    },
+    {
+      "id": "straight_blocker-Qs6h-limped_oop",
+      "family": "connected",
+      "partition": "development",
+      "hero": 1,
+      "hole": "Qs6h",
+      "board": "9sTdJc2h3s",
+      "history": "ck/kk/kk/",
+      "tags": [
+        "straight_blocker",
+        "limped_oop",
+        "river",
+        "contrast"
+      ]
+    },
+    {
+      "id": "straight_blocker-Qs6h-checked_to_ip",
+      "family": "connected",
+      "partition": "development",
+      "hero": 0,
+      "hole": "Qs6h",
+      "board": "9sTdJc2h3s",
+      "history": "b300c/kk/kk/k",
+      "tags": [
+        "straight_blocker",
+        "checked_to_ip",
+        "river",
+        "contrast"
+      ]
+    },
+    {
+      "id": "straight_blocker-Qs6h-half_pot",
+      "family": "connected",
+      "partition": "development",
+      "hero": 0,
+      "hole": "Qs6h",
+      "board": "9sTdJc2h3s",
+      "history": "b300c/kk/kk/b300",
+      "tags": [
+        "straight_blocker",
+        "half_pot",
+        "river",
+        "contrast"
+      ]
+    },
+    {
+      "id": "straight_blocker-Qs6h-pot",
+      "family": "connected",
+      "partition": "development",
+      "hero": 1,
+      "hole": "Qs6h",
+      "board": "9sTdJc2h3s",
+      "history": "b300c/kk/kk/kb600",
+      "tags": [
+        "straight_blocker",
+        "pot",
+        "river",
+        "contrast"
+      ]
+    },
+    {
+      "id": "straight_blocker-Qs6h-overbet",
+      "family": "connected",
+      "partition": "development",
+      "hero": 0,
+      "hole": "Qs6h",
+      "board": "9sTdJc2h3s",
+      "history": "b300c/kk/kk/b1200",
+      "tags": [
+        "straight_blocker",
+        "overbet",
+        "river",
+        "contrast"
+      ]
+    },
+    {
+      "id": "straight_blocker-Qs6h-all_in",
+      "family": "connected",
+      "partition": "development",
+      "hero": 1,
+      "hole": "Qs6h",
+      "board": "9sTdJc2h3s",
+      "history": "b300c/kk/kk/kb19700",
+      "tags": [
+        "straight_blocker",
+        "all_in",
+        "river",
+        "contrast"
+      ]
+    },
+    {
+      "id": "straight_blocker-Qs6h-three_bet_pot",
+      "family": "connected",
+      "partition": "development",
+      "hero": 0,
+      "hole": "Qs6h",
+      "board": "9sTdJc2h3s",
+      "history": "b300b1000c/kk/kk/b1000",
+      "tags": [
+        "straight_blocker",
+        "three_bet_pot",
+        "river",
+        "contrast"
+      ]
+    },
+    {
+      "id": "straight_blocker-Qs6h-three_barrels",
+      "family": "connected",
+      "partition": "development",
+      "hero": 0,
+      "hole": "Qs6h",
+      "board": "9sTdJc2h3s",
+      "history": "b300c/b300c/b900c/b2500",
+      "tags": [
+        "straight_blocker",
+        "three_barrels",
+        "river",
+        "contrast"
+      ]
+    },
+    {
+      "id": "straight_blocker-7s6h-limped_oop",
+      "family": "connected",
+      "partition": "development",
+      "hero": 1,
+      "hole": "7s6h",
+      "board": "9sTdJc2h3s",
+      "history": "ck/kk/kk/",
+      "tags": [
+        "straight_blocker",
+        "limped_oop",
+        "river",
+        "contrast"
+      ]
+    },
+    {
+      "id": "straight_blocker-7s6h-checked_to_ip",
+      "family": "connected",
+      "partition": "development",
+      "hero": 0,
+      "hole": "7s6h",
+      "board": "9sTdJc2h3s",
+      "history": "b300c/kk/kk/k",
+      "tags": [
+        "straight_blocker",
+        "checked_to_ip",
+        "river",
+        "contrast"
+      ]
+    },
+    {
+      "id": "straight_blocker-7s6h-half_pot",
+      "family": "connected",
+      "partition": "development",
+      "hero": 0,
+      "hole": "7s6h",
+      "board": "9sTdJc2h3s",
+      "history": "b300c/kk/kk/b300",
+      "tags": [
+        "straight_blocker",
+        "half_pot",
+        "river",
+        "contrast"
+      ]
+    },
+    {
+      "id": "straight_blocker-7s6h-pot",
+      "family": "connected",
+      "partition": "development",
+      "hero": 1,
+      "hole": "7s6h",
+      "board": "9sTdJc2h3s",
+      "history": "b300c/kk/kk/kb600",
+      "tags": [
+        "straight_blocker",
+        "pot",
+        "river",
+        "contrast"
+      ]
+    },
+    {
+      "id": "straight_blocker-7s6h-overbet",
+      "family": "connected",
+      "partition": "development",
+      "hero": 0,
+      "hole": "7s6h",
+      "board": "9sTdJc2h3s",
+      "history": "b300c/kk/kk/b1200",
+      "tags": [
+        "straight_blocker",
+        "overbet",
+        "river",
+        "contrast"
+      ]
+    },
+    {
+      "id": "straight_blocker-7s6h-all_in",
+      "family": "connected",
+      "partition": "development",
+      "hero": 1,
+      "hole": "7s6h",
+      "board": "9sTdJc2h3s",
+      "history": "b300c/kk/kk/kb19700",
+      "tags": [
+        "straight_blocker",
+        "all_in",
+        "river",
+        "contrast"
+      ]
+    },
+    {
+      "id": "straight_blocker-7s6h-three_bet_pot",
+      "family": "connected",
+      "partition": "development",
+      "hero": 0,
+      "hole": "7s6h",
+      "board": "9sTdJc2h3s",
+      "history": "b300b1000c/kk/kk/b1000",
+      "tags": [
+        "straight_blocker",
+        "three_bet_pot",
+        "river",
+        "contrast"
+      ]
+    },
+    {
+      "id": "straight_blocker-7s6h-three_barrels",
+      "family": "connected",
+      "partition": "development",
+      "hero": 0,
+      "hole": "7s6h",
+      "board": "9sTdJc2h3s",
+      "history": "b300c/b300c/b900c/b2500",
+      "tags": [
+        "straight_blocker",
+        "three_barrels",
+        "river",
+        "contrast"
+      ]
+    }
+  ]
+}

@@ -7,7 +7,7 @@ PYTHON_IMAGE = "docker.io/library/debian@sha256:c67e92c8099ba22853ab4cfda7cfb494
 VM_IMAGE = "projects/batch-custom-image/global/images/batch-cos-stable-official-20261110-00-p01"
 
 
-def bootstrap(command, uri, digest):
+def bootstrap(command, uri, digest, *, parallel=True):
     """Install the checkpoint-compatible runtime and preserve exit logs."""
     script = "\n".join([
         "set -Eeuo pipefail",
@@ -45,7 +45,8 @@ def bootstrap(command, uri, digest):
         "cd /workspace/coordinator",
         "python -m pip install --no-cache-dir pip==25.3 setuptools==80.9.0 wheel==0.45.1",
         "python -m pip install --no-cache-dir --no-deps --only-binary=:all: torch==2.7.0+cpu --index-url https://download.pytorch.org/whl/cpu",
-        "python -m pip install --no-cache-dir '.[parallel]'",
+        "python -m pip install --no-cache-dir '.[parallel]'" if parallel else
+        "python -m pip install --no-cache-dir .",
         "python -m pip check",
         "python --version",
         "uname -r || true",

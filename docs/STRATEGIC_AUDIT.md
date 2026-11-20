@@ -1,5 +1,8 @@
 # HUNL strategic-position evaluation
 
+For separate P56 and P80 Google Batch experiments on the original P32 library,
+see [the Batch audit protocol](POSITION_AUDITS_BATCH.md).
+
 This offline suite lives in `hunl_escher/strategic_audit`. It evaluates trusted
 playable policy checkpoints without training, API credentials or a cloud job.
 It follows the FHP suite's distinction between provable mistakes and
