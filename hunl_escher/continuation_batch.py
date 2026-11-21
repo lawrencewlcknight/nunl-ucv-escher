@@ -1,4 +1,4 @@
-"""Self-contained corrected P56/P80 continuation; no external opponents."""
+"""Self-contained corrected P56/P80/P104 continuation; no external opponents."""
 import argparse
 import json
 from pathlib import Path
@@ -13,15 +13,15 @@ from .corrected_continuation import prepare_corrected_source, fingerprint
 from .continuation_sources import source_profile, validate_source_metadata
 from .train import write_json
 
-def prepare_p80_source(source, trainer, workspace):
-    """Keep the already corrected P80 trainer and all saved learning state intact."""
-    p = source_profile(80)
-    for name in ('reload-P80.json', 'resume.json'):
+def prepare_archived_source(source, trainer, workspace, baseline_hours):
+    """Keep an already corrected trainer and all saved learning state intact."""
+    p = source_profile(baseline_hours)
+    for name in (f'reload-P{baseline_hours}.json', 'resume.json'):
         storage('cp', p['uri'] + '/' + name, source / name)
-    receipt = validate_source_metadata(lambda name: json.loads((source / name).read_text()), 80)
+    receipt = validate_source_metadata(lambda name: json.loads((source / name).read_text()), baseline_hours)
     if (sha256_file(source / 'source.tar.gz') != p['archive_sha256'] or
             fingerprint(trainer) != p['fingerprint']):
-        raise ValueError('P80 archived trainer checksum/fingerprint mismatch')
+        raise ValueError(f'P{baseline_hours} archived trainer checksum/fingerprint mismatch')
     shutil.copy2(source / 'source.tar.gz', source / 'training_source.tar.gz')
     write_json(workspace / 'source-verification.json', dict(receipt,
         archive_sha256=p['archive_sha256'], migration_required=False,
@@ -60,7 +60,7 @@ def run_worker(workspace, output_uri, baseline_hours=56):
                 receipts = ('sampler-migration.json', 'original-P56-verified.json', 'original-P56-verify.log')
             else:
                 stage('VERIFYING_CORRECTED_SOURCE')
-                source, trainer = prepare_p80_source(source, trainer, workspace)
+                source, trainer = prepare_archived_source(source, trainer, workspace, baseline_hours)
                 receipts = ('source-verification.json',)
             for name in receipts:
                 storage('cp', workspace / name, uri + '/' + name)
@@ -104,7 +104,7 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--workspace', type=Path, required=True)
     parser.add_argument('--output-uri', required=True)
-    parser.add_argument('--baseline-hours', type=int, choices=(56, 80), default=56)
+    parser.add_argument('--baseline-hours', type=int, choices=(56, 80, 104), default=56)
     args = vars(parser.parse_args())
     def terminate(signum, frame):
         signal.signal(signal.SIGTERM, signal.SIG_IGN)

@@ -1,4 +1,4 @@
-"""Pinned production baselines for the two Batch continuation experiments."""
+"""Pinned production baselines for Batch continuation experiments."""
 
 
 def source_profile(hours):
@@ -14,7 +14,13 @@ def source_profile(hours):
             policy_sha256='a489504dada7fcb98501a6655c705f4ad679a46cd7979aad15bdbe63483acc5c',
             fingerprint='b4510da50376a69972b2420cd7f5f2d7193291d61fc1624b457b817298b1704b',
             archive_sha256='323c92b4e35dac18205abee34d78b445c1ad3552e70758b9dd49bff5898a26c1')
-    raise ValueError('Batch baseline must be 56 or 80')
+    if hours == 104:
+        return dict(common, hours=104, iteration=5359,
+            uri='gs://clever-overview-399515-fhp-escher-results/hunl/hunl-p80-plus24-batch-20261120',
+            policy_sha256='b717b47b9afa0a8e1c2efc6214fb48d46d8cb069b85e873465fbf695a93c8307',
+            fingerprint='b4510da50376a69972b2420cd7f5f2d7193291d61fc1624b457b817298b1704b',
+            archive_sha256='323c92b4e35dac18205abee34d78b445c1ad3552e70758b9dd49bff5898a26c1')
+    raise ValueError('Batch baseline must be 56, 80 or 104')
 
 
 def validate_source_metadata(read, hours):
@@ -35,7 +41,7 @@ def validate_source_metadata(read, hours):
             reload['status'] != 'VERIFIED' or reload['iteration'] != iteration or
             reload['source_fingerprint'] != p['fingerprint']):
         raise ValueError(f'{label} source identity/recovery is not the approved baseline')
-    if hours == 80:
+    if hours >= 80:
         resume = read('resume.json')
         diagnostics = policy['metrics']['policy_validation']
         if (resume['source_fingerprint'] != p['fingerprint'] or
@@ -44,7 +50,7 @@ def validate_source_metadata(read, hours):
                 resume['policy_group_sampling'] != 'objective_mass' or
                 diagnostics.get('group_sampling') != 'objective_mass' or
                 diagnostics.get('policy_sampling_seed') != [p['seed'], iteration]):
-            raise ValueError('P80 does not attest to the corrected archived sampler')
+            raise ValueError(f'{label} does not attest to the corrected archived sampler')
     return dict(status='VERIFIED_METADATA', baseline_sha256=p['policy_sha256'], iteration=iteration,
                 source_fingerprint=p['fingerprint'],
                 full_reload='Repeated on Batch before training')

@@ -51,7 +51,7 @@ def equal(a, b):
         assert a == b
 
 
-@pytest.mark.parametrize('baseline_hours', [56, 80])
+@pytest.mark.parametrize('baseline_hours', [56, 80, 104])
 def test_migration_preserves_all_learning_state_and_continues(tmp_path, baseline_hours):
     module = launcher()
     module.source_archive(REPO, tmp_path / "source.tar.gz")
@@ -89,8 +89,8 @@ def test_migration_preserves_all_learning_state_and_continues(tmp_path, baseline
             equal(original[key], state[key])
     assert (migrated / "P56.pkl").read_bytes() == (baseline / "P56.pkl").read_bytes()
     labels = [f'P{baseline_hours + 6*i}' for i in range(5)]
-    if baseline_hours == 80:
-        publish_policy(migrated / 'training', migrated, 'P80')
+    if baseline_hours != 56:
+        publish_policy(migrated / 'training', migrated, f'P{baseline_hours}')
     report = run_continuation(migrated, patched, tmp_path / "continued", baseline_hours=baseline_hours,
         stage_seconds=.001, wall_seconds=240, allow_smoke=True, verify_each_stage=True)
     assert report["status"] == "TRAINING_COMPLETE" and report["final_recovery_verified"]
@@ -112,7 +112,7 @@ def test_migration_preserves_all_learning_state_and_continues(tmp_path, baseline
         patch_trainer(patched, 123)
 
 
-@pytest.mark.parametrize('baseline_hours', [56, 80])
+@pytest.mark.parametrize('baseline_hours', [56, 80, 104])
 def test_batch_contract_and_shell(tmp_path, baseline_hours):
     module = launcher()
     bundle = tmp_path / "bundle"
@@ -140,7 +140,7 @@ def test_batch_contract_and_shell(tmp_path, baseline_hours):
 
 
 @pytest.mark.parametrize('failure', [False, True])
-@pytest.mark.parametrize('baseline_hours', [56, 80])
+@pytest.mark.parametrize('baseline_hours', [56, 80, 104])
 def test_worker_is_self_contained_and_publishes_failure(tmp_path, monkeypatch, failure, baseline_hours):
     from contextlib import contextmanager
     from hunl_escher import continuation_batch as worker
@@ -157,15 +157,16 @@ def test_worker_is_self_contained_and_publishes_failure(tmp_path, monkeypatch, f
         path.mkdir()
         return path, path
     monkeypatch.setattr(worker, 'download_source', download)
-    def migrate(source, trainer, root):
+    def migrate(source, trainer, root, hours=None):
+        assert hours == (None if baseline_hours == 56 else baseline_hours)
         if failure:
             raise ValueError('Rejected source')
         (source / 'training_source.tar.gz').write_bytes(b'archive')
         return source, trainer
-    monkeypatch.setattr(worker, 'prepare_corrected_source' if baseline_hours == 56 else 'prepare_p80_source', migrate)
+    monkeypatch.setattr(worker, 'prepare_corrected_source' if baseline_hours == 56 else 'prepare_archived_source', migrate)
     def wrong_preparation(*args):
-        pytest.fail('Wrong baseline preparation: P80 must not be migrated again')
-    monkeypatch.setattr(worker, 'prepare_p80_source' if baseline_hours == 56 else 'prepare_corrected_source', wrong_preparation)
+        pytest.fail('Wrong baseline preparation: Corrected baselines must not be migrated again')
+    monkeypatch.setattr(worker, 'prepare_archived_source' if baseline_hours == 56 else 'prepare_corrected_source', wrong_preparation)
     monkeypatch.setattr(worker, 'storage', lambda *args: uploads.append(args))
     def train(source, trainer, output, **kwargs):
         stages.append('train')
