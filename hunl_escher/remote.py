@@ -211,9 +211,15 @@ def parse_gtow(payload, action_menu=DEFAULT_ACTION_MENU, *, hero=None):
         if len(data["players"]) != 2 or set(players) != {0, 1}:
             raise ProtocolError("Expected two distinct seats")
         if hero is None:
-            candidates = [seat for seat, p in players.items() if p.get("hole_cards")]
+            # Live names are the registered bot name and "GTO Wizard". Both
+            # players' cards can be visible in an already-terminal new hand.
+            opponents = [seat for seat, p in players.items()
+                         if p.get("name") in ("GTO Wizard", "gto_wizard")]
+            candidates = [1 - opponents[0]] if len(opponents) == 1 else []
             if len(candidates) != 1:
                 candidates = [seat for seat, p in players.items() if p.get("name") == "user"]
+            if len(candidates) != 1:
+                candidates = [seat for seat, p in players.items() if p.get("hole_cards")]
             if len(candidates) != 1:
                 raise ProtocolError("Cannot identify our seat without prior hand context")
             hero = candidates[0]

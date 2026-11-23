@@ -1,12 +1,14 @@
 from copy import deepcopy
 import json
 from http.client import IncompleteRead
+from io import BytesIO
+from urllib.error import HTTPError
 
 import numpy as np
 import pytest
 import torch
 
-from hunl_escher.api import APIError, AmbiguousOutcome, GTOWizardClient, JSONTransport, SlumbotClient
+from hunl_escher.api import APIError, AmbiguousOutcome, GTOWizardClient, GTOWizardTransport, JSONTransport, SlumbotClient
 from hunl_escher.checkpointing import LoadedHUNLPolicy, save_policy_checkpoint
 from hunl_escher.config import make_solver, smoke_config
 from hunl_escher.features import HUNLFeatureEncoder
@@ -170,6 +172,41 @@ def test_allin_runout_and_short_allin():
     assert parse_slumbot(a, 1).terminal and parse_gtow(b).terminal
 
 
+@pytest.mark.parametrize("hero", [0, 1])
+@pytest.mark.parametrize("reverse_players", [False, True])
+def test_gtow_terminal_fold_with_live_names_and_both_cards(hero, reverse_players):
+    state = decision()
+    state.apply_action(0)
+    _, payload = synthetic_payloads(state, hero)
+    players = payload["game_state"]["players"]
+    for seat, player in enumerate(players):
+        player["name"] = "ucv-escher" if seat == hero else "GTO Wizard"
+        player["hole_cards"] = "2c3d" if seat == 0 else "4h5s"
+    if reverse_players:
+        players.reverse()
+    parsed = parse_gtow(payload)
+    assert parsed.terminal and parsed.hero == hero
+    assert parsed.hole == ((0, 5) if hero == 0 else (10, 15))
+    assert parsed.winnings == (-50 if hero == 0 else 50)
+    assert parsed.view is None
+
+
+def test_gtow_unknown_names_and_two_visible_hands_remain_ambiguous():
+    state = decision()
+    state.apply_action(0)
+    _, payload = synthetic_payloads(state, 1)
+    for seat, player in enumerate(payload["game_state"]["players"]):
+        player["name"] = f"unknown-{seat}"
+        player["hole_cards"] = "2c3d" if seat == 0 else "4h5s"
+    with pytest.raises(ProtocolError, match="Cannot identify"):
+        parse_gtow(payload)
+
+
+def test_gtow_default_timeout_matches_provider_client():
+    client = GTOWizardClient("TEST_KEY_NOT_SENT")
+    assert client.transport.timeout == 180
+
+
 @pytest.fixture
 def checkpoint(tmp_path):
     s = make_solver(smoke_config(), seed=47)
@@ -261,10 +298,11 @@ def test_slumbot_timeout_stops_and_logs_no_duplicate_action(tmp_path):
     assert rows[-1]["event"] == "stopped" and rows[-1]["completed_hands"] == 0
 
 
+@pytest.mark.parametrize("transport_type", [JSONTransport, GTOWizardTransport])
 @pytest.mark.parametrize("failure", [TimeoutError("SECRET_KEY_SHOULD_NOT_BE_LOGGED"), IncompleteRead(b"SECRET_PARTIAL_BODY")])
-def test_http_get_backoff_but_never_post_retry(monkeypatch, failure):
+def test_http_get_backoff_but_never_post_retry(monkeypatch, failure, transport_type):
     sleeps = []
-    transport = JSONTransport("https://example.invalid", sleep=sleeps.append)
+    transport = transport_type("https://example.invalid", sleep=sleeps.append)
     attempts = []
     def broken(*args):
         attempts.append(args)
@@ -328,3 +366,109 @@ def test_http_auth_errors_are_not_retried_and_hide_response(monkeypatch):
     with pytest.raises(APIError) as exc:
         t.request("POST", "/hands", {})
     assert str(exc.value) == "HTTP 401" and len(calls) == 1
+
+
+@pytest.mark.parametrize("code", [502, 503, 504])
+@pytest.mark.parametrize("path,body", [("/hands", {"game_name": "HUNL 200BB"}),
+                                      ("/hands/123/act", {"action": "b", "amount": 200})])
+def test_gto_engine_busy_retries_identical_request(monkeypatch, capsys, code, path, body):
+    calls, sleeps = [], []
+    transport = GTOWizardTransport("https://example.invalid", sleep=sleeps.append)
+    def once(*args):
+        calls.append(deepcopy(args))
+        if len(calls) < 3:
+            raise HTTPError("https://example.invalid", code, "SECRET_SERVER_MESSAGE", {}, None)
+        return {"hand_id": 123}
+    monkeypatch.setattr(transport, "_once", once)
+    assert transport.request("POST", path, body) == {"hand_id": 123}
+    assert calls == [("POST", path, body)] * 3
+    assert sleeps == [2, 4] and transport.busy_retries == 2
+    assert "SECRET" not in capsys.readouterr().out
+
+
+@pytest.mark.parametrize("code,error", [(400, APIError), (401, APIError), (429, AmbiguousOutcome), (500, AmbiguousOutcome)])
+def test_gto_other_post_errors_not_retried(monkeypatch, code, error):
+    calls = []
+    transport = GTOWizardTransport("https://example.invalid", sleep=lambda _: pytest.fail("Unexpected retry"))
+    def once(*args):
+        calls.append(args)
+        raise HTTPError("https://example.invalid", code, "SECRET_SERVER_MESSAGE", {}, None)
+    monkeypatch.setattr(transport, "_once", once)
+    with pytest.raises(error) as exc:
+        transport.request("POST", "/hands", {})
+    assert len(calls) == 1 and "SECRET" not in str(exc.value)
+
+
+def test_gto_busy_attempt_limit_and_backoff_cap(monkeypatch):
+    calls, sleeps = [], []
+    transport = GTOWizardTransport("https://example.invalid", sleep=sleeps.append)
+    def once(*args):
+        calls.append(args)
+        raise HTTPError("https://example.invalid", 503, "Busy", {}, None)
+    monkeypatch.setattr(transport, "_once", once)
+    with pytest.raises(APIError, match="HTTP 503 after 32 attempts"):
+        transport.request("POST", "/hands", {})
+    assert len(calls) == 32 and transport.busy_retries == 31
+    assert sleeps == [2, 4, 8, 16] + [32] * 27
+
+
+def test_gto_busy_backoff_obeys_benchmark_deadline(monkeypatch):
+    calls, sleeps, now = [], [], [0]
+    def sleep(seconds):
+        sleeps.append(seconds)
+        now[0] += seconds
+    transport = GTOWizardTransport("https://example.invalid", sleep=sleep, clock=lambda: now[0])
+    transport.deadline = 3
+    def once(*args):
+        calls.append(args)
+        raise HTTPError("https://example.invalid", 503, "Busy", {}, None)
+    monkeypatch.setattr(transport, "_once", once)
+    with pytest.raises(TimeoutError, match="wall budget"):
+        transport.request("POST", "/hands", {})
+    assert len(calls) == 2 and sleeps == [2, 1]
+
+
+def test_gto_busy_create_and_act_complete_without_extra_hands(tmp_path, monkeypatch):
+    server = MockServer("gtow")
+    busy = set()
+    transport = GTOWizardTransport("https://example.invalid", sleep=lambda _: None)
+    def once(method, path, body):
+        if method == "POST" and path not in busy:
+            busy.add(path)
+            raise HTTPError("https://example.invalid", 503, "Busy", {}, None)
+        return server.request(method, path, body)
+    monkeypatch.setattr(transport, "_once", once)
+    log = Journal(tmp_path / "busy.jsonl")
+    try:
+        result = run_matches(GTOWizardClient(transport=transport), Agent(), hands=5, journal=log)
+    finally:
+        log.close()
+    assert result["completed_hands"] == 5
+    assert server.number == 5
+    assert transport.busy_retries > 1
+
+
+@pytest.mark.parametrize("path", ["/hands", "/hands/123/act"])
+def test_gto_conflict_keeps_redacted_provider_reason_without_retry(monkeypatch, path):
+    calls = []
+    transport = GTOWizardTransport("https://example.invalid",
+        headers={"X-API-Key": "SENSITIVE_TEST_KEY"}, sleep=lambda _: pytest.fail("Must not retry conflict"))
+    def conflict(*args, **kwargs):
+        calls.append(args)
+        body = json.dumps({"detail": "Daily hand limit reached.\nSENSITIVE_TEST_KEY"}).encode()
+        raise HTTPError("https://example.invalid", 409, "Conflict", {}, BytesIO(body))
+    monkeypatch.setattr(transport.opener, "open", conflict)
+    with pytest.raises(APIError) as exc:
+        transport.request("POST", path, {})
+    assert str(exc.value) == f"HTTP 409 on POST {path}: Daily hand limit reached. [REDACTED]"
+    assert len(calls) == 1
+
+
+@pytest.mark.parametrize("body", [b"<html>PRIVATE_SERVER_BODY</html>", b'{"detail": {"key": "PRIVATE_SERVER_BODY"}}'])
+def test_gto_conflict_without_string_detail_keeps_status_only(monkeypatch, body):
+    transport = GTOWizardTransport("https://example.invalid")
+    def conflict(*args, **kwargs):
+        raise HTTPError("https://example.invalid", 409, "Conflict", {}, BytesIO(body))
+    monkeypatch.setattr(transport.opener, "open", conflict)
+    with pytest.raises(APIError, match="^HTTP 409 on POST /hands$"):
+        transport.request("POST", "/hands", {})

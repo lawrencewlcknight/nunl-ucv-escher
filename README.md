@@ -52,7 +52,7 @@ supports them.
 This is a runnable development learner, not a trained competitive model.
 Slumbot and GTO Wizard API adapters, inference-only play and offline equivalence
 tests are implemented in [the API interface](docs/API_INTERFACE.md). Slumbot has
-a small live smoke test; GTO Wizard remains verified offline pending an API key.
+a small live smoke test; GTO Wizard authenticated read-only access is verified.
 The [four-plus-four-hour learning check](docs/LEARNING_EXPERIMENT.md) implements
 checkpoint restart, paired head-to-head statistics and isolated external benchmarks.
 Production playing strength has not yet been measured.
@@ -63,6 +63,12 @@ For a controlled sampler comparison using saved replay, see the
 [policy sampler experiment](docs/POLICY_SAMPLER_EXPERIMENT.md). It refits matched
 policies without new self-play, evaluates them locally, and provides a separate
 Slumbot follow-up after a positive primary result. Production defaults are unchanged.
+
+The [corrected P32 GTO Wizard experiment](docs/GTO_WIZARD_P32_EXPERIMENT.md)
+benchmarks the objective-mass refit with 1,000 excluded pilot hands and 20,000
+confirmation hands, reporting AIVAT and raw scores. Its launcher submits a single
+Google Cloud Batch task with periodic journal uploads. It requires a completed
+corrected refit and never substitutes the original P32 checkpoint.
 
 Use Python 3.10–3.12 (3.12 is the development reference):
 
@@ -215,3 +221,10 @@ Launchers require `--execute` to create cloud resources.
 
 No old FHP experiment runners, results, checkpoints, cloud launchers, evaluation
 suite or Git history were copied. The original FHP repository is untouched.
+
+### HUNL P128 external benchmarks
+
+Two separate Google Batch jobs evaluate the verified P128 policy against Slumbot
+(20,000 scored hands, no pilot) and GTO Wizard (8,000 total scored
+hands, no pilot). See [P128 external benchmarks](docs/P128_EXTERNAL_BENCHMARKS.md)
+for the fixed policy identity, timeout safeguards, launch and analysis-only download commands.

@@ -1,7 +1,7 @@
 """Small synchronous HTTP clients with conservative mutation recovery.
 
-GETs may be retried with bounded backoff. POSTs are never blindly retried:
-without an idempotency key a timeout can mean the action was already applied.
+GETs use bounded backoff. GTO POSTs follow the provider's engine-busy retry
+policy; lost responses and timeouts are not blindly replayed.
 """
 from functools import wraps
 from http.client import HTTPException
@@ -31,6 +31,10 @@ class _NoRedirect(HTTPRedirectHandler):
 
 
 class JSONTransport:
+    post_attempts = 1
+    retryable_post_statuses = ()
+    deadline = None
+
     def __init__(self, base_url, *, headers=None, timeout=30, min_interval=.5,
                  get_attempts=3, sleep=time.sleep, clock=time.monotonic):
         if timeout <= 0 or min_interval < 0 or not 1 <= get_attempts <= 5:
@@ -42,6 +46,7 @@ class JSONTransport:
         self.timeout, self.min_interval = timeout, min_interval
         self.get_attempts, self.sleep, self.clock = get_attempts, sleep, clock
         self.last_request = None
+        self.busy_retries = 0
         context = ssl.create_default_context()
         # Some python.org macOS installations have no default CA file. Augment
         # system trust with the optional standard bundle; never disable TLS checks.
@@ -71,15 +76,23 @@ class JSONTransport:
     def request(self, method, path, body=None):
         if method not in ("GET", "POST") or not path.startswith("/") or path.startswith("//"):
             raise ValueError("Unsupported HTTP request")
-        attempts = self.get_attempts if method == "GET" else 1
+        attempts = self.get_attempts if method == "GET" else self.post_attempts
         for attempt in range(attempts):
+            if self.deadline is not None and self.clock() >= self.deadline:
+                raise TimeoutError("Benchmark wall budget exhausted before request")
             try:
                 return self._once(method, path, body)
             except HTTPError as exc:
                 transient = exc.code == 429 or exc.code >= 500
-                if method == "POST" and transient:
+                if method == "POST" and exc.code in self.retryable_post_statuses:
+                    if attempt + 1 == attempts:
+                        raise APIError(f"GTO engine busy: HTTP {exc.code} after {attempts} attempts") from None
+                    self.busy_retries += 1
+                    print(f"GTO engine busy (HTTP {exc.code}); retry {attempt + 2}/{attempts} "
+                          f"in {min(2 ** (attempt + 1), 32)}s", flush=True)
+                elif method == "POST" and transient:
                     raise AmbiguousOutcome(f"POST returned HTTP {exc.code}; mutation was not retried") from None
-                if not transient or attempt + 1 == attempts:
+                elif not transient or attempt + 1 == attempts:
                     raise APIError(f"HTTP {exc.code}") from None
             except (URLError, TimeoutError, OSError, ValueError, HTTPException) as exc:
                 # No URLs, headers or server bodies in exception text: they can contain secrets.
@@ -88,7 +101,39 @@ class JSONTransport:
                     raise AmbiguousOutcome(f"POST response unavailable or invalid ({reason_type}); mutation was not retried") from None
                 if attempt + 1 == attempts:
                     raise APIError("GET response unavailable or invalid") from None
-            self.sleep(min(2 ** attempt, 4))
+            delay = min(2 ** (attempt + 1), 32) if method == "POST" else min(2 ** attempt, 4)
+            if self.deadline is not None:
+                delay = min(delay, max(0, self.deadline - self.clock()))
+            self.sleep(delay)
+
+
+class GTOWizardTransport(JSONTransport):
+    # Same status codes, attempt limit and backoff as gtowizard-ai's client.
+    # These explicit HTTP responses are distinct from a lost/invalid response.
+    post_attempts = 32
+    retryable_post_statuses = (502, 503, 504)
+
+    def _once(self, method, path, body):
+        try:
+            return super()._once(method, path, body)
+        except HTTPError as exc:
+            if exc.code != 409:
+                raise
+            # A conflict can mean a usage limit or a hand-state problem. Keep
+            # the provider's explanation instead of guessing or retrying it.
+            message = f"HTTP 409 on {method} {path.split('?')[0]}"
+            try:
+                with exc:
+                    data = json.loads(exc.read(4096))
+                detail = data.get("detail") if isinstance(data, dict) else None
+                if isinstance(detail, str):
+                    for value in self.headers.values():
+                        if value:
+                            detail = detail.replace(str(value), "[REDACTED]")
+                    message += ": " + " ".join(detail.split())[:512]
+            except (ValueError, OSError, HTTPException):
+                pass
+            raise APIError(message) from None
 
 
 def _mutation(method):
@@ -164,7 +209,9 @@ class GTOWizardClient:
         if transport is None and not api_key:
             raise ValueError("GTO Wizard requires an approved API key")
         self.action_menu = tuple(action_menu)
-        self.transport = transport or JSONTransport("https://researcher.gtowizard.com", headers={"X-API-Key": api_key})
+        # Match the official GTO client: opponent computation may exceed 30s.
+        self.transport = transport or GTOWizardTransport("https://researcher.gtowizard.com",
+            headers={"X-API-Key": api_key}, timeout=180)
         self.current = None
         self.recoveries = 0
 

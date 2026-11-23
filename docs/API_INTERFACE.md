@@ -99,8 +99,10 @@ Account play requires `--slumbot-login` plus `SLUMBOT_USERNAME` and
 `SLUMBOT_PASSWORD`. GTO Wizard reads `GTO_WIZARD_API_KEY`; `--gto-key-env NAME`
 selects another variable. Keys/passwords should not appear in command-line
 arguments. GTO Wizard hands are genuine account evaluations and may affect its
-leaderboard. No GTO Wizard live test was performed for this implementation: no
-approved key was available. Its schema/client compatibility is verified offline.
+leaderboard. Authenticated read-only requests and complete live-hand play through
+this adapter have succeeded. The
+[corrected P32 experiment](GTO_WIZARD_P32_EXPERIMENT.md) defines the benchmark
+and requires a verified corrected refit before starting live hands.
 
 ### Local credentials with `.env`
 
@@ -126,12 +128,27 @@ Keep the local copy in sync when rotating the cloud secret.
 ## Network failures and recovery
 
 Requests are sequential, with at least 0.5 seconds between starts and a default
-30-second timeout (`--timeout` is configurable). GET requests have at most three
+180-second timeout for the GTO benchmark client, matching the
+[official client](https://github.com/gtowizard-ai/researcher-api-client/blob/main/src/main.py).
+The generic play CLI retains its configurable `--timeout` (30 seconds by default);
+use `--timeout 180` for GTO Wizard. GET requests have at most three
 attempts with bounded backoff. TLS verification stays enabled; the optional
 `api` extra supplies a standard Certifi CA bundle for Python installations without
 a usable default CA file. Credentials are never forwarded through redirects.
 
-POST actions and new-hand requests are never blindly repeated. A lost response
+GTO POST actions and new-hand requests retry explicit HTTP 502, 503 and 504
+responses, matching the official client's engine-busy policy: at most 32 attempts,
+waiting 2, 4, 8, 16, then 32 seconds between attempts. The same request is repeated;
+the policy does not choose a new action. The benchmark wall deadline still applies.
+Other POST errors do not gain retries, and failed hands are not silently skipped.
+
+For GTO HTTP 409 conflicts, errors include the method/path and a bounded JSON
+`detail` string with credential values redacted. A 409 is not automatically
+treated as engine busy or assumed to mean quota exhaustion. The benchmark
+[FAQ](https://gtowizard.com/benchmark/faq) lists per-user/game limits of 10,000
+hands/day, 25,000/week and 50,000/month; the daily reset is midnight UTC.
+
+A lost response
 might mean the server already applied the action. GTO Wizard can query
 `GET /hands/in-progress`: the client continues only when the returned public
 history proves the submitted action occurred in the same hand. If the state is
@@ -139,6 +156,11 @@ unchanged, inconsistent or missing, the client stops. A missing hand might have
 finished, but that does not establish its payoff. Slumbot has no documented
 read-only recovery endpoint, so an ambiguous POST stops its session immediately.
 An errored client instance blocks further mutations.
+
+The GTO adapter identifies the seat opposite `GTO Wizard` (or `gto_wizard`),
+allowing the user's registered bot name. Terminal responses can reveal both
+players' cards, including when the opponent folds before the user acts; these
+hands must still be scored. Opponent cards are not used for policy decisions.
 
 For a known unfinished GTO Wizard hand, an explicit new runner can resume it:
 

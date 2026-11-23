@@ -8,7 +8,7 @@ import time
 
 import numpy as np
 
-from .api import APIError, GTOWizardClient, JSONTransport, SlumbotClient
+from .api import APIError, GTOWizardClient, GTOWizardTransport, JSONTransport, SlumbotClient
 from .checkpointing import LoadedHUNLPolicy, load_checkpoint_payload, sha256_file
 from .features import ENCODER_ID
 from .game import DEFAULT_ACTION_MENU, load_hunl_game
@@ -135,7 +135,8 @@ def main(argv=None):
             journal.write("summary", **summary)
         else:
             base = "https://slumbot.com" if args.opponent == "slumbot" else "https://researcher.gtowizard.com"
-            transport = JSONTransport(base, headers={"X-API-Key": key} if key else None,
+            transport_type = GTOWizardTransport if args.opponent == "gtow" else JSONTransport
+            transport = transport_type(base, headers={"X-API-Key": key} if key else None,
                                       timeout=args.timeout, min_interval=args.min_interval)
             if args.opponent == "slumbot":
                 client = SlumbotClient(action_menu=agent.action_menu, transport=transport,
