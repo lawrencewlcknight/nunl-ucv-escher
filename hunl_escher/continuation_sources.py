@@ -20,7 +20,13 @@ def source_profile(hours):
             policy_sha256='b717b47b9afa0a8e1c2efc6214fb48d46d8cb069b85e873465fbf695a93c8307',
             fingerprint='b4510da50376a69972b2420cd7f5f2d7193291d61fc1624b457b817298b1704b',
             archive_sha256='323c92b4e35dac18205abee34d78b445c1ad3552e70758b9dd49bff5898a26c1')
-    raise ValueError('Batch baseline must be 56, 80 or 104')
+    if hours == 128:
+        return dict(common, hours=128, iteration=6514,
+            uri='gs://clever-overview-399515-fhp-escher-results/hunl/hunl-p104-plus24-batch-20261122',
+            policy_sha256='aade5f09a22fc7aeddc7063e4250fc00f04c16cc5c4827381f775e3d66727bb3',
+            fingerprint='b4510da50376a69972b2420cd7f5f2d7193291d61fc1624b457b817298b1704b',
+            archive_sha256='323c92b4e35dac18205abee34d78b445c1ad3552e70758b9dd49bff5898a26c1')
+    raise ValueError('Batch baseline must be 56, 80, 104 or 128')
 
 
 def validate_source_metadata(read, hours):

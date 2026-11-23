@@ -228,3 +228,12 @@ Two separate Google Batch jobs evaluate the verified P128 policy against Slumbot
 (20,000 scored hands, no pilot) and GTO Wizard (8,000 total scored
 hands, no pilot). See [P128 external benchmarks](docs/P128_EXTERNAL_BENCHMARKS.md)
 for the fixed policy identity, timeout safeguards, launch and analysis-only download commands.
+
+### Continue HUNL P128 to P152 on Google Batch
+
+Resume the verified P128 full recovery for 24 additional active hours with the
+unchanged corrected trainer. Export P134/P140/P146/P152 and then evaluate P152
+against P128 plus all four adjacent comparisons. Use eight workers/eight Torch
+threads on `c4-highmem-16`; no external opponents are included. See the
+[P128 continuation protocol](docs/P128_PLUS24_BATCH.md) for preparation, submission
+and analysis-only download commands.

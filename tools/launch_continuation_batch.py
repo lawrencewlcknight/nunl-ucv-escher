@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Prepare/submit a corrected P56/P80/P104+24 Batch job with local comparisons only."""
+"""Prepare/submit a corrected P56/P80/P104/P128+24 Batch job with local comparisons only."""
 import argparse
 import hashlib
 import json
@@ -104,7 +104,7 @@ def main():
     parser.add_argument('--region', default='europe-west1')
     parser.add_argument('--bucket', default='gs://clever-overview-399515-fhp-escher-results/hunl')
     parser.add_argument('--service-account', default='fhp-escher-runner@clever-overview-399515.iam.gserviceaccount.com')
-    parser.add_argument('--baseline-hours', type=int, choices=(56, 80, 104), default=56)
+    parser.add_argument('--baseline-hours', type=int, choices=(56, 80, 104, 128), default=56)
     parser.add_argument('--execute', action='store_true')
     args = vars(parser.parse_args()); execute = args.pop('execute')
     prepared = args.pop('submit_prepared')

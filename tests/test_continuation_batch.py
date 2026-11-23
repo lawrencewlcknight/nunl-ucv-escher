@@ -51,7 +51,7 @@ def equal(a, b):
         assert a == b
 
 
-@pytest.mark.parametrize('baseline_hours', [56, 80, 104])
+@pytest.mark.parametrize('baseline_hours', [56, 80, 104, 128])
 def test_migration_preserves_all_learning_state_and_continues(tmp_path, baseline_hours):
     module = launcher()
     module.source_archive(REPO, tmp_path / "source.tar.gz")
@@ -112,7 +112,7 @@ def test_migration_preserves_all_learning_state_and_continues(tmp_path, baseline
         patch_trainer(patched, 123)
 
 
-@pytest.mark.parametrize('baseline_hours', [56, 80, 104])
+@pytest.mark.parametrize('baseline_hours', [56, 80, 104, 128])
 def test_batch_contract_and_shell(tmp_path, baseline_hours):
     module = launcher()
     bundle = tmp_path / "bundle"
@@ -140,7 +140,7 @@ def test_batch_contract_and_shell(tmp_path, baseline_hours):
 
 
 @pytest.mark.parametrize('failure', [False, True])
-@pytest.mark.parametrize('baseline_hours', [56, 80, 104])
+@pytest.mark.parametrize('baseline_hours', [56, 80, 104, 128])
 def test_worker_is_self_contained_and_publishes_failure(tmp_path, monkeypatch, failure, baseline_hours):
     from contextlib import contextmanager
     from hunl_escher import continuation_batch as worker
