@@ -27,7 +27,7 @@ def metadata(hours=80):
     }
 
 
-@pytest.mark.parametrize('hours', [80, 104, 128])
+@pytest.mark.parametrize('hours', [80, 104, 128, 152])
 @pytest.mark.parametrize('file,field,value', [
     ('training/latest.json', 'state', 'state_004159'),
     ('training/latest.json', 'iteration', 4159),
@@ -50,7 +50,7 @@ def test_rejects_incompatible_baseline(file, field, value, hours):
         validate_source_metadata(data.__getitem__, hours)
 
 
-@pytest.mark.parametrize('hours', [80, 104, 128])
+@pytest.mark.parametrize('hours', [80, 104, 128, 152])
 @pytest.mark.parametrize('damage', [None, 'archive', 'trainer', 'sampler'])
 def test_archived_preparation_verifies_without_migration(tmp_path, monkeypatch, damage, hours):
     from hunl_escher import continuation_batch as worker

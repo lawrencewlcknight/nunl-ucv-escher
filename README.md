@@ -237,3 +237,12 @@ against P128 plus all four adjacent comparisons. Use eight workers/eight Torch
 threads on `c4-highmem-16`; no external opponents are included. See the
 [P128 continuation protocol](docs/P128_PLUS24_BATCH.md) for preparation, submission
 and analysis-only download commands.
+
+### Continue HUNL P152 to P176 on Google Batch
+
+Resume the verified P152 full recovery for 24 additional active hours with the
+corrected average-policy group sampler. Export P158/P164/P170/P176 and evaluate
+P176 against P152 plus all four adjacent comparisons. The archived trainer,
+eight workers/eight Torch threads and `c4-highmem-16` resources remain unchanged.
+No external opponents are evaluated. See the [P152 continuation protocol](docs/P152_PLUS24_BATCH.md)
+for preparation, submission and analysis-only downloads.
