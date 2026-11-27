@@ -115,8 +115,9 @@ def test_slumbot_transport_uses_long_timeout_no_post_retry():
     assert client.transport.retryable_post_statuses == ()
 
 
-@pytest.mark.parametrize('provider,hand_count', [('gtow', 8000), ('slumbot', 20000)])
-def test_full_production_budget_has_no_pilot(tmp_path, monkeypatch, provider, hand_count):
+@pytest.mark.parametrize('hours,provider,hand_count', [(128, 'gtow', 8000), (128, 'slumbot', 20000),
+                                                     (200, 'slumbot', 8000)])
+def test_full_production_budget_has_no_pilot(tmp_path, monkeypatch, hours, provider, hand_count):
     # Exercise production loop and budget with cheap offline terminal hands.
     class Client:
         transport = SimpleNamespace(request=lambda *a, **k: dict(gto_wizard_version=2, total_hands=0))
@@ -136,7 +137,8 @@ def test_full_production_budget_has_no_pilot(tmp_path, monkeypatch, provider, ha
         return .5, .5
     monkeypatch.setattr(benchmark, 'collect_hand', complete)
     report = benchmark.run_benchmark(tmp_path, tmp_path / 'full', provider=provider,
-        client_factory=lambda *args: client)
+        client_factory=lambda *args: client, policy_hours=hours)
+    assert report['policy'] == f'P{hours}'
     assert report['status'] == 'COMPLETE' and client.calls == hand_count
     assert report['completed_pilot_hands'] == 0 and report['completed_confirmation_hands'] == hand_count
     guard = benchmark.HandBudget(client, 1)
@@ -144,6 +146,36 @@ def test_full_production_budget_has_no_pilot(tmp_path, monkeypatch, provider, ha
     with pytest.raises(ProtocolError, match='budget exhausted'):
         guard.new_hand()
     assert guard.attempted == 1
+
+
+def test_p200_offline_wire_protocol_and_identity(policy, tmp_path):
+    # Reuse a real tiny policy while exercising P200 labels and selection.
+    for suffix in ['pkl', 'json']:
+        (policy / f'P128.{suffix}').rename(policy / f'P200.{suffix}')
+    marker = json.loads((policy / 'P200.json').read_text())
+    marker['label'] = 'P200'
+    (policy / 'P200.json').write_text(json.dumps(marker))
+    manifest = json.loads((policy / 'continuation.json').read_text())
+    manifest['checkpoints'] = {'P200': marker}
+    (policy / 'continuation.json').write_text(json.dumps(manifest))
+    server = MockServer('slumbot')
+    report = benchmark.run_benchmark(policy, tmp_path / 'p200-result', provider='slumbot',
+        policy_hours=200, smoke=True, client_factory=client_factory('slumbot', server))
+    assert report['status'] == 'COMPLETE' and report['policy'] == 'P200'
+    assert report['completed_confirmation_hands'] == report['fresh_hand_attempts'] == 8
+    assert report['completed_pilot_hands'] == 0
+    assert not any('login' in r[1] for r in server.requests)
+    (policy / 'P200.pkl').write_bytes(b'corrupt')
+    server = MockServer('slumbot')
+    with pytest.raises(ValueError, match='Policy hash'):
+        benchmark.run_benchmark(policy, tmp_path / 'p200-rejected', provider='slumbot',
+            policy_hours=200, smoke=True, client_factory=client_factory('slumbot', server))
+    assert not server.requests
+
+
+def test_p200_gto_not_enabled(tmp_path):
+    with pytest.raises(ValueError, match='not enabled'):
+        benchmark.run_benchmark(tmp_path, tmp_path / 'wrong', provider='gtow', policy_hours=200)
 
 
 def test_deadline_stops_within_a_hand(policy, tmp_path, monkeypatch):

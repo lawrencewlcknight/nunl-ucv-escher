@@ -255,3 +255,15 @@ P200 against P176 plus all four adjacent comparisons. Keep the archived trainer,
 eight workers/eight Torch threads and `c4-highmem-16` resources unchanged.
 No external opponents are evaluated. See the [P176 continuation protocol](docs/P176_PLUS24_BATCH.md)
 for preparation, submission and analysis-only downloads.
+
+
+### HUNL P200: Slumbot benchmark and continuation to P224
+
+Two independent Google Batch jobs use the verified P200 policy at iteration 9844.
+The [private Slumbot benchmark](docs/P200_SLUMBOT_BATCH.md) scores 8,000 hands with
+no pilot, retaining partial results on failure. The
+[P200 continuation](docs/P200_PLUS24_BATCH.md) adds 24 active hours, exports
+P206/P212/P218/P224 and runs the primary P224-vs-P200 comparison plus four adjacent
+comparisons. Training retains the corrected policy grouping, archived trainer,
+eight workers/eight Torch threads and `c4-highmem-16`. Both jobs run autonomously
+on GCP; preparation alone submits neither job.

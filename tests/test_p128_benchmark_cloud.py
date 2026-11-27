@@ -27,15 +27,19 @@ def launcher():
         sys.path.pop(0)
 
 
-@pytest.mark.parametrize('provider,counts', [('gtow', (0, 8000)), ('slumbot', (0, 20000))])
-def test_separate_bounded_batch_bundle(tmp_path, provider, counts):
+@pytest.mark.parametrize('hours,provider,counts', [(128, 'gtow', (0, 8000)),
+    (128, 'slumbot', (0, 20000)), (200, 'slumbot', (0, 8000))])
+def test_separate_bounded_batch_bundle(tmp_path, hours, provider, counts):
     mod = launcher()
     output = tmp_path / provider
-    plan = mod.build_bundle(output, provider=provider, run_name='hunl-p128-' + provider)
+    plan = mod.build_bundle(output, provider=provider, run_name=f'hunl-p{hours}-' + provider,
+                            policy_hours=hours)
     assert (plan['pilot_hands'], plan['confirmation_hands']) == counts
     assert plan['total_hand_cap'] == sum(counts)
-    assert plan['expected_policy_sha256'] == benchmark.POLICY_SHA256
-    assert plan['expected_manifest_sha256'] == benchmark.MANIFEST_SHA256
+    profile = benchmark.benchmark_profile(hours)
+    assert plan['expected_policy_sha256'] == profile['policy_sha256']
+    assert plan['expected_manifest_sha256'] == profile['manifest_sha256']
+    assert plan['policy_hours'] == hours
     job = json.loads((output / 'job.json').read_text())
     task = job['taskGroups'][0]['taskSpec']
     assert task['maxRetryCount'] == 0 and task['maxRunDuration'] == '93600s'
@@ -48,6 +52,7 @@ def test_separate_bounded_batch_bundle(tmp_path, provider, counts):
         assert 'export PATH=' in (output / name).read_text()
     script = (output / 'run.sh').read_text()
     assert '--provider ' + provider in script and 'DPkg::Lock::Timeout=600' in script
+    assert f'--policy-hours {hours}' in script
     assert '--kill-after=600s 25h' in script and 'hunl_escher.p128_benchmark_cloud' in script
     assert 'OMP_NUM_THREADS=1' in script
     assert all('--if-generation-match=0' in c for c in plan['commands'][:-1])
@@ -68,14 +73,18 @@ def test_preparation_is_offline_and_changed_bundle_cannot_submit(tmp_path, monke
         mod.submit_prepared(tmp_path / 'bundle')
 
 
-def test_download_only_three_required_artifacts(tmp_path, monkeypatch):
+@pytest.mark.parametrize('hours', [128, 200])
+def test_download_only_three_required_artifacts(tmp_path, monkeypatch, hours):
     source = tmp_path / 'source'
     source.mkdir()
-    for name in ('P128.pkl', 'P128.json', 'continuation.json'):
+    label = f'P{hours}'
+    for name in (label + '.pkl', label + '.json', 'continuation.json'):
         (source / name).write_text(name)
-    monkeypatch.setattr(cloud, 'POLICY_SHA256', sha256_file(source / 'P128.pkl'))
-    monkeypatch.setattr(cloud, 'MANIFEST_SHA256', sha256_file(source / 'continuation.json'))
-    monkeypatch.setattr(cloud, 'verified_candidate', lambda root: None)
+    profile = dict(cloud.benchmark_profile(hours), uri='gs://test/source',
+                   policy_sha256=sha256_file(source / (label + '.pkl')),
+                   manifest_sha256=sha256_file(source / 'continuation.json'))
+    monkeypatch.setattr(cloud, 'benchmark_profile', lambda hours=128: profile)
+    monkeypatch.setattr(cloud, 'verified_candidate', lambda root, **kwargs: None)
     seen = []
     def transfer(operation, uri, destination):
         assert operation == 'cp'
@@ -83,13 +92,41 @@ def test_download_only_three_required_artifacts(tmp_path, monkeypatch):
         seen.append(name)
         shutil.copyfile(source / name, destination)
     monkeypatch.setattr(cloud, 'storage', transfer)
-    cloud.download_policy('gs://test/source', tmp_path / 'download')
-    assert seen == ['continuation.json', 'P128.json', 'P128.pkl']
+    cloud.download_policy('gs://test/source', tmp_path / 'download', hours)
+    assert seen == ['continuation.json', label + '.json', label + '.pkl']
     seen.clear()
     (source / 'continuation.json').write_text('changed')
     with pytest.raises(ValueError, match='checksum mismatch'):
-        cloud.download_policy('gs://test/source', tmp_path / 'rejected')
+        cloud.download_policy('gs://test/source', tmp_path / 'rejected', hours)
     assert seen == ['continuation.json']
+
+
+def test_p200_rejects_changed_hand_budget_before_submission(tmp_path, monkeypatch):
+    mod = launcher()
+    plan = mod.build_bundle(tmp_path / 'bundle', provider='slumbot', policy_hours=200,
+                            run_name='hunl-p200-test')
+    plan['confirmation_hands'] = 20000
+    (tmp_path / 'bundle/launch.json').write_text(json.dumps(plan))
+    monkeypatch.setattr(mod.subprocess, 'run', lambda *a, **k: pytest.fail('Must reject before network'))
+    with pytest.raises(ValueError, match='pinned benchmark'):
+        mod.submit_prepared(tmp_path / 'bundle')
+
+
+def test_p200_duplicate_job_cannot_consume_more_hands(tmp_path, monkeypatch):
+    from types import SimpleNamespace
+    mod = launcher()
+    mod.build_bundle(tmp_path / 'bundle', provider='slumbot', policy_hours=200,
+                     run_name='hunl-p200-test')
+    monkeypatch.setattr(mod, 'verify_remote_manifest', lambda plan: None)
+    calls = []
+    def run(command, **kwargs):
+        calls.append(command)
+        assert command[1:4] == ['batch', 'jobs', 'list']
+        return SimpleNamespace(stdout=json.dumps([{'name': 'projects/test/locations/europe-west1/jobs/hunl-p200-test'}]))
+    monkeypatch.setattr(mod.subprocess, 'run', run)
+    with pytest.raises(ValueError, match='already exists'):
+        mod.submit_prepared(tmp_path / 'bundle')
+    assert len(calls) == 1
 
 
 @pytest.mark.parametrize('provider', ['gtow', 'slumbot'])

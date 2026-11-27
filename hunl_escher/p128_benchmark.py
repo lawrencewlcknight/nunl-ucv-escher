@@ -1,4 +1,4 @@
-"""Independent fixed-sample external benchmarks of the verified HUNL P128 policy."""
+"""Independent fixed-sample external benchmarks of pinned HUNL policies."""
 import argparse
 import json
 import math
@@ -17,6 +17,7 @@ from .continuation_evaluate import verified_checkpoint
 from .gtow_p32 import account_snapshot, DeadlineTransport
 from .remote import ProtocolError, parse_gtow
 from .train import write_json
+from .benchmark_sources import benchmark_profile
 
 POLICY_SHA256 = "aade5f09a22fc7aeddc7063e4250fc00f04c16cc5c4827381f775e3d66727bb3"
 MANIFEST_SHA256 = "a08210f79bcddebc564109886673d38cb7c8002326b682b2b66f085eb54c048b"
@@ -25,21 +26,25 @@ LABEL = "P128"
 COUNTS = {"slumbot": (0, 20000), "gtow": (0, 8000)}
 
 
-def verified_candidate(experiment, *, smoke=False):
+def verified_candidate(experiment, *, smoke=False, policy_hours=128):
+    profile = benchmark_profile(policy_hours)
+    label = profile['label']
     root = Path(experiment)
-    policy, marker = verified_checkpoint(root, LABEL, smoke=smoke)
+    policy, marker = verified_checkpoint(root, label, smoke=smoke)
     manifest_hash = sha256_file(root / "continuation.json")
-    if not smoke and (marker["sha256"] != POLICY_SHA256
-                      or marker["outer_iteration"] != 6514 or manifest_hash != MANIFEST_SHA256):
-        raise ValueError("Requires the pinned production P128 training run")
+    if not smoke and (marker["sha256"] != profile['policy_sha256']
+                      or marker["outer_iteration"] != profile['iteration']
+                      or manifest_hash != profile['manifest_sha256']):
+        raise ValueError(f"Requires the pinned production {label} training run")
     payload = load_checkpoint_payload(policy)
     if payload["outer_iteration"] != marker["outer_iteration"]:
         raise ValueError("Policy iteration differs from training marker")
     if not smoke:
         training = json.loads((root / "continuation.json").read_text())
-        validation = training["checkpoints"][LABEL]["metrics"]["policy_validation"]
-        if validation["group_sampling"] != "objective_mass":
-            raise ValueError("P128 must use the corrected policy grouping sampler")
+        validation = training["checkpoints"][label]["metrics"]["policy_validation"]
+        if (validation["group_sampling"] != "objective_mass" or
+                validation.get('policy_sampling_seed') != [profile['seed'], profile['iteration']]):
+            raise ValueError(f"{label} must use the corrected policy grouping sampler and seed")
     return dict(kind="checkpoint", checkpoint=policy), dict(policy_sha256=marker["sha256"],
         source_manifest_sha256=manifest_hash, outer_iteration=marker["outer_iteration"],
         active_seconds=marker["active_seconds"])
@@ -72,22 +77,24 @@ class HandBudget:
 
 
 def run_benchmark(experiment, output, *, provider, max_seconds=86400, seed=None,
-                  preflight=False, smoke=False, client_factory=None):
-    if provider not in COUNTS:
-        raise ValueError("Unknown benchmark provider")
+                  preflight=False, smoke=False, client_factory=None, policy_hours=128):
+    profile = benchmark_profile(policy_hours)
+    label = profile['label']
+    if provider not in profile['counts']:
+        raise ValueError("Provider is not enabled for this benchmark policy")
     if seed is None:
-        seed = 1287901 if provider == "slumbot" else 1288901
+        seed = policy_hours * 10000 + (7901 if provider == "slumbot" else 8901)
     if not math.isfinite(max_seconds) or max_seconds <= 0 or seed < 0:
         raise ValueError("Invalid execution limits")
     if smoke and client_factory is None:
         raise ValueError("Synthetic smoke requires an injected offline client")
-    spec, identity = verified_candidate(experiment, smoke=smoke)
+    spec, identity = verified_candidate(experiment, smoke=smoke, policy_hours=policy_hours)
     if provider == "gtow" and client_factory is None and not os.environ.get("GTO_WIZARD_API_KEY"):
         raise ValueError("Set GTO_WIZARD_API_KEY in the environment")
     output = Path(output)
     output.mkdir(parents=True, exist_ok=False)
-    pilot_count, main_count = (0, 8) if smoke else COUNTS[provider]
-    design = dict(provider=provider, policy=LABEL, game_name="HUNL 200BB", **identity,
+    pilot_count, main_count = (0, 8) if smoke else profile['counts'][provider]
+    design = dict(provider=provider, policy=label, game_name="HUNL 200BB", **identity,
         seed=seed, pilot_hands=pilot_count, confirmation_hands=main_count,
         pilot_excluded=True, fixed_sample=True, alpha=.05, max_seconds=max_seconds,
         primary_metric="aivat_bb" if provider == "gtow" else "raw_bb", secondary_metric="raw_bb", smoke=smoke,
@@ -95,7 +102,8 @@ def run_benchmark(experiment, output, *, provider, max_seconds=86400, seed=None,
         preflight_only=preflight, interval_unit="independent fresh server hand",
         interpretation="Absolute benchmark of one fixed trained policy; not an improvement or exploitability test",
         implementation_sha256={name: sha256_file(Path(__file__).with_name(name))
-            for name in ("p128_benchmark.py", "gtow_p32.py", "api.py", "remote.py", "play.py", "benchmark.py")})
+            for name in ("p128_benchmark.py", "benchmark_sources.py", "continuation_sources.py",
+                         "gtow_p32.py", "api.py", "remote.py", "play.py", "benchmark.py")})
     write_json(output / "design.json", design)
     report = dict(status="STARTING", **design, scores={"pilot": [], "main": []},
                   raw={"pilot": [], "main": []}, version_checks=[], estimate=None,
@@ -150,7 +158,7 @@ def run_benchmark(experiment, output, *, provider, max_seconds=86400, seed=None,
                 if time.monotonic() >= deadline:
                     raise TimeoutError("Benchmark wall budget exhausted")
                 hand_in_flight = True
-                score, raw = collect_hand(client, agent, journal, phase, LABEL, ordinal)
+                score, raw = collect_hand(client, agent, journal, phase, label, ordinal)
                 if not math.isfinite(score) or not math.isfinite(raw):
                     raise ProtocolError("Non-finite terminal score")
                 hand_id = client.current.hand_id
@@ -213,7 +221,8 @@ def run_benchmark(experiment, output, *, provider, max_seconds=86400, seed=None,
 
 def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--experiment", required=True, type=Path, help="Directory containing verified P128.pkl, P128.json and continuation.json")
+    parser.add_argument("--experiment", required=True, type=Path, help="Directory containing the verified policy, marker and continuation.json")
+    parser.add_argument("--policy-hours", type=int, choices=(128, 200), default=128)
     parser.add_argument("--output", required=True, type=Path, help="New immutable benchmark output directory")
     parser.add_argument("--max-seconds", type=float, default=86400)
     parser.add_argument("--provider", required=True, choices=tuple(COUNTS))

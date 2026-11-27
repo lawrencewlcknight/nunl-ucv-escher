@@ -1,4 +1,4 @@
-"""Self-contained corrected P56/P80/P104/P128/P152/P176 continuation; no external opponents."""
+"""Self-contained corrected P56/P80/P104/P128/P152/P176/P200 continuation; no external opponents."""
 import argparse
 import json
 from pathlib import Path
@@ -104,7 +104,7 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--workspace', type=Path, required=True)
     parser.add_argument('--output-uri', required=True)
-    parser.add_argument('--baseline-hours', type=int, choices=(56, 80, 104, 128, 152, 176), default=56)
+    parser.add_argument('--baseline-hours', type=int, choices=(56, 80, 104, 128, 152, 176, 200), default=56)
     args = vars(parser.parse_args())
     def terminate(signum, frame):
         signal.signal(signal.SIGTERM, signal.SIG_IGN)
