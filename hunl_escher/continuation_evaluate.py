@@ -1,4 +1,4 @@
-"""Five fixed-policy comparisons after a verified 24-hour continuation."""
+"""Final-versus-baseline and adjacent comparisons after a verified continuation."""
 import argparse
 import json
 import math
@@ -11,7 +11,7 @@ from .continuation import report_labels
 from .experiment_runtime import run_child
 from .train import write_json
 
-# Conservative family correction: four secondary tests at 1% each.
+# Historical four-comparison level; larger families divide the same 4% budget.
 SECONDARY_ALPHA = .01
 
 
@@ -41,7 +41,9 @@ def gate_secondary(result, primary_passed, smoke):
 
 def render(output, report):
     lines = ['# No-limit Holdem continuation: local evaluation', '',
-             f"Primary: {report['primary']}, 95% interval. Four adjacent comparisons: 99% intervals;",
+             f"Primary: {report['primary']}, 95% interval. "
+             f"{report['secondary_family_size']} adjacent comparisons: "
+             f"{100*(1-report['secondary_alpha']):.5g}% intervals;",
              'secondary improvement claims require the primary test to pass.',
              'One training seed; these matches do not measure exploitability.', '',
              '| Comparison | Status | bb/100 | Interval | Conclusion |',
@@ -51,7 +53,7 @@ def render(output, report):
         if result:
             lo, hi = result['interval']
             lines.append(f"| {name} | {item['status']} | {result['bb_per_100']:.2f} | "
-                         f"{100*result['confidence']:.0f}% [{lo:.2f}, {hi:.2f}] | {result['conclusion']} |")
+                         f"{100*result['confidence']:.5g}% [{lo:.2f}, {hi:.2f}] | {result['conclusion']} |")
         else:
             lines.append(f"| {name} | {item['status']} | — | — | — |")
     lines += ['', ('External benchmarks are disabled for this experiment.'
@@ -66,14 +68,16 @@ def run_suite(experiment, output, *, workers=8, max_seconds=14400, smoke=False,
         raise ValueError('Invalid evaluation limits')
     root, output = Path(experiment).resolve(), Path(output).resolve()
     labels = report_labels(json.loads((root / 'continuation.json').read_text()))
+    secondary_count = len(labels) - 1
+    secondary_alpha = 4 * SECONDARY_ALPHA / secondary_count
     for label in labels:
         verified_checkpoint(root, label, smoke=smoke)
     output.mkdir(parents=True, exist_ok=False)
     report = dict(status='EVALUATING', smoke=smoke, primary=labels[-1]+'-vs-'+labels[0],
-                  secondary_alpha=SECONDARY_ALPHA, secondary_family_size=4, head_to_head={},
+                  secondary_alpha=secondary_alpha, secondary_family_size=secondary_count, head_to_head={},
                   external_benchmarks=external_benchmarks)
     write_json(output / 'design.json', dict(labels=labels, primary=report['primary'],
-        primary_alpha=.05, secondary_alpha=SECONDARY_ALPHA, secondary_family_size=4,
+        primary_alpha=.05, secondary_alpha=secondary_alpha, secondary_family_size=secondary_count,
         effect_bb100=10, power=.8, pilot_excluded=True, workers=workers,
         max_seconds=max_seconds, smoke=smoke,
         pilot_pairs=4 if smoke else 10000, minimum=8 if smoke else 100000,
@@ -93,7 +97,7 @@ def run_suite(experiment, output, *, workers=8, max_seconds=14400, smoke=False,
                 '--a', str(root / f'{a}.pkl'), '--b', str(root / f'{b}.pkl'),
                 '--output', str(target), '--workers', str(workers),
                 '--max-seconds', str(budget), '--seed', str(28301 + 10*index),
-                '--alpha', str(.05 if index == 0 else SECONDARY_ALPHA)]
+                '--alpha', str(.05 if index == 0 else secondary_alpha)]
             if smoke:
                 command += ['--pilot-pairs', '4', '--minimum', '8', '--maximum', '8']
             # A process boundary enforces the deadline even during a stalled pool.

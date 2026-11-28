@@ -1,4 +1,4 @@
-"""Self-contained corrected P56/P80/P104/P128/P152/P176/P200 continuation; no external opponents."""
+"""Self-contained corrected continuation with six-hour checkpoints; no external opponents."""
 import argparse
 import json
 from pathlib import Path
@@ -11,6 +11,7 @@ from .continuation_cloud import download_source, publisher, storage
 from .continuation_evaluate import run_suite
 from .corrected_continuation import prepare_corrected_source, fingerprint
 from .continuation_sources import source_profile, validate_source_metadata
+from .continuation_schedule import continuation_schedule
 from .train import write_json
 
 def prepare_archived_source(source, trainer, workspace, baseline_hours):
@@ -30,7 +31,8 @@ def prepare_archived_source(source, trainer, workspace, baseline_hours):
     return source, trainer
 
 
-def run_worker(workspace, output_uri, baseline_hours=56):
+def run_worker(workspace, output_uri, baseline_hours=56, additional_hours=24):
+    schedule = continuation_schedule(baseline_hours, additional_hours)
     profile = source_profile(baseline_hours)
     source_uri = profile['uri']
     uri = output_uri.rstrip('/')
@@ -45,6 +47,7 @@ def run_worker(workspace, output_uri, baseline_hours=56):
     status_root.mkdir()
     status = dict(status='PREPARING', source_uri=source_uri, output_uri=uri,
                   baseline_hours=baseline_hours, baseline_sha256=profile['policy_sha256'], policy_group_sampling='objective_mass',
+                  additional_active_hours=additional_hours,
                   external_benchmarks=False)
     def stage(name, **fields):
         status.update(status=name, **fields)
@@ -68,7 +71,8 @@ def run_worker(workspace, output_uri, baseline_hours=56):
             storage('cp', '--if-generation-match=0', archive, uri + '/training_source.tar.gz')
             stage('TRAINING')
             report = run_continuation(source, trainer, output, baseline_hours=baseline_hours,
-                                      stage_seconds=21600, wall_seconds=108000, upload_uri=uri,
+                                      additional_hours=additional_hours,
+                                      stage_seconds=21600, wall_seconds=schedule['training_wall_hours']*3600, upload_uri=uri,
                                       verify_each_stage=True)
             # Fail closed if the trained artifacts do not attest to the fix.
             for label in report['labels'][1:]:
@@ -87,9 +91,9 @@ def run_worker(workspace, output_uri, baseline_hours=56):
                 instructions='Restore full state with this patched archived trainer and exact runtime; '
                              'a playable policy alone cannot resume training. No automatic retries.'))
             sync()
-            stage('EVALUATING', final_policy_sha256=report['checkpoints'][f'P{baseline_hours + 24}']['sha256'])
+            stage('EVALUATING', final_policy_sha256=report['checkpoints'][schedule['labels'][-1]]['sha256'])
             evaluation = run_suite(output, output / 'evaluation', workers=8,
-                                   max_seconds=14400, external_benchmarks=False)
+                                   max_seconds=schedule['evaluation_wall_hours']*3600, external_benchmarks=False)
             sync(final=True)
             stage(evaluation['status'], final_recovery_verified=True,
                   evaluation_status=evaluation['status'])
@@ -104,7 +108,8 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--workspace', type=Path, required=True)
     parser.add_argument('--output-uri', required=True)
-    parser.add_argument('--baseline-hours', type=int, choices=(56, 80, 104, 128, 152, 176, 200), default=56)
+    parser.add_argument('--baseline-hours', type=int, choices=(56, 80, 104, 128, 152, 176, 200, 224), default=56)
+    parser.add_argument('--additional-hours', type=int, choices=(24, 72), default=24)
     args = vars(parser.parse_args())
     def terminate(signum, frame):
         signal.signal(signal.SIGTERM, signal.SIG_IGN)

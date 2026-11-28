@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Prepare/submit a corrected P56/P80/P104/P128/P152/P176/P200+24 Batch job with local comparisons only."""
+"""Prepare/submit a corrected 24- or 72-hour Batch continuation with local comparisons only."""
 import argparse
 import hashlib
 import json
@@ -10,16 +10,19 @@ import sys
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from hunl_escher.continuation_sources import source_profile, validate_source_metadata
+from hunl_escher.continuation_schedule import continuation_schedule
 
 from launch_learning_check import source_archive
 from batch_runtime import PYTHON_IMAGE, VM_IMAGE, bootstrap, job_spec
 
 def build_bundle(output, *, run_name, project='clever-overview-399515', region='europe-west1',
                  bucket='gs://clever-overview-399515-fhp-escher-results/hunl',
-                 baseline_hours=56, service_account='fhp-escher-runner@clever-overview-399515.iam.gserviceaccount.com'):
+                 baseline_hours=56, additional_hours=24,
+                 service_account='fhp-escher-runner@clever-overview-399515.iam.gserviceaccount.com'):
     profile = source_profile(baseline_hours)
     source_uri = profile['uri']
-    labels = [f'P{baseline_hours + 6*i}' for i in range(5)]
+    schedule = continuation_schedule(baseline_hours, additional_hours)
+    labels = list(schedule['labels'])
     if not re.fullmatch(r'[a-z][a-z0-9-]{1,61}[a-z0-9]', run_name):
         raise ValueError('Invalid Batch job name')
     if not re.fullmatch(r'[a-z]+-[a-z]+[0-9]+', region):
@@ -33,24 +36,24 @@ def build_bundle(output, *, run_name, project='clever-overview-399515', region='
     output.mkdir(parents=True, exist_ok=False)
     source_archive(Path(__file__).resolve().parents[1], output / 'source.tar.gz')
     digest = hashlib.sha256((output / 'source.tar.gz').read_bytes()).hexdigest()
-    command = ['timeout', '--signal=TERM', '--kill-after=300s', '126000s',
+    command = ['timeout', '--signal=TERM', '--kill-after=300s', f"{schedule['worker_wall_hours']*3600}s",
                'python', '-u', '-m', 'hunl_escher.continuation_batch',
                '--workspace', '/workspace/continuation', '--output-uri', uri,
-               '--baseline-hours', str(baseline_hours)]
+               '--baseline-hours', str(baseline_hours), '--additional-hours', str(additional_hours)]
     script = bootstrap(command, uri, digest)
-    job = job_spec(script, service_account, boot_disk_gb=200, max_run_seconds=129600,
-                   labels=dict(experiment=f'hunl-p{baseline_hours}-plus24', sampler='objective-mass'))
+    job = job_spec(script, service_account, boot_disk_gb=200, max_run_seconds=schedule['max_job_hours']*3600,
+                   labels=dict(experiment=f'hunl-p{baseline_hours}-plus{additional_hours}', sampler='objective-mass'))
     job['allocationPolicy']['location'] = dict(allowedLocations=['regions/' + region])
-    plan = dict(experiment=f'hunl_p{baseline_hours}_plus24_objective_mass_v1', backend='google_cloud_batch',
+    plan = dict(experiment=f'hunl_p{baseline_hours}_plus{additional_hours}_objective_mass_v1', backend='google_cloud_batch',
         job_name=run_name, project=project, region=region, uri=uri, source_uri=source_uri, baseline_hours=baseline_hours,
         source_sha256=digest, baseline_sha256=profile['policy_sha256'],
         original_trainer_fingerprint=profile['fingerprint'],
         machine='c4-highmem-16', boot_disk_gb=200, collection_workers=8, training_threads=8,
-        labels=labels, additional_active_hours=24, stage_hours=6,
+        **dict(schedule, labels=labels),
         policy_group_sampling='objective_mass', python_container=PYTHON_IMAGE, vm_image=VM_IMAGE,
-        training_wall_hours=30, evaluation_wall_hours=4, worker_wall_hours=35, max_job_hours=36,
         automatic_retries=0, external_benchmarks=False,
-        primary=f'{labels[-1]} vs original {labels[0]}, alpha 0.05', secondary='Four adjacent comparisons, alpha 0.01 each',
+        primary=f'{labels[-1]} vs original {labels[0]}, alpha 0.05',
+        secondary=f"{len(labels)-1} adjacent comparisons, alpha {schedule['secondary_alpha']:.10g} each",
         evaluation='After training; eight workers; pilot excluded; matched deals with exchanged seats',
         recovery='Every stage; keep all playable policies and newest full recovery; preserve prior runs',
         cleanup='Batch releases its VM and disk; results, provenance and full recovery remain in GCS')
@@ -104,7 +107,8 @@ def main():
     parser.add_argument('--region', default='europe-west1')
     parser.add_argument('--bucket', default='gs://clever-overview-399515-fhp-escher-results/hunl')
     parser.add_argument('--service-account', default='fhp-escher-runner@clever-overview-399515.iam.gserviceaccount.com')
-    parser.add_argument('--baseline-hours', type=int, choices=(56, 80, 104, 128, 152, 176, 200), default=56)
+    parser.add_argument('--baseline-hours', type=int, choices=(56, 80, 104, 128, 152, 176, 200, 224), default=56)
+    parser.add_argument('--additional-hours', type=int, choices=(24, 72), default=24)
     parser.add_argument('--execute', action='store_true')
     args = vars(parser.parse_args()); execute = args.pop('execute')
     prepared = args.pop('submit_prepared')

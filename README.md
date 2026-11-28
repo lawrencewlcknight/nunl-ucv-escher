@@ -267,3 +267,13 @@ P206/P212/P218/P224 and runs the primary P224-vs-P200 comparison plus four adjac
 comparisons. Training retains the corrected policy grouping, archived trainer,
 eight workers/eight Torch threads and `c4-highmem-16`. Both jobs run autonomously
 on GCP; preparation alone submits neither job.
+
+### Continue HUNL P224 to P296 on Google Batch
+
+The [72-hour continuation](docs/P224_PLUS72_BATCH.md) resumes the verified P224
+full state and unchanged corrected trainer. It exports twelve six-hour checkpoints
+P230 through P296, then evaluates P296 vs P224 and all twelve adjacent pairs.
+The larger secondary family uses 99.667% intervals. Resources remain
+`c4-highmem-16` with eight collection workers/eight Torch threads; limits are
+90 hours for training orchestration, 12 hours for evaluation and 104 hours for the
+Batch task. No external benchmark or chat automation is involved.

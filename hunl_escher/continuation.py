@@ -17,18 +17,13 @@ from .checkpointing import load_checkpoint_payload, sha256_file
 from .experiment import publish_policy, upload_checkpoint
 from .experiment_runtime import run_child
 from .train import write_json
+from .continuation_schedule import continuation_labels
 
 LABELS = ('P8', 'P14', 'P20', 'P26', 'P32')
 
 
-def continuation_labels(baseline_hours=8):
-    if not isinstance(baseline_hours, int) or baseline_hours < 8 or (baseline_hours-8) % 24:
-        raise ValueError('Baseline must be P8 plus a whole number of 24-hour continuations')
-    return tuple(f'P{baseline_hours + 6*i}' for i in range(5))
-
-
 def report_labels(report):
-    labels = continuation_labels(report.get('baseline_hours', 8))
+    labels = continuation_labels(report.get('baseline_hours', 8), report.get('additional_hours', 24))
     if tuple(report.get('labels', labels)) != labels:
         raise ValueError('Continuation labels differ from its baseline')
     return labels
@@ -62,8 +57,8 @@ def trainer_command(training, contract, seconds):
 
 def run_continuation(source_run, trainer_source, output, *, stage_seconds=21600.,
                      wall_seconds=108000., upload_uri=None, allow_smoke=False, baseline_hours=8,
-                     verify_each_stage=False):
-    labels = continuation_labels(baseline_hours)
+                     verify_each_stage=False, additional_hours=24):
+    labels = continuation_labels(baseline_hours, additional_hours)
     baseline, final = labels[0], labels[-1]
     if not all(math.isfinite(x) and x > 0 for x in (stage_seconds, wall_seconds)):
         raise ValueError('Time budgets must be positive and finite')
@@ -87,7 +82,8 @@ def run_continuation(source_run, trainer_source, output, *, stage_seconds=21600.
     root.mkdir(parents=True, exist_ok=False)
     report = dict(status='PREPARING', source_run=str(source), trainer_source=str(trainer),
                   training_source_fingerprint=contract['source_fingerprint'],
-                  stage_seconds=stage_seconds, additional_active_seconds=4*stage_seconds,
+                  stage_seconds=stage_seconds, additional_active_seconds=(len(labels)-1)*stage_seconds,
+                  additional_hours=additional_hours,
                   smoke=contract['smoke'], baseline_hours=baseline_hours, labels=labels,
                   checkpoints={baseline: marker}, stages={})
     write_json(root / 'continuation.json', report)
@@ -125,7 +121,7 @@ def run_continuation(source_run, trainer_source, output, *, stage_seconds=21600.
             remaining = deadline-time.monotonic()
             if remaining <= 0:
                 raise TimeoutError('Continuation wall budget exhausted')
-            # Use absolute cumulative targets, avoiding four accumulated iteration
+            # Use absolute cumulative targets, avoiding accumulated iteration
             # overshoots. Active time excludes extraction, saving and uploads.
             target = marker['active_seconds'] + index*stage_seconds
             if contract['smoke']:
@@ -175,6 +171,7 @@ def main():
     p.add_argument('--upload-uri')
     p.add_argument('--allow-smoke', action='store_true')
     p.add_argument('--baseline-hours', type=int, default=8)
+    p.add_argument('--additional-hours', type=int, choices=(24, 72), default=24)
     run_continuation(**vars(p.parse_args()))
 
 

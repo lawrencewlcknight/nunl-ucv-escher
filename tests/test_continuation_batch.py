@@ -51,8 +51,8 @@ def equal(a, b):
         assert a == b
 
 
-@pytest.mark.parametrize('baseline_hours', [56, 80, 104, 128, 152, 176, 200])
-def test_migration_preserves_all_learning_state_and_continues(tmp_path, baseline_hours):
+@pytest.mark.parametrize('baseline_hours,additional_hours', [(h, 24) for h in (56, 80, 104, 128, 152, 176, 200)] + [(224, 72)])
+def test_migration_preserves_all_learning_state_and_continues(tmp_path, baseline_hours, additional_hours):
     module = launcher()
     module.source_archive(REPO, tmp_path / "source.tar.gz")
     archived = tmp_path / "legacy"
@@ -88,11 +88,11 @@ def test_migration_preserves_all_learning_state_and_continues(tmp_path, baseline
         if key != "repository_commit":
             equal(original[key], state[key])
     assert (migrated / "P56.pkl").read_bytes() == (baseline / "P56.pkl").read_bytes()
-    labels = [f'P{baseline_hours + 6*i}' for i in range(5)]
+    labels = [f'P{baseline_hours + 6*i}' for i in range(additional_hours // 6 + 1)]
     if baseline_hours != 56:
         publish_policy(migrated / 'training', migrated, f'P{baseline_hours}')
     report = run_continuation(migrated, patched, tmp_path / "continued", baseline_hours=baseline_hours,
-        stage_seconds=.001, wall_seconds=240, allow_smoke=True, verify_each_stage=True)
+        stage_seconds=.001, wall_seconds=360, allow_smoke=True, verify_each_stage=True, additional_hours=additional_hours)
     assert report["status"] == "TRAINING_COMPLETE" and report["final_recovery_verified"]
     assert list(report["checkpoints"]) == labels
     for label in labels[1:]:
@@ -102,34 +102,41 @@ def test_migration_preserves_all_learning_state_and_continues(tmp_path, baseline
     for label in labels:
         assert json.loads((tmp_path / "continued" / f"reload-{label}.json").read_text())["status"] == "VERIFIED"
     from hunl_escher.continuation_evaluate import run_suite
-    evaluation = run_suite(tmp_path / "continued", tmp_path / "evaluation", workers=1, max_seconds=180,
+    evaluation = run_suite(tmp_path / "continued", tmp_path / "evaluation", workers=1, max_seconds=240,
                            smoke=True, external_benchmarks=False)
     assert evaluation["status"] == "COMPLETE"
     assert evaluation["primary"] == f"{labels[-1]}-vs-{labels[0]}"
-    assert len(evaluation["head_to_head"]) == 5
+    assert len(evaluation["head_to_head"]) == additional_hours // 6 + 1
+    assert evaluation["secondary_alpha"] == pytest.approx(.04 / (additional_hours // 6))
+    assert report["additional_active_seconds"] == pytest.approx(additional_hours // 6 * .001)
     assert "External benchmarks are disabled" in (tmp_path / "evaluation/continuation_report.md").read_text()
     with pytest.raises(ValueError, match="checksum"):
         patch_trainer(patched, 123)
 
 
-@pytest.mark.parametrize('baseline_hours', [56, 80, 104, 128, 152, 176, 200])
-def test_batch_contract_and_shell(tmp_path, baseline_hours):
+@pytest.mark.parametrize('baseline_hours,additional_hours', [(h, 24) for h in (56, 80, 104, 128, 152, 176, 200)] + [(224, 72)])
+def test_batch_contract_and_shell(tmp_path, baseline_hours, additional_hours):
     module = launcher()
     bundle = tmp_path / "bundle"
     plan = module.build_bundle(bundle, project="test", region="europe-west1", bucket="gs://test/hunl",
-        service_account="runner@test.iam.gserviceaccount.com", run_name="hunl-batch-test", baseline_hours=baseline_hours)
+        service_account="runner@test.iam.gserviceaccount.com", run_name="hunl-batch-test", baseline_hours=baseline_hours, additional_hours=additional_hours)
     job = json.loads((bundle / "job.json").read_text())
     spec = job["taskGroups"][0]["taskSpec"]
-    assert spec["maxRetryCount"] == 0 and spec["maxRunDuration"] == "129600s"
+    assert spec["maxRetryCount"] == 0 and spec["maxRunDuration"] == ("374400s" if additional_hours == 72 else "129600s")
     assert spec["computeResource"] == dict(cpuMilli=16000, memoryMib=120000)
     assert job["allocationPolicy"]["instances"][0]["policy"]["bootDisk"]["type"] == "hyperdisk-balanced"
     assert "batch-cos" in plan["vm_image"] and "@sha256:" in plan["python_container"]
     assert plan["policy_group_sampling"] == "objective_mass"
-    assert plan["labels"] == [f"P{baseline_hours + 6*i}" for i in range(5)]
+    assert plan["labels"] == [f"P{baseline_hours + 6*i}" for i in range(additional_hours // 6 + 1)]
     assert plan["baseline_hours"] == baseline_hours
+    assert plan["additional_active_hours"] == additional_hours
+    assert plan["training_wall_hours"] == 30 * (additional_hours // 24)
+    assert plan["evaluation_wall_hours"] == 4 * (additional_hours // 24)
     script = (bundle / "batch.sh").read_text()
     assert "hunl_escher.continuation_batch" in script and "shutdown" not in script
     assert f"--baseline-hours {baseline_hours}" in script
+    assert f"--additional-hours {additional_hours}" in script
+    assert str(plan["worker_wall_hours"] * 3600) + "s" in script
     assert "pip==25.3" in script and "--no-deps --only-binary=:all: torch==2.7.0+cpu" in script
     assert "APT::Update::Error-Mode=any" in script
     assert "free -m || true" in script and "python3-venv procps" in script
@@ -140,13 +147,13 @@ def test_batch_contract_and_shell(tmp_path, baseline_hours):
 
 
 @pytest.mark.parametrize('failure', [False, True])
-@pytest.mark.parametrize('baseline_hours', [56, 80, 104, 128, 152, 176, 200])
-def test_worker_is_self_contained_and_publishes_failure(tmp_path, monkeypatch, failure, baseline_hours):
+@pytest.mark.parametrize('baseline_hours,additional_hours', [(h, 24) for h in (56, 80, 104, 128, 152, 176, 200)] + [(224, 72)])
+def test_worker_is_self_contained_and_publishes_failure(tmp_path, monkeypatch, failure, baseline_hours, additional_hours):
     from contextlib import contextmanager
     from hunl_escher import continuation_batch as worker
     uploads, stages, syncs = [], [], []
     profile = worker.source_profile(baseline_hours)
-    labels = [f"P{baseline_hours + 6*i}" for i in range(5)]
+    labels = [f"P{baseline_hours + 6*i}" for i in range(additional_hours // 6 + 1)]
     @contextmanager
     def publisher(path, uri, **kwargs):
         yield lambda **kw: syncs.append((path, kw))
@@ -170,8 +177,8 @@ def test_worker_is_self_contained_and_publishes_failure(tmp_path, monkeypatch, f
     monkeypatch.setattr(worker, 'storage', lambda *args: uploads.append(args))
     def train(source, trainer, output, **kwargs):
         stages.append('train')
-        assert kwargs == dict(baseline_hours=baseline_hours, stage_seconds=21600,
-            wall_seconds=108000, upload_uri='gs://test/new', verify_each_stage=True)
+        assert kwargs == dict(baseline_hours=baseline_hours, additional_hours=additional_hours, stage_seconds=21600,
+            wall_seconds=108000 * (additional_hours // 24), upload_uri='gs://test/new', verify_each_stage=True)
         output.mkdir()
         return dict(labels=labels, training_source_fingerprint='patched',
             checkpoints={label: dict(sha256='hash', outer_iteration=i, metrics=dict(policy_validation=dict(
@@ -180,18 +187,18 @@ def test_worker_is_self_contained_and_publishes_failure(tmp_path, monkeypatch, f
     monkeypatch.setattr(worker, 'run_continuation', train)
     def evaluate(root, output, **kwargs):
         assert stages == ['train']
-        assert kwargs == dict(workers=8, max_seconds=14400, external_benchmarks=False)
+        assert kwargs == dict(workers=8, max_seconds=14400 * (additional_hours // 24), external_benchmarks=False)
         stages.append('evaluate')
         return dict(status='COMPLETE')
     monkeypatch.setattr(worker, 'run_suite', evaluate)
     root = tmp_path / 'work'
     if failure:
         with pytest.raises(ValueError, match='Rejected source'):
-            worker.run_worker(root, 'gs://test/new', baseline_hours=baseline_hours)
+            worker.run_worker(root, 'gs://test/new', baseline_hours=baseline_hours, additional_hours=additional_hours)
         assert stages == [] and uploads == []
         assert json.loads((root / 'status/batch_status.json').read_text())['status'] == 'FAILED'
     else:
-        assert worker.run_worker(root, 'gs://test/new', baseline_hours=baseline_hours)['status'] == 'COMPLETE'
+        assert worker.run_worker(root, 'gs://test/new', baseline_hours=baseline_hours, additional_hours=additional_hours)['status'] == 'COMPLETE'
         assert stages == ['train', 'evaluate']
         assert (root / 'run/resume.json').exists()
         assert not (root / 'run/slumbot_ready.json').exists()
